@@ -3,6 +3,7 @@
 
 import typing
 
+import os
 import ast
 import math
 import re
@@ -175,7 +176,7 @@ math_constants = {
 # the old behavior "fork") but it will not solve the core problem of fork, nor
 # will it remove the deprecation warnings in py3.12 & py3.13.  Issue is
 # ddiscussed here: https://github.com/searxng/searxng/issues/4159
-mp_fork = multiprocessing.get_context("fork")
+mp_fork = multiprocessing.get_context("spawn" if os.name == 'nt' else "fork")
 
 
 def _eval_expr(expr):
