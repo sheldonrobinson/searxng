@@ -10,9 +10,9 @@ usage::
 
 import typing as t
 
+import os
 import sys
 import copy
-from os.path import realpath, dirname
 
 import types
 import inspect
@@ -24,7 +24,7 @@ if t.TYPE_CHECKING:
     from searx.enginelib import Engine
 
 logger = logger.getChild('engines')
-ENGINE_DIR = dirname(realpath(__file__))
+ENGINE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Defaults for the namespace of an engine module, see load_engine()
 ENGINE_DEFAULT_ARGS: dict[str, int | str | list[t.Any] | dict[str, t.Any] | bool] = {

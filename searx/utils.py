@@ -425,17 +425,15 @@ def int_or_zero(num: list[str] | str) -> int:
 def load_module(filename: str, module_dir: str) -> types.ModuleType:
     modname, modext = splitext(filename)
     modpath = join(module_dir, filename)
-    if modext == '.pyc':
-        module = importlib.util.import_module(modname, package=modpath)
-    else:
-        # and https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
-        spec = importlib.util.spec_from_file_location(modname, modpath)
-        if not spec:
-            raise ValueError(f"Error loading '{modpath}' module")
-        module = importlib.util.module_from_spec(spec)
-        if not spec.loader:
-            raise ValueError(f"Error loading '{modpath}' module")
-        spec.loader.exec_module(module)
+
+    # and https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+    spec = importlib.util.spec_from_file_location(modname, modpath)
+    if not spec:
+        raise ValueError(f"Error loading '{modpath}' module")
+    module = importlib.util.module_from_spec(spec)
+    if not spec.loader:
+        raise ValueError(f"Error loading '{modpath}' module")
+    spec.loader.exec_module(module)
     return module
 
 
