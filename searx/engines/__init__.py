@@ -120,7 +120,8 @@ def load_engine(engine_data: dict[str, t.Any]) -> "Engine | types.ModuleType | N
         logger.error('The "engine" field is missing for the engine named "{}"'.format(engine_name))
         return None
     try:
-        engine = load_module(module_name + '.py', ENGINE_DIR)
+        module_path = os.path.join(ENGINE_DIR, module_name + '.pyc')
+        engine = load_module(module_name + '.pyc', ENGINE_DIR) if os.path.exists(module_path) else load_module(module_name + '.py', ENGINE_DIR)
     except (SyntaxError, KeyboardInterrupt, SystemExit, SystemError, ImportError, RuntimeError):
         logger.exception('Fatal exception in engine "{}"'.format(module_name))
         sys.exit(1)
