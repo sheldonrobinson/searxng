@@ -34,7 +34,7 @@ const svg2svg_favicon_opts: Config = {
 };
 
 export default {
-  base: "/static/themes/simple/",
+  base: "./",
   publicDir: "static/",
 
   build: {
@@ -52,7 +52,8 @@ export default {
         // stylesheets
         ltr: `${PATH.src}/less/style-ltr.less`,
         rtl: `${PATH.src}/less/style-rtl.less`,
-        rss: `${PATH.src}/less/rss.less`
+        rss: `${PATH.src}/less/rss.less`,
+        noscript: `${PATH.src}/less/noscript.less`
       },
 
       // file naming conventions / pathnames are relative to outDir (PATH.dist)
@@ -74,6 +75,9 @@ export default {
             .normalize("NFD")
             .replace(/[^a-zA-Z0-9.-]/g, "_")
             .toLowerCase();
+        },
+        comments: {
+          legal: true
         }
       }
     }
@@ -128,6 +132,28 @@ export default {
         dest: `${PATH.dist}/img/searxng.png`
       }
     ]),
+
+    // SearXNG PWA Icons (static)
+    plg_svg2png(
+      [
+        {
+          src: `${PATH.brand}/searxng-wordmark.svg`,
+          dest: `${PATH.dist}/img/512.png`
+        }
+      ],
+      512,
+      512
+    ),
+    plg_svg2png(
+      [
+        {
+          src: `${PATH.brand}/searxng-wordmark.svg`,
+          dest: `${PATH.dist}/img/192.png`
+        }
+      ],
+      192,
+      192
+    ),
 
     // -- svg
     plg_svg2svg(

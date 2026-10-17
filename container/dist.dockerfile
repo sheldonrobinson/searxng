@@ -1,8 +1,5 @@
-ARG CONTAINER_IMAGE_ORGANIZATION="searxng"
-ARG CONTAINER_IMAGE_NAME="searxng"
-
-FROM localhost/$CONTAINER_IMAGE_ORGANIZATION/$CONTAINER_IMAGE_NAME:builder AS builder
-FROM ghcr.io/searxng/base:searxng AS dist
+FROM localhost/searxng/searxng:builder AS builder
+FROM docker.io/searxng/base:searxng AS dist
 
 COPY --chown=977:977 --from=builder /usr/local/searxng/.venv/ ./.venv/
 COPY --chown=977:977 --from=builder /usr/local/searxng/searx/ ./searx/
@@ -15,17 +12,17 @@ ARG VCS_URL="unknown"
 ARG VCS_REVISION="unknown"
 
 LABEL org.opencontainers.image.created="$CREATED" \
-      org.opencontainers.image.description="SearXNG is a metasearch engine. Users are neither tracked nor profiled." \
-      org.opencontainers.image.documentation="https://docs.searxng.org/admin/installation-docker" \
-      org.opencontainers.image.licenses="AGPL-3.0-or-later" \
-      org.opencontainers.image.revision="$VCS_REVISION" \
-      org.opencontainers.image.source="$VCS_URL" \
-      org.opencontainers.image.title="SearXNG" \
-      org.opencontainers.image.url="https://searxng.org" \
-      org.opencontainers.image.version="$VERSION"
+    org.opencontainers.image.description="SearXNG is a metasearch engine. Users are neither tracked nor profiled." \
+    org.opencontainers.image.documentation="https://docs.searxng.org/admin/installation-docker" \
+    org.opencontainers.image.licenses="AGPL-3.0-or-later" \
+    org.opencontainers.image.revision="$VCS_REVISION" \
+    org.opencontainers.image.source="$VCS_URL" \
+    org.opencontainers.image.title="SearXNG" \
+    org.opencontainers.image.url="https://searxng.org" \
+    org.opencontainers.image.version="$VERSION"
 
-ENV SEARXNG_VERSION="$VERSION" \
-    SEARXNG_SETTINGS_PATH="$CONFIG_PATH/settings.yml" \
+ENV __SEARXNG_VERSION="$VERSION" \
+    __SEARXNG_SETTINGS_PATH="$__SEARXNG_CONFIG_PATH/settings.yml" \
     GRANIAN_PROCESS_NAME="searxng" \
     GRANIAN_INTERFACE="wsgi" \
     GRANIAN_HOST="::" \
@@ -36,8 +33,8 @@ ENV SEARXNG_VERSION="$VERSION" \
     GRANIAN_BLOCKING_THREADS_IDLE_TIMEOUT="5m"
 
 # "*_PATH" ENVs are defined in base images
-VOLUME $CONFIG_PATH
-VOLUME $DATA_PATH
+VOLUME $__SEARXNG_CONFIG_PATH
+VOLUME $__SEARXNG_DATA_PATH
 
 EXPOSE 8080
 

@@ -4,11 +4,11 @@
 data.help() {
     cat <<EOF
 data.:
-  all       : update searx/sxng_locales.py and searx/data/*
-  traits    : update searx/data/engine_traits.json & searx/sxng_locales.py
-  useragents: update searx/data/useragents.json with the most recent versions of Firefox
-  locales   : update searx/data/locales.json from babel
-  currencies: update searx/data/currencies.json from wikidata
+  all           : update searx/sxng_locales.py and searx/data/*
+  traits        : update searx/data/engine_traits.json & searx/sxng_locales.py
+  useragents    : update searx/data/useragents.json with the most recent versions of Firefox
+  locales       : update searx/data/locales.json from babel
+  currencies    : update searx/data/currencies.json from wikidata
 EOF
 }
 
@@ -26,7 +26,8 @@ data.all() {
         build_msg DATA "update searx/data/ahmia_blacklist.txt"
         python searxng_extra/update/update_ahmia_blacklist.py
         build_msg DATA "update searx/data/wikidata_units.json"
-        python searxng_extra/update/update_wikidata_units.py
+        build_msg DATA "update searx/data/wikidata_properties.json"
+        python searxng_extra/update/update_wikidata.py
         build_msg DATA "update searx/data/currencies.json"
         python searxng_extra/update/update_currencies.py
         build_msg DATA "update searx/data/external_bangs.json"

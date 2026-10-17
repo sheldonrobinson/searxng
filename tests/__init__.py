@@ -5,7 +5,6 @@ import pathlib
 import os
 import aiounittest
 
-
 os.environ.pop('SEARXNG_SETTINGS_PATH', None)
 os.environ['SEARXNG_DISABLE_ETC_SETTINGS'] = '1'
 
@@ -82,7 +81,6 @@ class SearxTestCase(aiounittest.AsyncTestCase):
         # - initialize searx.network, searx.metrics, searx.processors and searx.search.checker
 
         searx.search.initialize(
-            enable_checker=True,
             check_network=True,
             enable_metrics=searx.get_setting("general.enable_metrics"),  # type: ignore
         )
