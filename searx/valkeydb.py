@@ -19,6 +19,7 @@ A valkey DB connect can be tested by::
 """
 
 import os
+
 if os.name == 'nt':  # Windows
     import getpass
 else:
@@ -26,6 +27,7 @@ else:
         import pwd
     except ImportError:
         pwd = None  # Or handle the missing module appropriately
+
 import logging
 import warnings
 
