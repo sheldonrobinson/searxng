@@ -31,7 +31,7 @@ from searx.version import VERSION_TAG
 from searx.exceptions import SearxXPathSyntaxException, SearxEngineXPathException
 from searx import logger
 
-logger = logger.getChild('utils')
+logger = logger.getChild("utils")
 
 XPathSpecType: t.TypeAlias = str | XPath
 """Type alias used by :py:obj:`searx.utils.get_xpath`,
@@ -40,18 +40,18 @@ XPathSpecType: t.TypeAlias = str | XPath
 ElementType: t.TypeAlias = ElementBase | _Element
 
 
-_BLOCKED_TAGS = ('script', 'style')
+_BLOCKED_TAGS = ("script", "style")
 
-_ECMA_UNESCAPE4_RE = re.compile(r'%u([0-9a-fA-F]{4})', re.UNICODE)
-_ECMA_UNESCAPE2_RE = re.compile(r'%([0-9a-fA-F]{2})', re.UNICODE)
+_ECMA_UNESCAPE4_RE = re.compile(r"%u([0-9a-fA-F]{4})", re.UNICODE)
+_ECMA_UNESCAPE2_RE = re.compile(r"%([0-9a-fA-F]{2})", re.UNICODE)
 
 _JS_STRING_DELIMITERS = re.compile(r'(["\'`])')
-_JS_QUOTE_KEYS_RE = re.compile(r'([\{\s,])([\$_\w][\$_\w0-9]*)(:)')
-_JS_VOID_OR_UNDEFINED_RE = re.compile(r'void\s+[0-9]+|void\s*\([0-9]+\)|undefined')
+_JS_QUOTE_KEYS_RE = re.compile(r"([\{\s,])([\$_\w][\$_\w0-9]*)(:)")
+_JS_VOID_OR_UNDEFINED_RE = re.compile(r"void\s+[0-9]+|void\s*\([0-9]+\)|undefined")
 _JS_DECIMAL_RE = re.compile(r"([\[\,:])\s*(\-?)\s*([0-9_]*)\.([0-9_]*)")
 _JS_DECIMAL2_RE = re.compile(r"([\[\,:])\s*(\-?)\s*([0-9_]+)")
 _JS_EXTRA_COMA_RE = re.compile(r"\s*,\s*([\]\}])")
-_JS_STRING_ESCAPE_RE = re.compile(r'\\(.)')
+_JS_STRING_ESCAPE_RE = re.compile(r"\\(.)")
 _JSON_PASSTHROUGH_ESCAPES = R'"\bfnrtu'
 
 _XPATH_CACHE: dict[str, XPath] = {}
@@ -76,9 +76,9 @@ def gen_useragent(os_string: str | None = None) -> str:
 
     See searx/data/useragents.json
     """
-    return USER_AGENTS['ua'].format(
-        os=os_string or choice(USER_AGENTS['os']),
-        version=choice(USER_AGENTS['versions']),
+    return USER_AGENTS["ua"].format(
+        os=os_string or choice(USER_AGENTS["os"]),
+        version=choice(USER_AGENTS["versions"]),
     )
 
 
@@ -92,8 +92,8 @@ class HTMLTextExtractor(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         self.tags.append(tag)
-        if tag == 'br':
-            self.result.append(' ')
+        if tag == "br":
+            self.result.append(" ")
 
     def handle_endtag(self, tag: str) -> None:
         if not self.tags:
@@ -116,7 +116,7 @@ class HTMLTextExtractor(HTMLParser):
     def handle_charref(self, name: str) -> None:
         if not self.is_valid_tag():
             return
-        if name[0] in ('x', 'X'):
+        if name[0] in ("x", "X"):
             codepoint = int(name[1:], 16)
         else:
             codepoint = int(name)
@@ -130,7 +130,7 @@ class HTMLTextExtractor(HTMLParser):
         self.result.append(name)
 
     def get_text(self):
-        return ''.join(self.result).strip()
+        return "".join(self.result).strip()
 
     def error(self, message: str) -> None:
         # error handle is needed in <py3.10
@@ -166,8 +166,8 @@ def html_to_text(html_str: str) -> str:
     """
     if not html_str:
         return ""
-    html_str = html_str.replace('\n', ' ').replace('\r', ' ')
-    html_str = ' '.join(html_str.split())
+    html_str = html_str.replace("\n", " ").replace("\r", " ")
+    html_str = " ".join(html_str.split())
     s = HTMLTextExtractor()
     try:
         s.feed(html_str)
@@ -197,7 +197,9 @@ def markdown_to_text(markdown_str: str) -> str:
     """
 
     html_str: str = (
-        MarkdownIt("commonmark", {"typographer": True}).enable(["replacements", "smartquotes"]).render(markdown_str)
+        MarkdownIt("commonmark", {"typographer": True})
+        .enable(["replacements", "smartquotes"])
+        .render(markdown_str)
     )
     return html_to_text(html_str)
 
@@ -223,27 +225,27 @@ def extract_text(
     """
     if isinstance(xpath_results, list):
         # it's list of result : concat everything using recursive call
-        result = ''
+        result = ""
         for e in xpath_results:
-            result = result + (extract_text(e) or '')
+            result = result + (extract_text(e) or "")
         return result.strip()
     if isinstance(xpath_results, ElementType):
         # it's a element
         text: str = html.tostring(  # type: ignore
             xpath_results,  # pyright: ignore[reportArgumentType]
-            encoding='unicode',
-            method='text',
+            encoding="unicode",
+            method="text",
             with_tail=False,
         )
-        text = text.strip().replace('\n', ' ')  # type: ignore
-        return ' '.join(text.split())  # type: ignore
+        text = text.strip().replace("\n", " ")  # type: ignore
+        return " ".join(text.split())  # type: ignore
     if isinstance(xpath_results, (str, Number, bool)):
         return str(xpath_results)
     if xpath_results is None and allow_none:
         return None
     if xpath_results is None and not allow_none:
-        raise ValueError('extract_text(None, allow_none=False)')
-    raise ValueError('unsupported type')
+        raise ValueError("extract_text(None, allow_none=False)")
+    raise ValueError("unsupported type")
 
 
 def normalize_url(url: str, base_url: str) -> str:
@@ -273,30 +275,33 @@ def normalize_url(url: str, base_url: str) -> str:
     Returns:
         * str: normalized URL
     """
-    if url.startswith('//'):
+    if url.startswith("//"):
         # add http or https to this kind of url //example.com/
         parsed_search_url = urlparse(base_url)
-        url = '{0}:{1}'.format(parsed_search_url.scheme or 'http', url)
-    elif url.startswith('/'):
+        url = "{0}:{1}".format(parsed_search_url.scheme or "http", url)
+    elif url.startswith("/"):
         # fix relative url to the search engine
         url = urljoin(base_url, url)
 
     # fix relative urls that fall through the crack
-    if '://' not in url:
+    if "://" not in url:
         url = urljoin(base_url, url)
 
     parsed_url = urlparse(url)
 
     # add a / at this end of the url if there is no path
     if not parsed_url.netloc:
-        raise ValueError('Cannot parse url')
+        raise ValueError("Cannot parse url")
     if not parsed_url.path:
-        url += '/'
+        url += "/"
 
     return url
 
 
-def extract_url(xpath_results: list[ElementType] | ElementType | str | Number | bool | None, base_url: str) -> str:
+def extract_url(
+    xpath_results: list[ElementType] | ElementType | str | Number | bool | None,
+    base_url: str,
+) -> str:
     """Extract and normalize URL from lxml Element
 
     Example:
@@ -325,15 +330,17 @@ def extract_url(xpath_results: list[ElementType] | ElementType | str | Number | 
         * str: normalized URL
     """
     if xpath_results == []:
-        raise ValueError('Empty url resultset')
+        raise ValueError("Empty url resultset")
 
     url = extract_text(xpath_results)
     if url:
         return normalize_url(url, base_url)
-    raise ValueError('URL not found')
+    raise ValueError("URL not found")
 
 
-def dict_subset(dictionary: MutableMapping[t.Any, t.Any], properties: set[str]) -> MutableMapping[str, t.Any]:
+def dict_subset(
+    dictionary: MutableMapping[t.Any, t.Any], properties: set[str]
+) -> MutableMapping[str, t.Any]:
     """Extract a subset of a dict
 
     Examples:
@@ -347,7 +354,7 @@ def dict_subset(dictionary: MutableMapping[t.Any, t.Any], properties: set[str]) 
 
 def humanize_bytes(size: int | float, precision: int = 2):
     """Determine the *human readable* value of bytes on 1024 base (1KB=1024B)."""
-    s = ['B ', 'KB', 'MB', 'GB', 'TB']
+    s = ["B ", "KB", "MB", "GB", "TB"]
 
     x = len(s)
     p = 0
@@ -359,7 +366,7 @@ def humanize_bytes(size: int | float, precision: int = 2):
 
 def humanize_number(size: int | float, precision: int = 0):
     """Determine the *human readable* value of a decimal number."""
-    s = ['', 'K', 'M', 'B', 'T']
+    s = ["", "K", "M", "B", "T"]
 
     x = len(s)
     p = 0
@@ -418,7 +425,7 @@ def int_or_zero(num: list[str] | str) -> int:
 
 
 def load_module(filename: str, module_dir: str) -> types.ModuleType:
-    modname,_ = splitext(filename)
+    modname, _ = splitext(filename)
     modpath = join(module_dir, filename)
 
     # and https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
@@ -436,7 +443,7 @@ def to_string(obj: t.Any) -> str:
     """Convert obj to its string representation."""
     if isinstance(obj, str):
         return obj
-    if hasattr(obj, '__str__'):
+    if hasattr(obj, "__str__"):
         return str(obj)
     return repr(obj)
 
@@ -490,13 +497,13 @@ def get_string_replaces_function(replaces: dict[str, str]) -> Callable[[str], st
 def get_engine_from_settings(name: str) -> dict[str, dict[str, str]]:
     """Return engine configuration from settings.yml of a given engine name"""
 
-    if 'engines' not in settings:
+    if "engines" not in settings:
         return {}
 
-    for engine in settings['engines']:
-        if 'name' not in engine:
+    for engine in settings["engines"]:
+        if "name" not in engine:
             continue
-        if name == engine['name']:
+        if name == engine["name"]:
             return engine
 
     return {}
@@ -525,7 +532,9 @@ def get_xpath(xpath_spec: XPathSpecType) -> XPath:
     if isinstance(xpath_spec, XPath):
         return xpath_spec
 
-    raise TypeError('xpath_spec must be either a str or a lxml.etree.XPath')  # pyright: ignore[reportUnreachable]
+    raise TypeError(
+        "xpath_spec must be either a str or a lxml.etree.XPath"
+    )  # pyright: ignore[reportUnreachable]
 
 
 def eval_xpath(element: ElementType, xpath_spec: XPathSpecType) -> t.Any:
@@ -552,20 +561,22 @@ def eval_xpath(element: ElementType, xpath_spec: XPathSpecType) -> t.Any:
         # https://lxml.de/xpathxslt.html#xpath-return-values
         return xpath(element)
     except XPathError as e:
-        arg = ' '.join([str(i) for i in e.args])
+        arg = " ".join([str(i) for i in e.args])
         raise SearxEngineXPathException(xpath_spec, arg) from e
 
 
-def eval_xpath_list(element: ElementType, xpath_spec: XPathSpecType, min_len: int | None = None) -> list[t.Any]:
+def eval_xpath_list(
+    element: ElementType, xpath_spec: XPathSpecType, min_len: int | None = None
+) -> list[t.Any]:
     """Same as :py:obj:`searx.utils.eval_xpath`, but additionally ensures the
     return value is a :py:obj:`list`.  The minimum length of the list is also
     checked (if ``min_len`` is set)."""
 
     result: list[t.Any] = eval_xpath(element, xpath_spec)
     if not isinstance(result, list):
-        raise SearxEngineXPathException(xpath_spec, 'the result is not a list')
+        raise SearxEngineXPathException(xpath_spec, "the result is not a list")
     if min_len is not None and min_len > len(result):
-        raise SearxEngineXPathException(xpath_spec, 'len(xpath_str) < ' + str(min_len))
+        raise SearxEngineXPathException(xpath_spec, "len(xpath_str) < " + str(min_len))
     return result
 
 
@@ -589,7 +600,9 @@ def eval_xpath_getindex(
     if default == _NOTSET:
         # raise an SearxEngineXPathException instead of IndexError to record
         # xpath_spec
-        raise SearxEngineXPathException(xpath_spec, 'index ' + str(index) + ' not found')
+        raise SearxEngineXPathException(
+            xpath_spec, "index " + str(index) + " not found"
+        )
     return default
 
 
@@ -613,55 +626,69 @@ def get_embedded_stream_url(url: str) -> str:
     iframe_src = ""
 
     # YouTube
-    if parsed_url.netloc in ['www.youtube.com', 'youtube.com'] and parsed_url.path == '/watch' and parsed_url.query:
-        video_id = parse_qs(parsed_url.query).get('v', [])
+    if (
+        parsed_url.netloc in ["www.youtube.com", "youtube.com"]
+        and parsed_url.path == "/watch"
+        and parsed_url.query
+    ):
+        video_id = parse_qs(parsed_url.query).get("v", [])
         if video_id:
-            iframe_src = 'https://www.youtube-nocookie.com/embed/' + video_id[0]
+            iframe_src = "https://www.youtube-nocookie.com/embed/" + video_id[0]
 
     # Facebook
-    elif parsed_url.netloc in ['www.facebook.com', 'facebook.com']:
-        encoded_href = urlencode({'href': url})
-        iframe_src = 'https://www.facebook.com/plugins/video.php?allowfullscreen=true&' + encoded_href
+    elif parsed_url.netloc in ["www.facebook.com", "facebook.com"]:
+        encoded_href = urlencode({"href": url})
+        iframe_src = (
+            "https://www.facebook.com/plugins/video.php?allowfullscreen=true&"
+            + encoded_href
+        )
 
     # Instagram
-    elif parsed_url.netloc in ['www.instagram.com', 'instagram.com'] and parsed_url.path.startswith('/p/'):
-        if parsed_url.path.endswith('/'):
-            iframe_src = url + 'embed'
+    elif parsed_url.netloc in [
+        "www.instagram.com",
+        "instagram.com",
+    ] and parsed_url.path.startswith("/p/"):
+        if parsed_url.path.endswith("/"):
+            iframe_src = url + "embed"
         else:
-            iframe_src = url + '/embed'
+            iframe_src = url + "/embed"
 
     # TikTok
     elif (
-        parsed_url.netloc in ['www.tiktok.com', 'tiktok.com']
-        and parsed_url.path.startswith('/@')
-        and '/video/' in parsed_url.path
+        parsed_url.netloc in ["www.tiktok.com", "tiktok.com"]
+        and parsed_url.path.startswith("/@")
+        and "/video/" in parsed_url.path
     ):
-        path_parts = parsed_url.path.split('/video/')
+        path_parts = parsed_url.path.split("/video/")
         video_id = path_parts[1]
-        iframe_src = 'https://www.tiktok.com/embed/' + video_id
+        iframe_src = "https://www.tiktok.com/embed/" + video_id
 
     # Dailymotion
-    elif parsed_url.netloc in ['www.dailymotion.com', 'dailymotion.com'] and parsed_url.path.startswith('/video/'):
-        path_parts = parsed_url.path.split('/')
+    elif parsed_url.netloc in [
+        "www.dailymotion.com",
+        "dailymotion.com",
+    ] and parsed_url.path.startswith("/video/"):
+        path_parts = parsed_url.path.split("/")
         if len(path_parts) == 3:
             video_id = path_parts[2]
-            iframe_src = 'https://www.dailymotion.com/embed/video/' + video_id
+            iframe_src = "https://www.dailymotion.com/embed/video/" + video_id
 
     # Bilibili
-    elif parsed_url.netloc in ['www.bilibili.com', 'bilibili.com'] and parsed_url.path.startswith('/video/'):
-        path_parts = parsed_url.path.split('/')
+    elif parsed_url.netloc in [
+        "www.bilibili.com",
+        "bilibili.com",
+    ] and parsed_url.path.startswith("/video/"):
+        path_parts = parsed_url.path.split("/")
 
         video_id = path_parts[2]
         param_key = None
-        if video_id.startswith('av'):
+        if video_id.startswith("av"):
             video_id = video_id[2:]
-            param_key = 'aid'
-        elif video_id.startswith('BV'):
-            param_key = 'bvid'
+            param_key = "aid"
+        elif video_id.startswith("BV"):
+            param_key = "bvid"
 
-        iframe_src = (
-            f'https://player.bilibili.com/player.html?{param_key}={video_id}&high_quality=1&autoplay=false&danmaku=0'
-        )
+        iframe_src = f"https://player.bilibili.com/player.html?{param_key}={video_id}&high_quality=1&autoplay=false&danmaku=0"
 
     return iframe_src
 
@@ -670,9 +697,9 @@ def _j2p_process_escape(match: re.Match[str]) -> str:
     # deal with ECMA escape characters
     _escape = match.group(1) or match.group(2)
     return (
-        Rf'\{_escape}'
+        Rf"\{_escape}"
         if _escape in _JSON_PASSTHROUGH_ESCAPES
-        else R'\u00' if _escape == 'x' else '' if _escape == '\n' else _escape
+        else R"\u00" if _escape == "x" else "" if _escape == "\n" else _escape
     )
 
 
@@ -703,7 +730,9 @@ def js_obj_str_to_python(js_obj_str: str) -> t.Any:
     try:
         return json.loads(s)
     except json.JSONDecodeError as e:
-        logger.debug("Internal error: js_obj_str_to_python creates invalid JSON:\n%s", s)
+        logger.debug(
+            "Internal error: js_obj_str_to_python creates invalid JSON:\n%s", s
+        )
         raise ValueError("js_obj_str_to_python creates invalid JSON") from e
 
 
@@ -737,7 +766,7 @@ def js_obj_str_to_json_str(js_obj_str: str) -> str:
             # --> we are in a JS string
             # replace the colon by a temporary character
             # so _JS_QUOTE_KEYS_RE doesn't have to deal with colon inside the JS strings
-            p = p.replace(':', chr(1))
+            p = p.replace(":", chr(1))
             # replace JS escape sequences by JSON escape sequences
             p = _JS_STRING_ESCAPE_RE.sub(_j2p_process_escape, p)
             # the JS string is delimited by simple quote.
@@ -745,7 +774,7 @@ def js_obj_str_to_json_str(js_obj_str: str) -> str:
             # simple quote delimited string are converted to double quote delimited string
             # here, inside a JS string, we escape the double quote
             if in_string == "'":
-                p = p.replace('"', r'\"')
+                p = p.replace('"', r"\"")
             parts[i] = p
             # drop a trailing \ that was escaping the quote
             # leave it if it has been escaped twice as a literal i.e. two \ and ' in a row
@@ -780,17 +809,17 @@ def js_obj_str_to_json_str(js_obj_str: str) -> str:
             parts[i] = p
 
         # update for the next iteration
-        blackslash_just_before = len(p) > 0 and p[-1] == '\\'
+        blackslash_just_before = len(p) > 0 and p[-1] == "\\"
 
     # join the string
-    s = ''.join(parts)
+    s = "".join(parts)
     # add quote arround the key
     # { a: 12 }
     # becomes
     # { "a": 12 }
     s = _JS_QUOTE_KEYS_RE.sub(r'\1"\2"\3', s)
     # replace the surogate character by colon and strip whitespaces
-    s = s.replace(chr(1), ':').strip()
+    s = s.replace(chr(1), ":").strip()
     return s
 
 
@@ -821,7 +850,9 @@ def _array_startswith(arr: bytes, prefix: bytes) -> bool:
     return arr[: len(prefix)] == prefix
 
 
-def solve_altcha(parameters: dict[str, t.Any], maxCounter: int = 1000) -> tuple[str, int] | None:
+def solve_altcha(
+    parameters: dict[str, t.Any], maxCounter: int = 1000
+) -> tuple[str, int] | None:
     """Solves Altcha CAPTCHAs. It derives keys using PBKDF2 until the derived
     key starts with the ``keyPrefix``` from the challenge. If the solver does not
     finish after ``maxCounter`` iterations, returns ``None``."""
@@ -839,7 +870,13 @@ def solve_altcha(parameters: dict[str, t.Any], maxCounter: int = 1000) -> tuple[
         # Appends the counter to the nonce, i.e. writes the counter as a big-endian 32-bit integer.
         secret = nonce + counter.to_bytes(length=4)
 
-        key = pbkdf2_hmac(hash_name=hashAlgorithm, password=secret, salt=salt, iterations=cost, dklen=keyLength)
+        key = pbkdf2_hmac(
+            hash_name=hashAlgorithm,
+            password=secret,
+            salt=salt,
+            iterations=cost,
+            dklen=keyLength,
+        )
         if _array_startswith(key, keyPrefix):
             return key.hex(), counter
 
