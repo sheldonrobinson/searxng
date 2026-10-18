@@ -131,6 +131,8 @@ from searx.result_types import EngineResults, MainResult, Video
 from searx.result_types.image import Image
 from searx.utils import html_to_text, js_obj_str_to_json_str, js_obj_str_to_python
 
+# pylint: disable=undefined-variable
+
 if t.TYPE_CHECKING:
     from searx.extended_types import SXNG_Response
 

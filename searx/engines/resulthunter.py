@@ -19,8 +19,9 @@ from searx.utils import eval_xpath_list, eval_xpath, extract_text
 from searx.engines.brave import (
     safesearch_map,
     time_range_map,
-    fetch_traits,
 )  # pylint: disable=unused-import
+
+# pylint: disable=undefined-variable, used-before-assignment
 
 if t.TYPE_CHECKING:
     from lxml.etree import ElementBase

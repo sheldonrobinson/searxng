@@ -13,7 +13,7 @@ import typing as t
 import sys
 import copy
 import os
-from os.path import realpath, dirname
+from os.path import dirname, realpath  # pylint: disable=unused-import
 import warnings
 
 import types
@@ -26,7 +26,7 @@ from searx.data import ENGINE_TRAITS
 from searx.enginelib import Engine, EngineAbout
 
 logger = logger.getChild("engines")
-ENGINE_DIR = os.path.dirname(os.path.realpath(__file__))
+ENGINE_DIR = dirname(realpath(__file__))
 
 # Defaults for the namespace of an engine module, see load_engine()
 ENGINE_DEFAULT_ARGS: dict[str, t.Any] = {

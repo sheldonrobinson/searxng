@@ -37,6 +37,8 @@ from searx.utils import (
     extract_text,
 )
 
+# pylint: disable=undefined-variable
+
 if t.TYPE_CHECKING:
     from searx.extended_types import SXNG_Response
     from searx.search.processors import OnlineParams
