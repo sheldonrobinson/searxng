@@ -29,40 +29,42 @@ if TYPE_CHECKING:
     from searx.search import SearchQuery
     from searx.results import UnresponsiveEngine
 
-VALID_LANGUAGE_CODE = re.compile(r'^[a-z]{2,3}(-[a-zA-Z]{2})?$')
+VALID_LANGUAGE_CODE = re.compile(r"^[a-z]{2,3}(-[a-zA-Z]{2})?$")
 
-logger = logger.getChild('webutils')
+logger = logger.getChild("webutils")
 
-timeout_text = gettext('timeout')
-parsing_error_text = gettext('parsing error')
-http_protocol_error_text = gettext('HTTP protocol error')
-network_error_text = gettext('network error')
+timeout_text = gettext("timeout")
+parsing_error_text = gettext("parsing error")
+http_protocol_error_text = gettext("HTTP protocol error")
+network_error_text = gettext("network error")
 ssl_cert_error_text = gettext("SSL error: certificate validation has failed")
 exception_classname_to_text = {
-    None: gettext('unexpected crash'),
-    'timeout': timeout_text,
-    'asyncio.TimeoutError': timeout_text,
-    'curl_cffi.requests.exceptions.Timeout': timeout_text,
-    'curl_cffi.requests.exceptions.ConnectTimeout': timeout_text,
-    'curl_cffi.requests.exceptions.ReadTimeout': timeout_text,
-    'curl_cffi.requests.exceptions.HTTPError': gettext('HTTP error'),
-    'curl_cffi.requests.exceptions.ConnectionError': gettext("HTTP connection error"),
-    'curl_cffi.requests.exceptions.DNSError': gettext("HTTP connection error"),
-    'curl_cffi.requests.exceptions.IncompleteRead': http_protocol_error_text,
-    'curl_cffi.requests.exceptions.SSLError': ssl_cert_error_text,
-    'curl_cffi.requests.exceptions.CertificateVerifyError': ssl_cert_error_text,
-    'curl_cffi.requests.exceptions.ProxyError': gettext("proxy error"),
-    'curl_cffi.requests.exceptions.RequestException': network_error_text,
-    'searx.exceptions.SearxEngineCaptchaException': gettext("CAPTCHA"),
-    'searx.exceptions.SearxEngineTooManyRequestsException': gettext("too many requests"),
-    'searx.exceptions.SearxEngineAccessDeniedException': gettext("access denied"),
-    'searx.exceptions.SearxEngineAPIException': gettext("server API error"),
-    'searx.exceptions.SearxEngineXPathException': parsing_error_text,
-    'KeyError': parsing_error_text,
-    'json.decoder.JSONDecodeError': parsing_error_text,
-    'lxml.etree.ParserError': parsing_error_text,
-    'ssl.SSLCertVerificationError': ssl_cert_error_text,  # for Python > 3.7
-    'ssl.CertificateError': ssl_cert_error_text,  # for Python 3.7
+    None: gettext("unexpected crash"),
+    "timeout": timeout_text,
+    "asyncio.TimeoutError": timeout_text,
+    "curl_cffi.requests.exceptions.Timeout": timeout_text,
+    "curl_cffi.requests.exceptions.ConnectTimeout": timeout_text,
+    "curl_cffi.requests.exceptions.ReadTimeout": timeout_text,
+    "curl_cffi.requests.exceptions.HTTPError": gettext("HTTP error"),
+    "curl_cffi.requests.exceptions.ConnectionError": gettext("HTTP connection error"),
+    "curl_cffi.requests.exceptions.DNSError": gettext("HTTP connection error"),
+    "curl_cffi.requests.exceptions.IncompleteRead": http_protocol_error_text,
+    "curl_cffi.requests.exceptions.SSLError": ssl_cert_error_text,
+    "curl_cffi.requests.exceptions.CertificateVerifyError": ssl_cert_error_text,
+    "curl_cffi.requests.exceptions.ProxyError": gettext("proxy error"),
+    "curl_cffi.requests.exceptions.RequestException": network_error_text,
+    "searx.exceptions.SearxEngineCaptchaException": gettext("CAPTCHA"),
+    "searx.exceptions.SearxEngineTooManyRequestsException": gettext(
+        "too many requests"
+    ),
+    "searx.exceptions.SearxEngineAccessDeniedException": gettext("access denied"),
+    "searx.exceptions.SearxEngineAPIException": gettext("server API error"),
+    "searx.exceptions.SearxEngineXPathException": parsing_error_text,
+    "KeyError": parsing_error_text,
+    "json.decoder.JSONDecodeError": parsing_error_text,
+    "lxml.etree.ParserError": parsing_error_text,
+    "ssl.SSLCertVerificationError": ssl_cert_error_text,  # for Python > 3.7
+    "ssl.CertificateError": ssl_cert_error_text,  # for Python 3.7
 }
 
 
@@ -70,12 +72,14 @@ def get_translated_errors(unresponsive_engines: "Iterable[UnresponsiveEngine]"):
     translated_errors = []
 
     for unresponsive_engine in unresponsive_engines:
-        error_user_text = exception_classname_to_text.get(unresponsive_engine.error_type)
+        error_user_text = exception_classname_to_text.get(
+            unresponsive_engine.error_type
+        )
         if not error_user_text:
             error_user_text = exception_classname_to_text[None]
         error_msg = gettext(error_user_text)
         if unresponsive_engine.suspended:
-            error_msg = gettext('Suspended') + ': ' + error_msg
+            error_msg = gettext("Suspended") + ": " + error_msg
         translated_errors.append((unresponsive_engine.engine, error_msg))
 
     return sorted(translated_errors, key=lambda e: e[0])
@@ -96,7 +100,7 @@ class CSVWriter:
         self.writer.writerow(row)
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
-        data = data.strip('\x00')
+        data = data.strip("\x00")
         # ... and re-encode it into the target encoding
         data = self.encoder.encode(data)
         # write to the target stream
@@ -109,7 +113,9 @@ class CSVWriter:
             self.writerow(row)
 
 
-def write_csv_response(csv: CSVWriter, rc: "ResultContainer") -> None:  # pylint: disable=redefined-outer-name
+def write_csv_response(
+    csv: CSVWriter, rc: "ResultContainer"
+) -> None:  # pylint: disable=redefined-outer-name
     """Write rows of the results to a query (``application/csv``) into a CSV
     table (:py:obj:`CSVWriter`).  First line in the table contain the column
     names.  The column "type" specifies the type, the following types are
@@ -122,27 +128,27 @@ def write_csv_response(csv: CSVWriter, rc: "ResultContainer") -> None:  # pylint
 
     """
 
-    keys = ('title', 'url', 'content', 'host', 'engine', 'score', 'type')
+    keys = ("title", "url", "content", "host", "engine", "score", "type")
     csv.writerow(keys)
 
     for res in rc.get_ordered_results():
         row = res.as_dict()
-        row['host'] = row['parsed_url'].netloc
-        row['type'] = 'result'
-        csv.writerow([row.get(key, '') for key in keys])
+        row["host"] = row["parsed_url"].netloc
+        row["type"] = "result"
+        csv.writerow([row.get(key, "") for key in keys])
 
     for a in rc.answers:
         row = a.as_dict()
-        row['host'] = row['parsed_url'].netloc
-        csv.writerow([row.get(key, '') for key in keys])
+        row["host"] = row["parsed_url"].netloc
+        csv.writerow([row.get(key, "") for key in keys])
 
     for a in rc.suggestions:
-        row = {'title': a, 'type': 'suggestion'}
-        csv.writerow([row.get(key, '') for key in keys])
+        row = {"title": a, "type": "suggestion"}
+        csv.writerow([row.get(key, "") for key in keys])
 
     for a in rc.corrections:
-        row = {'title': a, 'type': 'correction'}
-        csv.writerow([row.get(key, '') for key in keys])
+        row = {"title": a, "type": "correction"}
+        csv.writerow([row.get(key, "") for key in keys])
 
 
 class JSONEncoder(json.JSONEncoder):  # pylint: disable=missing-class-docstring
@@ -161,13 +167,13 @@ class JSONEncoder(json.JSONEncoder):  # pylint: disable=missing-class-docstring
 def get_json_response(sq: "SearchQuery", rc: "ResultContainer") -> str:
     """Returns the JSON string of the results to a query (``application/json``)"""
     data = {
-        'query': sq.query,
-        'results': [_.as_dict() for _ in rc.get_ordered_results()],
-        'answers': [_.as_dict() for _ in rc.answers],
-        'corrections': list(rc.corrections),
-        'infoboxes': rc.infoboxes,
-        'suggestions': list(rc.suggestions),
-        'unresponsive_engines': get_translated_errors(rc.unresponsive_engines),
+        "query": sq.query,
+        "results": [_.as_dict() for _ in rc.get_ordered_results()],
+        "answers": [_.as_dict() for _ in rc.answers],
+        "corrections": list(rc.corrections),
+        "infoboxes": rc.infoboxes,
+        "suggestions": list(rc.suggestions),
+        "unresponsive_engines": get_translated_errors(rc.unresponsive_engines),
     }
     response = json.dumps(data, cls=JSONEncoder)
     return response
@@ -184,7 +190,7 @@ def get_static_file_list() -> list[str]:
 
     def _walk(path: pathlib.Path):
         for f in path.iterdir():
-            if f.name.startswith('.'):
+            if f.name.startswith("."):
                 # ignore hidden file
                 continue
             if f.is_file():
@@ -200,7 +206,7 @@ def get_result_templates(templates_path):
     result_templates = set()
     templates_path_length = len(templates_path) + 1
     for directory, _, files in os.walk(templates_path):
-        if directory.endswith('result_templates'):
+        if directory.endswith("result_templates"):
             for filename in files:
                 f = os.path.join(directory[templates_path_length:], filename)
                 result_templates.add(f)
@@ -213,13 +219,15 @@ def new_hmac(secret_key, url):
 
 def is_hmac_of(secret_key, value, hmac_to_check):
     hmac_of_value = new_hmac(secret_key, value)
-    return len(hmac_of_value) == len(hmac_to_check) and hmac.compare_digest(hmac_of_value, hmac_to_check)
+    return len(hmac_of_value) == len(hmac_to_check) and hmac.compare_digest(
+        hmac_of_value, hmac_to_check
+    )
 
 
 def prettify_url(url, max_length=74):
     if len(url) > max_length:
         chunk_len = int(max_length / 2 + 1)
-        return '{0}[...]{1}'.format(url[:chunk_len], url[-chunk_len:])
+        return "{0}[...]{1}".format(url[:chunk_len], url[-chunk_len:])
     return url
 
 
@@ -235,14 +243,14 @@ def contains_cjko(s: str) -> bool:
         bool: True if the input s contains the characters and False otherwise.
     """
     unicode_ranges = (
-        '\u4e00-\u9fff'  # Chinese characters
-        '\u3040-\u309f'  # Japanese hiragana
-        '\u30a0-\u30ff'  # Japanese katakana
-        '\u4e00-\u9faf'  # Japanese kanji
-        '\uac00-\ud7af'  # Korean hangul syllables
-        '\u1100-\u11ff'  # Korean hangul jamo
+        "\u4e00-\u9fff"  # Chinese characters
+        "\u3040-\u309f"  # Japanese hiragana
+        "\u30a0-\u30ff"  # Japanese katakana
+        "\u4e00-\u9faf"  # Japanese kanji
+        "\uac00-\ud7af"  # Korean hangul syllables
+        "\u1100-\u11ff"  # Korean hangul jamo
     )
-    return bool(re.search(fr'[{unicode_ranges}]', s))
+    return bool(re.search(rf"[{unicode_ranges}]", s))
 
 
 def regex_highlight_cjk(word: str) -> str:
@@ -261,8 +269,8 @@ def regex_highlight_cjk(word: str) -> str:
     """
     rword = re.escape(word)
     if contains_cjko(rword):
-        return fr'({rword})'
-    return fr'\b({rword})(?!\w)'
+        return rf"({rword})"
+    return rf"\b({rword})(?!\w)"
 
 
 def highlight_content(content, query):
@@ -271,18 +279,25 @@ def highlight_content(content, query):
         return None
 
     # ignoring html contents
-    if content.find('<') != -1:
+    if content.find("<") != -1:
         return content
 
     querysplit = query.split()
     queries = []
     for qs in querysplit:
-        qs = qs.replace("'", "").replace('"', '').replace(" ", "")
+        qs = qs.replace("'", "").replace('"', "").replace(" ", "")
         if len(qs) > 0:
-            queries.extend(re.findall(regex_highlight_cjk(qs), content, flags=re.I | re.U))
+            queries.extend(
+                re.findall(regex_highlight_cjk(qs), content, flags=re.I | re.U)
+            )
     if len(queries) > 0:
         regex = re.compile("|".join(map(regex_highlight_cjk, queries)))
-        return regex.sub(lambda match: f'<span class="highlight">{match.group(0)}</span>'.replace('\\', r'\\'), content)
+        return regex.sub(
+            lambda match: f'<span class="highlight">{match.group(0)}</span>'.replace(
+                "\\", r"\\"
+            ),
+            content,
+        )
     return content
 
 
@@ -303,19 +318,25 @@ def searxng_l10n_timespan(dt: datetime) -> str:  # pylint: disable=invalid-name
         minutes = int((timedifference.seconds / 60) % 60)
         hours = int(timedifference.seconds / 60 / 60)
         if hours == 0:
-            return gettext('{minutes} minute(s) ago').format(minutes=minutes)
-        return gettext('{hours} hour(s), {minutes} minute(s) ago').format(hours=hours, minutes=minutes)
+            return gettext("{minutes} minute(s) ago").format(minutes=minutes)
+        return gettext("{hours} hour(s), {minutes} minute(s) ago").format(
+            hours=hours, minutes=minutes
+        )
     return format_date(dt)
 
 
-NO_SUBGROUPING = 'without further subgrouping'
+NO_SUBGROUPING = "without further subgrouping"
 
 
-def group_engines_in_tab(engines: "Iterable[Engine]") -> List[Tuple[str, "Iterable[Engine]"]]:
+def group_engines_in_tab(
+    engines: "Iterable[Engine]",
+) -> List[Tuple[str, "Iterable[Engine]"]]:
     """Groups an Iterable of engines by their first non tab category (first subgroup)"""
 
     def get_subgroup(eng):
-        non_tab_categories = [c for c in eng.categories if c not in tabs + [DEFAULT_CATEGORY]]
+        non_tab_categories = [
+            c for c in eng.categories if c not in tabs + [DEFAULT_CATEGORY]
+        ]
         return non_tab_categories[0] if len(non_tab_categories) > 0 else NO_SUBGROUPING
 
     def group_sort_key(group):
@@ -324,13 +345,17 @@ def group_engines_in_tab(engines: "Iterable[Engine]") -> List[Tuple[str, "Iterab
     def engine_sort_key(engine):
         return (engine.language, engine.name)
 
-    tabs = list(get_setting('categories_as_tabs').keys())
+    tabs = list(get_setting("categories_as_tabs").keys())
     subgroups = itertools.groupby(sorted(engines, key=get_subgroup), get_subgroup)
-    sorted_groups = sorted(((name, list(engines)) for name, engines in subgroups), key=group_sort_key)
+    sorted_groups = sorted(
+        ((name, list(engines)) for name, engines in subgroups), key=group_sort_key
+    )
 
     ret_val = []
     for groupname, _engines in sorted_groups:
-        group_bang = '!' + groupname.replace(' ', '_') if groupname != NO_SUBGROUPING else ''
+        group_bang = (
+            "!" + groupname.replace(" ", "_") if groupname != NO_SUBGROUPING else ""
+        )
         ret_val.append((groupname, group_bang, sorted(_engines, key=engine_sort_key)))
 
     return ret_val

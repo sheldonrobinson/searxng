@@ -19,7 +19,9 @@ if typing.TYPE_CHECKING:
     from searx.plugins import PluginCfg
 
 
-def filter_url_field(result: "Result|LegacyResult", field_name: str, url_src: str) -> bool | str:
+def filter_url_field(
+    result: "Result|LegacyResult", field_name: str, url_src: str
+) -> bool | str:
     """Returns bool ``True`` to use URL unchanged (``False`` to ignore URL).
     If URL should be modified, the returned string is the new URL to use."""
 
@@ -37,7 +39,9 @@ def filter_url_field(result: "Result|LegacyResult", field_name: str, url_src: st
         new_url = resolver_url + doi
         if "doi" not in result:
             result["doi"] = doi
-        log.debug("oa_doi_rewrite: [URL field: %s] %s -> %s", field_name, url_src, new_url)
+        log.debug(
+            "oa_doi_rewrite: [URL field: %s] %s -> %s", field_name, url_src, new_url
+        )
         return new_url  # use new url
 
     return True  # use it unchanged
@@ -53,7 +57,9 @@ class SXNGPlugin(Plugin):
         self.info = PluginInfo(
             id=self.id,
             name=gettext("Open Access DOI rewrite"),
-            description=gettext("Avoid paywalls by redirecting to open-access versions of publications when available"),
+            description=gettext(
+                "Avoid paywalls by redirecting to open-access versions of publications when available"
+            ),
             preference_section=None,
         )
 
@@ -68,7 +74,7 @@ class SXNGPlugin(Plugin):
         return True
 
 
-regex = re.compile(r'10\.\d{4,9}/[^\s]+')
+regex = re.compile(r"10\.\d{4,9}/[^\s]+")
 
 
 def extract_doi(url):

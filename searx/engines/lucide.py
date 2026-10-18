@@ -29,7 +29,7 @@ categories = ["images", "icons"]
 
 def request(query: str, params: "OnlineParams"):
     params["url"] = f"{cdn_base_url}/tags.json"
-    params['query'] = query
+    params["query"] = query
     return params
 
 

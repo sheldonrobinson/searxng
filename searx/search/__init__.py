@@ -27,20 +27,22 @@ if t.TYPE_CHECKING:
     from .models import SearchQuery
     from searx.extended_types import SXNG_Request
 
-logger = logger.getChild('search')
+logger = logger.getChild("search")
 
 
 def initialize(
-    settings_engines: list[dict[str, t.Any]] = None,  # pyright: ignore[reportArgumentType]
+    settings_engines: list[
+        dict[str, t.Any]
+    ] = None,  # pyright: ignore[reportArgumentType]
     check_network: bool = False,
     enable_metrics: bool = True,
 ):
-    settings_engines = settings_engines or settings['engines']
+    settings_engines = settings_engines or settings["engines"]
     load_engines(settings_engines)
-    initialize_network(settings_engines, settings['outgoing'])
+    initialize_network(settings_engines, settings["outgoing"])
     if check_network:
         check_network_configuration()
-    initialize_metrics([engine['name'] for engine in settings_engines], enable_metrics)
+    initialize_metrics([engine["name"] for engine in settings_engines], enable_metrics)
     PROCESSORS.init(settings_engines)
 
 
@@ -71,7 +73,9 @@ class Search:
     def search_answerers(self):
 
         results = searx.answerers.STORAGE.ask(self.search_query.query)
-        self.result_container.extend(None, results)  # pyright: ignore[reportArgumentType]
+        self.result_container.extend(
+            None, results
+        )  # pyright: ignore[reportArgumentType]
         return bool(results)
 
     # do search-request
@@ -99,7 +103,7 @@ class Search:
             if request_params is None:
                 continue
 
-            counter_inc('engine', engineref.name, 'search', 'count', 'sent')
+            counter_inc("engine", engineref.name, "search", "count", "sent")
 
             # append request to list
             requests.append((engineref.name, self.search_query.query, request_params))
@@ -108,7 +112,7 @@ class Search:
             default_timeout = max(default_timeout, processor.engine.timeout)
 
         # adjust timeout
-        max_request_timeout = settings['outgoing']['max_request_timeout']
+        max_request_timeout = settings["outgoing"]["max_request_timeout"]
         actual_timeout = default_timeout
         query_timeout = self.search_query.timeout_limit
 
@@ -143,7 +147,13 @@ class Search:
             _search = copy_current_request_context(PROCESSORS[engine_name].search)
             th = threading.Thread(  # pylint: disable=invalid-name
                 target=_search,
-                args=(query, request_params, self.result_container, self.start_time, self.actual_timeout),
+                args=(
+                    query,
+                    request_params,
+                    self.result_container,
+                    self.start_time,
+                    self.actual_timeout,
+                ),
                 name=search_id,
             )
             th._timeout = False
@@ -152,12 +162,16 @@ class Search:
 
         for th in threading.enumerate():  # pylint: disable=invalid-name
             if th.name == search_id:
-                remaining_time = max(0.0, self.actual_timeout - (default_timer() - self.start_time))
+                remaining_time = max(
+                    0.0, self.actual_timeout - (default_timer() - self.start_time)
+                )
                 th.join(remaining_time)
                 if th.is_alive():
                     th._timeout = True
-                    self.result_container.add_unresponsive_engine(th._engine_name, 'timeout')
-                    PROCESSORS[th._engine_name].logger.error('engine timeout')
+                    self.result_container.add_unresponsive_engine(
+                        th._engine_name, "timeout"
+                    )
+                    PROCESSORS[th._engine_name].logger.error("engine timeout")
 
     def search_standard(self):
         """
@@ -184,7 +198,12 @@ class Search:
 class SearchWithPlugins(Search):
     """Inherit from the Search class, add calls to the plugins."""
 
-    def __init__(self, search_query: "SearchQuery", request: "SXNG_Request", user_plugins: list[str]):
+    def __init__(
+        self,
+        search_query: "SearchQuery",
+        request: "SXNG_Request",
+        user_plugins: list[str],
+    ):
         super().__init__(search_query)
         self.user_plugins = user_plugins
         self.result_container.on_result = self._on_result

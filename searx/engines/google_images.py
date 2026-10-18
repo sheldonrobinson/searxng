@@ -66,7 +66,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
         results.add(
             results.types.Image(
                 url=url,
-                title=unquote(urlparse(img_src).path.rsplit("/", 1)[-1]) or urlparse(url).netloc,
+                title=unquote(urlparse(img_src).path.rsplit("/", 1)[-1])
+                or urlparse(url).netloc,
                 img_src=img_src,
                 thumbnail_src=f"https://encrypted-tbn0.gstatic.com/images?q=tbn:{tbnid}",
                 resolution=f"{width} x {height}" if width and height else "",

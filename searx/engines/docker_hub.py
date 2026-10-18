@@ -7,15 +7,15 @@ from urllib.parse import urlencode
 from dateutil import parser
 
 about = {
-    "website": 'https://hub.docker.com',
-    "wikidata_id": 'Q100769064',
-    "official_api_documentation": 'https://docs.docker.com/registry/spec/api/',
+    "website": "https://hub.docker.com",
+    "wikidata_id": "Q100769064",
+    "official_api_documentation": "https://docs.docker.com/registry/spec/api/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
-categories = ['it', 'packages']  # optional
+categories = ["it", "packages"]  # optional
 paging = True
 
 base_url = "https://hub.docker.com"
@@ -25,18 +25,18 @@ page_size = 10
 def request(query, params):
     args = {
         "query": query,
-        "from": page_size * (params['pageno'] - 1),
+        "from": page_size * (params["pageno"] - 1),
         "size": page_size,
     }
-    params['url'] = f"{base_url}/api/search/v3/catalog/search?{urlencode(args)}"
+    params["url"] = f"{base_url}/api/search/v3/catalog/search?{urlencode(args)}"
 
     return params
 
 
 def response(resp):
-    '''post-response callback
+    """post-response callback
     resp: requests response object
-    '''
+    """
     results = []
     json_resp = resp.json()
 
@@ -51,19 +51,25 @@ def response(resp):
             pull_count = rate_plan.get("repositories", [{}])[0].get("pull_count")
             if pull_count:
                 popularity_infos.insert(0, f"{pull_count} pulls")
-            architectures.extend(arch['name'] for arch in rate_plan.get("architectures", []) if arch['name'])
+            architectures.extend(
+                arch["name"]
+                for arch in rate_plan.get("architectures", [])
+                if arch["name"]
+            )
 
         result = {
-            'template': 'packages.html',
-            'url': base_url + ("/_/" if is_official else "/r/") + item.get("slug", ""),
-            'title': item.get("name"),
-            'content': item.get("short_description"),
-            'thumbnail': item["logo_url"].get("large") or item["logo_url"].get("small"),
-            'package_name': item.get("name"),
-            'maintainer': item["publisher"].get("name"),
-            'publishedDate': parser.parse(item.get("updated_at") or item.get("created_at")),
-            'popularity': ', '.join(popularity_infos),
-            'tags': architectures,
+            "template": "packages.html",
+            "url": base_url + ("/_/" if is_official else "/r/") + item.get("slug", ""),
+            "title": item.get("name"),
+            "content": item.get("short_description"),
+            "thumbnail": item["logo_url"].get("large") or item["logo_url"].get("small"),
+            "package_name": item.get("name"),
+            "maintainer": item["publisher"].get("name"),
+            "publishedDate": parser.parse(
+                item.get("updated_at") or item.get("created_at")
+            ),
+            "popularity": ", ".join(popularity_infos),
+            "tags": architectures,
         }
         results.append(result)
 

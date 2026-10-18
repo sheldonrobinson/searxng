@@ -17,7 +17,7 @@ class GithubCodeTests(SearxTestCase):
 
     def setUp(self):
         super().setUp()
-        self.ghc = searx.engines.engines['github code']
+        self.ghc = searx.engines.engines["github code"]
         self.ghc.logger.setLevel(logging.INFO)
 
     def tearDown(self):
@@ -30,7 +30,10 @@ class GithubCodeTests(SearxTestCase):
                     {
                         "fragment": "    - [Tab management](#tab-management)\n    - [Buffer/window management]"
                         "(#bufferwindow-management)\n- [🎨 Highlights](#-highlights)",
-                        "matches": [{"indices": [47, 53], "text": "Buffer"}, {"indices": [74, 80], "text": "buffer"}],
+                        "matches": [
+                            {"indices": [47, 53], "text": "Buffer"},
+                            {"indices": [74, 80], "text": "buffer"},
+                        ],
                     },
                     {
                         "fragment": "To conditionally activate plugins, the best solution is to use the\n"
@@ -99,7 +102,9 @@ class GithubCodeTests(SearxTestCase):
             ],
         ]
     )
-    def test_code_extraction(self, code_matches, expected_code, expected_highlighted_lines):
+    def test_code_extraction(
+        self, code_matches, expected_code, expected_highlighted_lines
+    ):
         code, highlights = self.ghc.extract_code(code_matches=code_matches)
         self.assertEqual(code, expected_code)
         self.assertEqual(highlights, expected_highlighted_lines)
@@ -132,7 +137,10 @@ class GithubCodeTests(SearxTestCase):
                             "fragment": "- [x] smart stops working after custom\n"
                             "- [x] edit in empty buffer\n"
                             "- [x] support toggling line nr for preview",
-                            "matches": [{"indices": [59, 65], "text": "buffer"}, {"indices": [89, 93], "text": "line"}],
+                            "matches": [
+                                {"indices": [59, 65], "text": "buffer"},
+                                {"indices": [89, 93], "text": "line"},
+                            ],
                         },
                     ],
                 }

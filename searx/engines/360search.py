@@ -29,7 +29,7 @@ categories = ["general"]
 paging = True
 time_range_support = True
 
-time_range_dict = {'day': 'd', 'week': 'w', 'month': 'm', 'year': 'y'}
+time_range_dict = {"day": "d", "week": "w", "month": "m", "year": "y"}
 
 # Base URL
 base_url = "https://www.so.com"
@@ -58,8 +58,10 @@ def get_cookie(url: str) -> str:
         return cookie
     resp: SXNG_Response = http_get(url, timeout=10, allow_redirects=False)
     headers = resp.headers
-    cookie = headers['set-cookie'].split(";")[0]
-    CACHE.set(key=COOKIE_CACHE_KEY, value=cookie, expire=COOKIE_CACHE_EXPIRATION_SECONDS)
+    cookie = headers["set-cookie"].split(";")[0]
+    CACHE.set(
+        key=COOKIE_CACHE_KEY, value=cookie, expire=COOKIE_CACHE_EXPIRATION_SECONDS
+    )
 
     return cookie
 
@@ -70,14 +72,14 @@ def request(query, params):
         "q": query,
     }
 
-    if time_range_dict.get(params['time_range']):
-        query_params["adv_t"] = time_range_dict.get(params['time_range'])
+    if time_range_dict.get(params["time_range"]):
+        query_params["adv_t"] = time_range_dict.get(params["time_range"])
     params["url"] = f"{base_url}/s?{urlencode(query_params)}"
     # get token by calling the query page
     logger.debug("querying url: %s", params["url"])
     cookie = get_cookie(params["url"])
     logger.debug("obtained cookie: %s", cookie)
-    params['headers'] = {'Cookie': cookie}
+    params["headers"] = {"Cookie": cookie}
 
     return params
 
@@ -93,9 +95,13 @@ def response(resp):
     for item in dom.xpath('//li[contains(@class, "res-list")]'):
         title = extract_text(item.xpath('.//h3[contains(@class, "res-title")]/a'))
 
-        url = extract_text(item.xpath('.//h3[contains(@class, "res-title")]/a/@data-mdurl'))
+        url = extract_text(
+            item.xpath('.//h3[contains(@class, "res-title")]/a/@data-mdurl')
+        )
         if not url:
-            url = extract_text(item.xpath('.//h3[contains(@class, "res-title")]/a/@href'))
+            url = extract_text(
+                item.xpath('.//h3[contains(@class, "res-title")]/a/@href')
+            )
 
         content = extract_text(item.xpath('.//p[@class="res-desc"]'))
         if not content:

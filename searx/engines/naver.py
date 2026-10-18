@@ -69,7 +69,7 @@ naver_category_dict = {
 
 
 def setup(_: dict[str, t.Any]) -> bool | None:
-    if naver_category not in ('general', 'images', 'news', 'videos'):
+    if naver_category not in ("general", "images", "news", "videos"):
         raise SearxEngineAPIException(f"Unsupported category: {naver_category}")
 
 
@@ -79,7 +79,9 @@ def request(query, params):
     }
 
     if naver_category in naver_category_dict:
-        query_params["start"] = (params["pageno"] - 1) * naver_category_dict[naver_category]["start"] + 1
+        query_params["start"] = (params["pageno"] - 1) * naver_category_dict[
+            naver_category
+        ]["start"] + 1
         query_params["where"] = naver_category_dict[naver_category]["where"]
 
     if params["time_range"] in time_range_dict:
@@ -90,7 +92,12 @@ def request(query, params):
 
 
 def response(resp) -> EngineResults:
-    parsers = {'general': parse_general, 'images': parse_images, 'news': parse_news, 'videos': parse_videos}
+    parsers = {
+        "general": parse_general,
+        "images": parse_images,
+        "news": parse_news,
+        "videos": parse_videos,
+    }
 
     return parsers[naver_category](resp.text)
 
@@ -100,7 +107,9 @@ def parse_general(data):
 
     dom = html.fromstring(data)
 
-    for item in eval_xpath_list(dom, "//div[contains(@class, 'fds-web-normal-doc-root')]"):
+    for item in eval_xpath_list(
+        dom, "//div[contains(@class, 'fds-web-normal-doc-root')]"
+    ):
         thumbnail = extract_text(
             eval_xpath(
                 item,
@@ -108,17 +117,25 @@ def parse_general(data):
             )
         )
 
-        title = extract_text(eval_xpath(item, ".//span[contains(@class, 'sds-comps-text-type-headline1')]"))
+        title = extract_text(
+            eval_xpath(
+                item, ".//span[contains(@class, 'sds-comps-text-type-headline1')]"
+            )
+        )
 
         url = None
         try:
             url = eval_xpath_getindex(
-                item, ".//a[starts-with(@href, 'http') and not(contains(@href, 'keep.naver.com'))]/@href", 0
+                item,
+                ".//a[starts-with(@href, 'http') and not(contains(@href, 'keep.naver.com'))]/@href",
+                0,
             )
         except (ValueError, TypeError, SearxEngineXPathException):
             pass
 
-        content = extract_text(eval_xpath(item, ".//span[contains(@class, 'sds-comps-text-type-body1')]"))
+        content = extract_text(
+            eval_xpath(item, ".//span[contains(@class, 'sds-comps-text-type-body1')]")
+        )
 
         if title and url:
             results.add(
@@ -136,20 +153,20 @@ def parse_general(data):
 def parse_images(data):
     results = []
 
-    match = extr(data, 'var imageSearchTabData =', '</script>')
+    match = extr(data, "var imageSearchTabData =", "</script>")
     if match:
-        json = js_obj_str_to_python(match.strip().rstrip(';'))
-        items = json.get('content', {}).get('items', [])
+        json = js_obj_str_to_python(match.strip().rstrip(";"))
+        items = json.get("content", {}).get("items", [])
 
         for item in items:
             results.append(
                 {
                     "template": "images.html",
-                    "url": item.get('link'),
-                    "thumbnail_src": item.get('thumb'),
-                    "img_src": item.get('originalUrl'),
-                    "title": html_to_text(item.get('title')),
-                    "source": item.get('source'),
+                    "url": item.get("link"),
+                    "thumbnail_src": item.get("thumb"),
+                    "img_src": item.get("originalUrl"),
+                    "title": html_to_text(item.get("title")),
+                    "source": item.get("source"),
                     "resolution": f"{item.get('orgWidth')} x {item.get('orgHeight')}",
                 }
             )
@@ -162,13 +179,21 @@ def parse_news(data):
     dom = html.fromstring(data)
 
     for item in eval_xpath_list(
-        dom, "//div[contains(@class, 'sds-comps-base-layout') and contains(@class, 'sds-comps-full-layout')]"
+        dom,
+        "//div[contains(@class, 'sds-comps-base-layout') and contains(@class, 'sds-comps-full-layout')]",
     ):
-        title = extract_text(eval_xpath(item, ".//span[contains(@class, 'sds-comps-text-type-headline1')]/text()"))
+        title = extract_text(
+            eval_xpath(
+                item,
+                ".//span[contains(@class, 'sds-comps-text-type-headline1')]/text()",
+            )
+        )
 
         url = eval_xpath_getindex(item, ".//a[@href and @nocr='1']/@href", 0)
 
-        content = extract_text(eval_xpath(item, ".//span[contains(@class, 'sds-comps-text-type-body1')]"))
+        content = extract_text(
+            eval_xpath(item, ".//span[contains(@class, 'sds-comps-text-type-body1')]")
+        )
 
         thumbnail = None
         try:
@@ -203,19 +228,27 @@ def parse_videos(data):
 
         thumbnail = ""
         try:
-            thumbnail = eval_xpath_getindex(item, ".//img[contains(@class, 'thumb')]/@src", 0)
+            thumbnail = eval_xpath_getindex(
+                item, ".//img[contains(@class, 'thumb')]/@src", 0
+            )
         except (ValueError, TypeError, SearxEngineXPathException):
             pass
 
         length = None
         try:
-            length = parse_duration_string(extract_text(eval_xpath(item, ".//span[contains(@class, 'time')]")) or "")
+            length = parse_duration_string(
+                extract_text(eval_xpath(item, ".//span[contains(@class, 'time')]"))
+                or ""
+            )
         except (ValueError, TypeError):
             pass
 
         res.add(
             res.types.Video(
-                title=extract_text(eval_xpath(item, ".//a[contains(@class, 'info_title')]")) or "",
+                title=extract_text(
+                    eval_xpath(item, ".//a[contains(@class, 'info_title')]")
+                )
+                or "",
                 url=url,
                 thumbnail=thumbnail,
                 length=length,

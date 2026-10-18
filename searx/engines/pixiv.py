@@ -6,17 +6,17 @@ import random
 
 # Engine metadata
 about = {
-    "website": 'https://www.pixiv.net/',
-    "wikidata_id": 'Q306956',
+    "website": "https://www.pixiv.net/",
+    "wikidata_id": "Q306956",
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # Engine configuration
 paging = True
-categories = ['images']
+categories = ["images"]
 remove_ai_images = False
 
 # Search URL
@@ -63,11 +63,11 @@ def response(resp):
             {
                 "title": item.get("title"),
                 "url": proxy_full_image_url,
-                'content': item.get('alt'),
+                "content": item.get("alt"),
                 "author": f"{item.get('userName')} (ID: {item.get('userId')})",
                 "img_src": proxy_full_image_url,
                 "thumbnail_src": proxy_image_url,
-                "source": 'pixiv.net',
+                "source": "pixiv.net",
                 "template": "images.html",
             }
         )

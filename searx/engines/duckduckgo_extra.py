@@ -51,7 +51,9 @@ send_accept_language_header = False
 def setup(engine_settings: dict[str, t.Any]) -> bool | None:
 
     if engine_settings["ddg_category"] not in ["images", "videos", "news"]:
-        raise ValueError(f"Unsupported DuckDuckGo category: {engine_settings['ddg_category']}")
+        raise ValueError(
+            f"Unsupported DuckDuckGo category: {engine_settings['ddg_category']}"
+        )
 
 
 def fetch_vqd(
@@ -72,7 +74,9 @@ def fetch_vqd(
         if value:
             logger.debug("vqd value from duckduckgo.com request: '%s'", value)
         else:
-            logger.error("vqd: can't parse value from ddg response (return empty string)")
+            logger.error(
+                "vqd: can't parse value from ddg response (return empty string)"
+            )
             return ""
     else:
         logger.error("vqd: got HTTP %s from duckduckgo.com", resp.status_code)
@@ -142,7 +146,9 @@ def request(query: str, params: "OnlineParams") -> None:
         params["cookies"]["p"] = safe_search  # "-2", "1"
         args["p"] = safe_search
 
-    params["url"] = f"https://duckduckgo.com/{search_path_map[ddg_category]}.js?{urlencode(args)}"
+    params["url"] = (
+        f"https://duckduckgo.com/{search_path_map[ddg_category]}.js?{urlencode(args)}"
+    )
 
     logger.debug("param headers: %s", params["headers"])
     logger.debug("param data: %s", params["data"])
@@ -151,33 +157,33 @@ def request(query: str, params: "OnlineParams") -> None:
 
 def _image_result(result):
     return Image(
-        url=result['url'],
-        title=result['title'],
-        content='',
-        thumbnail_src=result['thumbnail'],
-        img_src=result['image'],
-        resolution='%s x %s' % (result['width'], result['height']),
-        source=result['source'],
+        url=result["url"],
+        title=result["title"],
+        content="",
+        thumbnail_src=result["thumbnail"],
+        img_src=result["image"],
+        resolution="%s x %s" % (result["width"], result["height"]),
+        source=result["source"],
     )
 
 
 def _video_result(result):
     return Video(
-        url=result['content'],
-        title=result['title'],
-        content=result['description'],
-        thumbnail=result['images'].get('small') or result['images'].get('medium'),
-        length=result['duration'],
-        metadata=result.get('uploader'),
+        url=result["content"],
+        title=result["title"],
+        content=result["description"],
+        thumbnail=result["images"].get("small") or result["images"].get("medium"),
+        length=result["duration"],
+        metadata=result.get("uploader"),
     )
 
 
 def _news_result(result):
     return MainResult(
-        url=result['url'],
-        title=result['title'],
-        content=html_to_text(result['excerpt']),
-        publishedDate=datetime.fromtimestamp(result['date']),
+        url=result["url"],
+        title=result["title"],
+        content=html_to_text(result["excerpt"]),
+        publishedDate=datetime.fromtimestamp(result["date"]),
     )
 
 
@@ -185,12 +191,12 @@ def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
     res_json = resp.json()
 
-    for result in res_json['results']:
-        if ddg_category == 'images':
+    for result in res_json["results"]:
+        if ddg_category == "images":
             res.add(_image_result(result))
-        elif ddg_category == 'videos':
+        elif ddg_category == "videos":
             res.add(_video_result(result))
-        elif ddg_category == 'news':
+        elif ddg_category == "news":
             res.add(_news_result(result))
         else:
             raise ValueError(f"Invalid duckduckgo category: {ddg_category}")

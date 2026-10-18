@@ -26,7 +26,8 @@ paging = True
 # search url
 url = "https://freesound.org/apiv2/"
 search_url = (
-    url + "search/text/?query={query}&page={page}&fields=name,url,download,created,description,type&token={api_key}"
+    url
+    + "search/text/?query={query}&page={page}&fields=name,url,download,created,description,type&token={api_key}"
 )
 
 

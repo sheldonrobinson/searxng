@@ -60,7 +60,12 @@ results_per_page: int = 20
 base_url = "https://api.search.brave.com/res/v1/web/search"
 """Base URL for the Brave Search API."""
 
-time_range_map = {"day": "past_day", "week": "past_week", "month": "past_month", "year": "past_year"}
+time_range_map = {
+    "day": "past_day",
+    "week": "past_week",
+    "month": "past_month",
+    "year": "past_year",
+}
 """Mapping of SearXNG time ranges to Brave API time ranges."""
 
 max_page = 10

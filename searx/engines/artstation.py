@@ -11,17 +11,17 @@ from searx.enginelib import EngineCache
 
 # Engine metadata
 about = {
-    "website": 'https://www.artstation.com/',
-    "wikidata_id": 'Q65551500',
+    "website": "https://www.artstation.com/",
+    "wikidata_id": "Q65551500",
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # Engine configuration
 paging = True
-categories = ['images']
+categories = ["images"]
 results_per_page = 20
 
 # Search URL
@@ -53,8 +53,12 @@ def fetch_csrf_tokens():
     public_token = resp.json()["public_csrf_token"]
     private_token = resp.cookies["PRIVATE-CSRF-TOKEN"]
 
-    CACHE.set(key=CSRF_PUBLICKEY_CACHE, value=public_token, expire=KEY_EXPIRATION_SECONDS)
-    CACHE.set(key=CSRF_PRIVATEKEY_CACHE, value=private_token, expire=KEY_EXPIRATION_SECONDS)
+    CACHE.set(
+        key=CSRF_PUBLICKEY_CACHE, value=public_token, expire=KEY_EXPIRATION_SECONDS
+    )
+    CACHE.set(
+        key=CSRF_PRIVATEKEY_CACHE, value=private_token, expire=KEY_EXPIRATION_SECONDS
+    )
 
     return public_token, private_token
 
@@ -72,11 +76,11 @@ def request(query, params):
     }
 
     params["url"] = base_url
-    params["method"] = 'POST'
-    params['headers']['content-type'] = "application/json"
-    params['headers']['PUBLIC-CSRF-TOKEN'] = public_token
+    params["method"] = "POST"
+    params["headers"]["content-type"] = "application/json"
+    params["headers"]["PUBLIC-CSRF-TOKEN"] = public_token
     params["cookies"] = {"PRIVATE-CSRF-TOKEN": private_token}
-    params['data'] = dumps(form_data)
+    params["data"] = dumps(form_data)
 
     return params
 
@@ -87,12 +91,14 @@ def response(resp) -> EngineResults:
 
     for item in search_res["data"]:
         thumb = item["smaller_square_cover_url"]
-        fullsize_image = re.sub(r'/\d{6,}/', '/', thumb).replace("smaller_square", "large")
+        fullsize_image = re.sub(r"/\d{6,}/", "/", thumb).replace(
+            "smaller_square", "large"
+        )
 
         results.add(
             results.types.LegacyResult(
                 {
-                    "template": 'images.html',
+                    "template": "images.html",
                     "title": item["title"],
                     "url": item["url"],
                     "author": f"{item['user']['username']} ({item['user']['full_name']})",

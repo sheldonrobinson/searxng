@@ -19,7 +19,7 @@ about = {
     "official_api_documentation": "https://developers.soundcloud.com/docs/api/guide",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 categories = ["music"]
@@ -69,14 +69,14 @@ def request(query, params):
 
     args = {
         "q": query,
-        "offset": (params['pageno'] - 1) * results_per_page,
+        "offset": (params["pageno"] - 1) * results_per_page,
         "limit": results_per_page,
         "facet": soundcloud_facet,
         "client_id": guest_client_id,
         "app_locale": app_locale_map.get(params["language"].split("-")[0], "en"),
     }
 
-    params['url'] = f"{search_url}?{urlencode(args)}"
+    params["url"] = f"{search_url}?{urlencode(args)}"
     return params
 
 

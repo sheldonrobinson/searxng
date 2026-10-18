@@ -74,7 +74,11 @@ def request(query: str, params: "OnlineParams"):
     params["headers"]["x-dogpile-token"] = _obtain_token()
 
     params["method"] = "POST"
-    params["json"] = {"q": query, "qadf": safe_search_map[params["safesearch"]], "page": params["pageno"]}
+    params["json"] = {
+        "q": query,
+        "qadf": safe_search_map[params["safesearch"]],
+        "page": params["pageno"],
+    }
 
 
 def response(resp: "SXNG_Response"):
@@ -98,7 +102,9 @@ def response(resp: "SXNG_Response"):
                     title=html_to_text(html.unescape(result["title"])),
                     content=html_to_text(html.unescape(result["description"])),
                     thumbnail=result["thumbnailUrl"],
-                    publishedDate=datetime.fromtimestamp(result["date"], tz=timezone.utc),
+                    publishedDate=datetime.fromtimestamp(
+                        result["date"], tz=timezone.utc
+                    ),
                 )
             )
         elif dogpile_categ == "videos":

@@ -28,6 +28,6 @@ def filter_request(
     request: flask.Request,
     cfg: config.Config,  # pylint: disable=unused-argument
 ) -> werkzeug.Response | None:
-    if request.headers.get('Accept-Language', '').strip() == '':
+    if request.headers.get("Accept-Language", "").strip() == "":
         return too_many_requests(network, "missing HTTP header Accept-Language")
     return None

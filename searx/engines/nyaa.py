@@ -11,42 +11,42 @@ from searx.utils import (
 
 # about
 about = {
-    "website": 'https://nyaa.si/',
+    "website": "https://nyaa.si/",
     "wikidata_id": None,
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
 # engine dependent config
-categories = ['files']
+categories = ["files"]
 paging = True
 
 # search-url
-base_url = 'https://nyaa.si/'
+base_url = "https://nyaa.si/"
 
 # xpath queries
 xpath_results = '//table[contains(@class, "torrent-list")]//tr[not(th)]'
-xpath_category = './/td[1]/a[1]'
-xpath_title = './/td[2]/a[last()]'
-xpath_torrent_links = './/td[3]/a'
-xpath_filesize = './/td[4]/text()'
-xpath_seeds = './/td[6]/text()'
-xpath_leeches = './/td[7]/text()'
-xpath_downloads = './/td[8]/text()'
+xpath_category = ".//td[1]/a[1]"
+xpath_title = ".//td[2]/a[last()]"
+xpath_torrent_links = ".//td[3]/a"
+xpath_filesize = ".//td[4]/text()"
+xpath_seeds = ".//td[6]/text()"
+xpath_leeches = ".//td[7]/text()"
+xpath_downloads = ".//td[8]/text()"
 
 
 # do search-request
 def request(query, params):
     args = urlencode(
         {
-            'q': query,
-            'p': params['pageno'],
+            "q": query,
+            "p": params["pageno"],
         }
     )
-    params['url'] = base_url + '?' + args  #
-    logger.debug("query_url --> %s", params['url'])
+    params["url"] = base_url + "?" + args  #
+    logger.debug("query_url --> %s", params["url"])
     return params
 
 
@@ -64,20 +64,20 @@ def response(resp):
 
         # category in which our torrent belongs
 
-        category = eval_xpath_getindex(result, xpath_category, 0, '')
+        category = eval_xpath_getindex(result, xpath_category, 0, "")
         if category:
-            category = category.attrib.get('title')
+            category = category.attrib.get("title")
 
         # torrent title
         page_a = result.xpath(xpath_title)[0]
         title = extract_text(page_a)
 
         # link to the page
-        href = base_url + page_a.attrib.get('href')
+        href = base_url + page_a.attrib.get("href")
 
         for link in result.xpath(xpath_torrent_links):
-            url = link.attrib.get('href')
-            if 'magnet' in url:
+            url = link.attrib.get("href")
+            if "magnet" in url:
                 # link to the magnet
                 magnet_link = url
             else:
@@ -95,7 +95,7 @@ def response(resp):
 
         # let's try to calculate the torrent size
 
-        filesize = eval_xpath_getindex(result, xpath_filesize, 0, '')
+        filesize = eval_xpath_getindex(result, xpath_filesize, 0, "")
 
         # content string contains all information not included into template
         content = 'Category: "{category}". Downloaded {downloads} times.'
@@ -103,15 +103,15 @@ def response(resp):
 
         results.append(
             {
-                'url': href,
-                'title': title,
-                'content': content,
-                'seed': seed,
-                'leech': leech,
-                'filesize': filesize,
-                'torrentfile': torrent_link,
-                'magnetlink': magnet_link,
-                'template': 'torrent.html',
+                "url": href,
+                "title": title,
+                "content": content,
+                "seed": seed,
+                "leech": leech,
+                "filesize": filesize,
+                "torrentfile": torrent_link,
+                "magnetlink": magnet_link,
+                "template": "torrent.html",
             }
         )
 

@@ -112,95 +112,95 @@ Replacements are:
 
 """
 
-lang_all = 'en'
-'''Replacement ``{lang}`` in :py:obj:`search_url` if language ``all`` is
+lang_all = "en"
+"""Replacement ``{lang}`` in :py:obj:`search_url` if language ``all`` is
 selected.
-'''
+"""
 
 no_result_for_http_status = []
-'''Return empty result for these HTTP status codes instead of throwing an error.
+"""Return empty result for these HTTP status codes instead of throwing an error.
 
 .. code:: yaml
 
     no_result_for_http_status: []
-'''
+"""
 
 soft_max_redirects = 0
-'''Maximum redirects, soft limit. Record an error but don't stop the engine'''
+"""Maximum redirects, soft limit. Record an error but don't stop the engine"""
 
-results_xpath = ''
-'''`XPath selector`_ for the list of result items'''
+results_xpath = ""
+"""`XPath selector`_ for the list of result items"""
 
 url_xpath = None
-'''`XPath selector`_ of result's ``url``.'''
+"""`XPath selector`_ of result's ``url``."""
 
 content_xpath = None
-'''`XPath selector`_ of result's ``content``.'''
+"""`XPath selector`_ of result's ``content``."""
 
 title_xpath = None
-'''`XPath selector`_ of result's ``title``.'''
+"""`XPath selector`_ of result's ``title``."""
 
 thumbnail_xpath = False
-'''`XPath selector`_ of result's ``thumbnail``.'''
+"""`XPath selector`_ of result's ``thumbnail``."""
 
-suggestion_xpath = ''
-'''`XPath selector`_ of result's ``suggestion``.'''
+suggestion_xpath = ""
+"""`XPath selector`_ of result's ``suggestion``."""
 
-cached_xpath = ''
-cached_url = ''
+cached_xpath = ""
+cached_url = ""
 
 cookies = {}
-'''Some engines might offer different result based on cookies.
-Possible use-case: To set safesearch cookie.'''
+"""Some engines might offer different result based on cookies.
+Possible use-case: To set safesearch cookie."""
 
 headers = {}
-'''Some engines might offer different result based headers.  Possible use-case:
-To set header to moderate.'''
+"""Some engines might offer different result based headers.  Possible use-case:
+To set header to moderate."""
 
-method = 'GET'
-'''Some engines might require to do POST requests for search.'''
+method = "GET"
+"""Some engines might require to do POST requests for search."""
 
-request_body = ''
-'''The body of the request.  This can only be used if different :py:obj:`method`
+request_body = ""
+"""The body of the request.  This can only be used if different :py:obj:`method`
 is set, e.g. ``POST``.  For formatting see the documentation of :py:obj:`search_url`::
 
     search={query}&page={pageno}{time_range}{safe_search}
-'''
+"""
 
 paging = False
-'''Engine supports paging [True or False].'''
+"""Engine supports paging [True or False]."""
 
 page_size = 1
-'''Number of results on each page.  Only needed if the site requires not a page
-number, but an offset.'''
+"""Number of results on each page.  Only needed if the site requires not a page
+number, but an offset."""
 
 first_page_num = 1
-'''Number of the first page (usually 0 or 1).'''
+"""Number of the first page (usually 0 or 1)."""
 
 send_page_num_on_first_page = True
-'''Whether to include the page number in the request for the first page.
-This can help if an engine blocks request that send a page number for the first page.'''
+"""Whether to include the page number in the request for the first page.
+This can help if an engine blocks request that send a page number for the first page."""
 
 time_range_support = False
-'''Engine supports search time range.'''
+"""Engine supports search time range."""
 
-time_range_url = '&hours={time_range_val}'
-'''Time range URL parameter in the in :py:obj:`search_url`.  If no time range is
+time_range_url = "&hours={time_range_val}"
+"""Time range URL parameter in the in :py:obj:`search_url`.  If no time range is
 requested by the user, the URL parameter is an empty string.  The
 ``{time_range_val}`` replacement is taken from the :py:obj:`time_range_map`.
 
 .. code:: yaml
 
     time_range_url : '&days={time_range_val}'
-'''
+"""
 
 time_range_map = {
-    'day': 24,
-    'week': 24 * 7,
-    'month': 24 * 30,
-    'year': 24 * 365,
+    "day": 24,
+    "week": 24 * 7,
+    "month": 24 * 30,
+    "year": 24 * 365,
 }
-'''Maps time range value from user to ``{time_range_val}`` in
+"""Maps time range value from user to ``{time_range_val}`` in
 :py:obj:`time_range_url`.
 
 .. code:: yaml
@@ -210,13 +210,13 @@ time_range_map = {
       week: 7
       month: 30
       year: 365
-'''
+"""
 
 safesearch = False
-'''Engine supports safe-search.'''
+"""Engine supports safe-search."""
 
-safe_search_map = {0: '&filter=none', 1: '&filter=moderate', 2: '&filter=strict'}
-'''Maps safe-search value to ``{safe_search}`` in :py:obj:`search_url`.
+safe_search_map = {0: "&filter=none", 1: "&filter=moderate", 2: "&filter=strict"}
+"""Maps safe-search value to ``{safe_search}`` in :py:obj:`search_url`.
 
 .. code:: yaml
 
@@ -226,50 +226,50 @@ safe_search_map = {0: '&filter=none', 1: '&filter=moderate', 2: '&filter=strict'
       1: '&filter=moderate'
       2: '&filter=strict'
 
-'''
+"""
 
 
 def request(query, params):
-    '''Build request parameters (see :ref:`engine request`).'''
+    """Build request parameters (see :ref:`engine request`)."""
     lang = lang_all
-    if params['language'] != 'all':
-        lang = params['language'][:2]
+    if params["language"] != "all":
+        lang = params["language"][:2]
 
-    time_range = ''
-    if params.get('time_range'):
-        time_range_val = time_range_map.get(params.get('time_range'))
+    time_range = ""
+    if params.get("time_range"):
+        time_range_val = time_range_map.get(params.get("time_range"))
         time_range = time_range_url.format(time_range_val=time_range_val)
 
-    safe_search = ''
-    safe_search_val = params.get('safesearch')
+    safe_search = ""
+    safe_search_val = params.get("safesearch")
     if safe_search_val is not None:
         safe_search = safe_search_map[safe_search_val]
 
     pageno = ""
     if send_page_num_on_first_page or params["pageno"] != 1:
-        pageno = (params['pageno'] - 1) * page_size + first_page_num
+        pageno = (params["pageno"] - 1) * page_size + first_page_num
 
     fargs = {
-        'query': urlencode({'q': query})[2:],
-        'lang': lang,
-        'pageno': pageno,
-        'time_range': time_range,
-        'safe_search': safe_search,
+        "query": urlencode({"q": query})[2:],
+        "lang": lang,
+        "pageno": pageno,
+        "time_range": time_range,
+        "safe_search": safe_search,
     }
 
-    params['cookies'].update(cookies)
-    params['headers'].update(headers)
+    params["cookies"].update(cookies)
+    params["headers"].update(headers)
 
-    params['url'] = search_url.format(**fargs)
-    params['method'] = method
+    params["url"] = search_url.format(**fargs)
+    params["method"] = method
 
     if request_body:
         # don't url-encode the query if it's in the request body
-        fargs['query'] = query
-        params['data'] = request_body.format(**fargs)
+        fargs["query"] = query
+        params["data"] = request_body.format(**fargs)
 
-    params['soft_max_redirects'] = soft_max_redirects
-    params['raise_for_httperror'] = False
+    params["soft_max_redirects"] = soft_max_redirects
+    params["raise_for_httperror"] = False
 
     return params
 
@@ -287,27 +287,31 @@ def response(resp) -> EngineResults:  # pylint: disable=too-many-branches
         return results
 
     dom = resp.html()
-    is_onion = 'onions' in categories
+    is_onion = "onions" in categories
 
     if results_xpath:
         for result in eval_xpath_list(dom, results_xpath):
             url = extract_url(eval_xpath(result, url_xpath), search_url)
             title = extract_text(eval_xpath_list(result, title_xpath, min_len=1))
             content = extract_text(eval_xpath_list(result, content_xpath))
-            tmp_result = {'url': url, 'title': title, 'content': content}
+            tmp_result = {"url": url, "title": title, "content": content}
 
             # add thumbnail if available
             if thumbnail_xpath:
                 thumbnail_xpath_result = eval_xpath_list(result, thumbnail_xpath)
                 if len(thumbnail_xpath_result) > 0:
-                    tmp_result['thumbnail'] = extract_url(thumbnail_xpath_result, search_url)
+                    tmp_result["thumbnail"] = extract_url(
+                        thumbnail_xpath_result, search_url
+                    )
 
             # add alternative cached url if available
             if cached_xpath:
-                tmp_result['cached_url'] = cached_url + extract_text(eval_xpath_list(result, cached_xpath, min_len=1))
+                tmp_result["cached_url"] = cached_url + extract_text(
+                    eval_xpath_list(result, cached_xpath, min_len=1)
+                )
 
             if is_onion:
-                tmp_result['is_onion'] = True
+                tmp_result["is_onion"] = True
 
             results.append(tmp_result)
 
@@ -321,11 +325,11 @@ def response(resp) -> EngineResults:  # pylint: disable=too-many-branches
             ):
                 results.append(
                     {
-                        'url': url,
-                        'title': title,
-                        'content': content,
-                        'cached_url': cached_url + cached,
-                        'is_onion': is_onion,
+                        "url": url,
+                        "title": title,
+                        "content": content,
+                        "cached_url": cached_url + cached,
+                        "is_onion": is_onion,
                     }
                 )
         else:
@@ -334,11 +338,18 @@ def response(resp) -> EngineResults:  # pylint: disable=too-many-branches
                 map(extract_text, eval_xpath_list(dom, title_xpath)),
                 map(extract_text, eval_xpath_list(dom, content_xpath)),
             ):
-                results.append({'url': url, 'title': title, 'content': content, 'is_onion': is_onion})
+                results.append(
+                    {
+                        "url": url,
+                        "title": title,
+                        "content": content,
+                        "is_onion": is_onion,
+                    }
+                )
 
     if suggestion_xpath:
         for suggestion in eval_xpath(dom, suggestion_xpath):
-            results.append({'suggestion': extract_text(suggestion)})
+            results.append({"suggestion": extract_text(suggestion)})
 
     logger.debug("found %s results", len(results))
     return results

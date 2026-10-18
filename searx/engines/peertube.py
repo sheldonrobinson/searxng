@@ -103,7 +103,9 @@ def video_response(resp):
             x
             for x in [
                 result.get("channel", {}).get("displayName"),
-                result.get("channel", {}).get("name") + "@" + result.get("channel", {}).get("host"),
+                result.get("channel", {}).get("name")
+                + "@"
+                + result.get("channel", {}).get("host"),
                 ", ".join(result.get("tags", [])),
             ]
             if x

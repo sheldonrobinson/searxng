@@ -34,40 +34,40 @@ from searx.exceptions import SearxEngineAPIException
 from searx.result_types import EngineResults
 from searx.extended_types import SXNG_Response
 
-base_url = 'http://localhost:8983'
-collection = ''
+base_url = "http://localhost:8983"
+collection = ""
 rows = 10
-sort = ''  # sorting: asc or desc
-field_list = 'name'  # list of field names to display on the UI
-default_fields = ''  # default field to query
-query_fields = ''  # query fields
-_search_url = ''
+sort = ""  # sorting: asc or desc
+field_list = "name"  # list of field names to display on the UI
+default_fields = ""  # default field to query
+query_fields = ""  # query fields
+_search_url = ""
 paging = True
 
 
 def setup(_: dict[str, t.Any]) -> bool | None:
-    if collection == '':
-        raise ValueError('collection cannot be empty')
+    if collection == "":
+        raise ValueError("collection cannot be empty")
 
     global _search_url
-    _search_url = base_url + '/solr/' + collection + '/select?{params}'
+    _search_url = base_url + "/solr/" + collection + "/select?{params}"
 
 
 def request(query, params):
-    query_params = {'q': query, 'rows': rows}
-    if field_list != '':
-        query_params['fl'] = field_list
-    if query_fields != '':
-        query_params['qf'] = query_fields
-    if default_fields != '':
-        query_params['df'] = default_fields
-    if sort != '':
-        query_params['sort'] = sort
+    query_params = {"q": query, "rows": rows}
+    if field_list != "":
+        query_params["fl"] = field_list
+    if query_fields != "":
+        query_params["qf"] = query_fields
+    if default_fields != "":
+        query_params["df"] = default_fields
+    if sort != "":
+        query_params["sort"] = sort
 
-    if 'pageno' in params:
-        query_params['start'] = rows * (params['pageno'] - 1)
+    if "pageno" in params:
+        query_params["start"] = rows * (params["pageno"] - 1)
 
-    params['url'] = _search_url.format(params=urlencode(query_params))
+    params["url"] = _search_url.format(params=urlencode(query_params))
 
     return params
 

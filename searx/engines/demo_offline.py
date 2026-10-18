@@ -66,7 +66,7 @@ def setup(engine_settings: dict[str, t.Any]) -> bool:
         ', {"value":"first item"}'
         ', {"value":"second item"}'
         ', {"value":"third item"}'
-        ']' % engine_settings.get('name')
+        "]" % engine_settings.get("name")
     )
 
     return True
@@ -95,9 +95,9 @@ def search(query: str, params: "RequestParams") -> EngineResults:
     for row in data_rows:
         count += 1
         kvmap = {
-            'query': query,
-            'language': params['searxng_locale'],
-            'value': row.get("value"),
+            "query": query,
+            "language": params["searxng_locale"],
+            "value": row.get("value"),
         }
         res.add(
             res.types.KeyValue(

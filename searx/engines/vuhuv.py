@@ -43,7 +43,13 @@ def setup(_: dict[str, t.Any]) -> bool | None:
 def request(query: str, params: "OnlineParams") -> None:
     # the purpose of "d" and "dh" are unknown, but the website
     # sends them, and without them the results are different
-    args = {"k": category_map[vuhuv_category], "p": params["pageno"], "q": query, "d": 1, "dh": 1}
+    args = {
+        "k": category_map[vuhuv_category],
+        "p": params["pageno"],
+        "q": query,
+        "d": 1,
+        "dh": 1,
+    }
     params["url"] = f"{base_url}/veri2/?{urlencode(args)}"
     params["headers"]["Referer"] = f"{base_url}/"
 
@@ -71,8 +77,12 @@ def _image_results(doc: "ElementBase") -> EngineResults:
                 res.types.Image(
                     url=extract_text(eval_xpath(result, "./a/@href")) or "",
                     title=extract_text(eval_xpath(result, "./a/@title")) or "",
-                    resolution=extract_text(eval_xpath(result, "div[contains(@class, 'olculeri')]")) or "",
-                    thumbnail_src="https:" + str(extract_text(eval_xpath(result, "./@data-kgorsel"))),
+                    resolution=extract_text(
+                        eval_xpath(result, "div[contains(@class, 'olculeri')]")
+                    )
+                    or "",
+                    thumbnail_src="https:"
+                    + str(extract_text(eval_xpath(result, "./@data-kgorsel"))),
                     img_src=extract_text(eval_xpath(result, "./@data-resimurl")) or "",
                 ),
             )
@@ -88,9 +98,13 @@ def _video_results(doc: "ElementBase") -> EngineResults:
                 res.types.Video(
                     url=extract_text(eval_xpath(result, "./a/@href")) or "",
                     title=extract_text(eval_xpath(result, "./a/@title")) or "",
-                    content=extract_text(eval_xpath(result, ".//div[contains(@class, 'abaslik')]")) or "",
+                    content=extract_text(
+                        eval_xpath(result, ".//div[contains(@class, 'abaslik')]")
+                    )
+                    or "",
                     thumbnail=extract_text(eval_xpath(result, "./@data-kgorsel")) or "",
-                    iframe_src=extract_text(eval_xpath(result, "./@data-embedurl")) or "",
+                    iframe_src=extract_text(eval_xpath(result, "./@data-embedurl"))
+                    or "",
                 ),
             )
         )

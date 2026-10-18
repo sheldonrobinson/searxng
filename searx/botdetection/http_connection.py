@@ -29,6 +29,6 @@ def filter_request(
     cfg: config.Config,  # pylint: disable=unused-argument
 ) -> werkzeug.Response | None:
 
-    if request.headers.get('Connection', '').strip() == 'close':
+    if request.headers.get("Connection", "").strip() == "close":
         return too_many_requests(network, "HTTP header 'Connection=close")
     return None

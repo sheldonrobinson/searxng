@@ -30,22 +30,22 @@ if t.TYPE_CHECKING:
     from searx.extended_types import SXNG_Response
 
 about = {
-    'website': 'https://repology.org',
-    'wikidata_id': 'Q107409859',
-    'use_official_api': True,
-    'official_api_documentation': 'https://repology.org/api/v1',
-    'require_api_key': False,
-    'results': 'JSON',
+    "website": "https://repology.org",
+    "wikidata_id": "Q107409859",
+    "use_official_api": True,
+    "official_api_documentation": "https://repology.org/api/v1",
+    "require_api_key": False,
+    "results": "JSON",
 }
-categories: list[str] = ['packages', 'it']
-base_url: str = 'https://repology.org'
+categories: list[str] = ["packages", "it"]
+base_url: str = "https://repology.org"
 
 
 def request(query: str, params: dict[str, t.Any]) -> None:
     args = {
-        'search': query,
+        "search": query,
     }
-    params['url'] = f"{base_url}/api/v1/projects/?{urlencode(args)}"
+    params["url"] = f"{base_url}/api/v1/projects/?{urlencode(args)}"
 
 
 def _get_most_common(items: list[str | None]) -> str | None:
@@ -63,7 +63,7 @@ def _flatten(xss):
     return [x for xs in xss for x in xs]
 
 
-def response(resp: 'SXNG_Response') -> EngineResults:
+def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
 
     resp_json = resp.json()
@@ -77,18 +77,26 @@ def response(resp: 'SXNG_Response') -> EngineResults:
                 latest_version = repo["version"]
                 break
         else:
-            latest_version = _get_most_common([repo.get("version") for repo in repositories])
+            latest_version = _get_most_common(
+                [repo.get("version") for repo in repositories]
+            )
 
         res.add(
             res.types.LegacyResult(
-                template='packages.html',
+                template="packages.html",
                 url=f"{base_url}/project/{pkgname}/versions",
                 title=pkgname,
                 content=_get_most_common([pkg.get("summary") for pkg in repositories]),
-                package_name=_get_most_common([pkg.get("visiblename") for pkg in repositories]),
+                package_name=_get_most_common(
+                    [pkg.get("visiblename") for pkg in repositories]
+                ),
                 version=latest_version,
-                license_name=_get_most_common(_flatten([pkg.get("licenses", []) for pkg in repositories])),
-                tags=list({pkg.get("repo") for pkg in repositories}),  # ensure that tags are unique
+                license_name=_get_most_common(
+                    _flatten([pkg.get("licenses", []) for pkg in repositories])
+                ),
+                tags=list(
+                    {pkg.get("repo") for pkg in repositories}
+                ),  # ensure that tags are unique
             )
         )
 

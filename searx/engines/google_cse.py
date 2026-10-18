@@ -7,7 +7,10 @@ from json import loads
 from urllib.parse import urlencode
 
 from searx.enginelib import EngineCache
-from searx.exceptions import SearxEngineAPIException, SearxEngineTooManyRequestsException
+from searx.exceptions import (
+    SearxEngineAPIException,
+    SearxEngineTooManyRequestsException,
+)
 from searx.network import get
 from searx.result_types import EngineResults, Result, MainResult, Image
 

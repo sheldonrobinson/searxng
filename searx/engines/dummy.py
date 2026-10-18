@@ -8,7 +8,7 @@ about = {
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'empty array',
+    "results": "empty array",
 }
 
 

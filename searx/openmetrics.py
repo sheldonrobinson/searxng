@@ -29,7 +29,12 @@ class OpenMetricsFamily:  # pylint: disable=too-few-public-methods
     """
 
     def __init__(
-        self, key: str, type_hint: OMFTypeHintType, help_hint: str, data_info: OMFDataInfoType, data: list[t.Any]
+        self,
+        key: str,
+        type_hint: OMFTypeHintType,
+        help_hint: str,
+        data_info: OMFDataInfoType,
+        data: list[t.Any],
     ):
         self.key: str = key
         self.type_hint: OMFTypeHintType = type_hint
@@ -47,7 +52,11 @@ class OpenMetricsFamily:  # pylint: disable=too-few-public-methods
             if not data_info_dict or not self.data[i]:
                 continue
 
-            info_representation = ','.join([f'{key}="{value}"' for (key, value) in data_info_dict.items()])
-            text_representation += f'{self.key}{{{info_representation}}} {self.data[i]}\n'
+            info_representation = ",".join(
+                [f'{key}="{value}"' for (key, value) in data_info_dict.items()]
+            )
+            text_representation += (
+                f"{self.key}{{{info_representation}}} {self.data[i]}\n"
+            )
 
         return text_representation

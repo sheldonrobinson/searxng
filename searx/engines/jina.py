@@ -53,7 +53,12 @@ def setup(_):
 
 def request(query: str, params: "OnlineParams"):
     # setting 'no-content' pushes the response time down to a third
-    args = {"q": query, "page": params["pageno"], "engine": jina_engine, "respondWith": "no-content"}
+    args = {
+        "q": query,
+        "page": params["pageno"],
+        "engine": jina_engine,
+        "respondWith": "no-content",
+    }
     params["url"] = f"{base_url}/?{urlencode(args)}"
     params["headers"].update(
         {

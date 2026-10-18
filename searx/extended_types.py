@@ -34,7 +34,11 @@ from lxml import html
 if typing.TYPE_CHECKING:
     import searx.preferences
     import searx.results
-    from searx.search.processors import OnlineParamTypes, OnlineDictParams, OnlineCurrenciesParams
+    from searx.search.processors import (
+        OnlineParamTypes,
+        OnlineDictParams,
+        OnlineCurrenciesParams,
+    )
 
 
 class SXNG_Request(flask.Request):

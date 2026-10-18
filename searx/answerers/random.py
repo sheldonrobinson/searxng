@@ -15,12 +15,14 @@ from . import Answerer, AnswererInfo
 
 
 def random_characters():
-    random_string_letters = string.ascii_lowercase + string.digits + string.ascii_uppercase
+    random_string_letters = (
+        string.ascii_lowercase + string.digits + string.ascii_uppercase
+    )
     return random.choices(random_string_letters, k=random.randint(8, 32))
 
 
 def random_string():
-    return ''.join(random_characters())
+    return "".join(random_characters())
 
 
 def random_float():
@@ -34,7 +36,7 @@ def random_int():
 
 def random_sha256():
     m = hashlib.sha256()
-    m.update(''.join(random_characters()).encode())
+    m.update("".join(random_characters()).encode())
     return str(m.hexdigest())
 
 

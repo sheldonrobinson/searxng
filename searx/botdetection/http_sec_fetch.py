@@ -54,19 +54,19 @@ def is_browser_supported(user_agent: str) -> bool:
     user_agent = user_agent.lower()
 
     # Chrome/Chromium/Edge/Opera
-    chrome_match = re.search(r'chrome/(\d+)', user_agent)
+    chrome_match = re.search(r"chrome/(\d+)", user_agent)
     if chrome_match:
         version = int(chrome_match.group(1))
         return version >= 80
 
     # Firefox
-    firefox_match = re.search(r'firefox/(\d+)', user_agent)
+    firefox_match = re.search(r"firefox/(\d+)", user_agent)
     if firefox_match:
         version = int(firefox_match.group(1))
         return version >= 90
 
     # Safari
-    safari_match = re.search(r'version/(\d+)\.(\d+)', user_agent)
+    safari_match = re.search(r"version/(\d+)\.(\d+)", user_agent)
     if safari_match:
         major = int(safari_match.group(1))
         minor = int(safari_match.group(2))
@@ -88,21 +88,21 @@ def filter_request(
         return None
 
     # Only check Sec-Fetch headers for supported browsers
-    user_agent = request.headers.get('User-Agent', '')
+    user_agent = request.headers.get("User-Agent", "")
     if is_browser_supported(user_agent):
         val = request.headers.get("Sec-Fetch-Mode", "")
-        if val not in ('navigate', 'cors'):
+        if val not in ("navigate", "cors"):
             logger.debug("invalid Sec-Fetch-Mode '%s'", val)
-            return flask.redirect(flask.url_for('index'), code=302)
+            return flask.redirect(flask.url_for("index"), code=302)
 
         val = request.headers.get("Sec-Fetch-Site", "")
-        if val not in ('same-origin', 'same-site', 'none'):
+        if val not in ("same-origin", "same-site", "none"):
             logger.debug("invalid Sec-Fetch-Site '%s'", val)
-            flask.redirect(flask.url_for('index'), code=302)
+            flask.redirect(flask.url_for("index"), code=302)
 
         val = request.headers.get("Sec-Fetch-Dest", "")
-        if val not in ('document', 'empty'):
+        if val not in ("document", "empty"):
             logger.debug("invalid Sec-Fetch-Dest '%s'", val)
-            flask.redirect(flask.url_for('index'), code=302)
+            flask.redirect(flask.url_for("index"), code=302)
 
     return None

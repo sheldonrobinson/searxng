@@ -19,7 +19,9 @@ class AnswererTest(SearxTestCase):
 
         self.storage = searx.plugins.PluginStorage()
         engines = {}
-        self.pref = searx.preferences.Preferences(["simple"], ["general"], engines, self.storage)
+        self.pref = searx.preferences.Preferences(
+            ["simple"], ["general"], engines, self.storage
+        )
         self.pref.parse_dict({"locale": "en"})
 
     @parameterized.expand(searx.answerers.STORAGE.answerer_list)

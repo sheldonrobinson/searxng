@@ -19,17 +19,17 @@ categories = ["it", "repos"]
 
 base_url = "https://ollama.com"
 
-results_xpath = '//li[@x-test-model]'
-title_xpath = './/span[@x-test-search-response-title]/text()'
+results_xpath = "//li[@x-test-model]"
+title_xpath = ".//span[@x-test-search-response-title]/text()"
 content_xpath = './/p[@class="max-w-lg break-words text-neutral-800 text-md"]/text()'
-url_xpath = './a/@href'
+url_xpath = "./a/@href"
 publish_date_xpath = './/span[contains(@class, "flex items-center")]/@title'
 
 
 def request(query, params):
     query_params = {"q": query}
 
-    params['url'] = f"{base_url}/search?{urlencode(query_params)}"
+    params["url"] = f"{base_url}/search?{urlencode(query_params)}"
     return params
 
 
@@ -42,7 +42,8 @@ def response(resp) -> EngineResults:
         published_date = None
         try:
             published_date = datetime.strptime(
-                extract_text(eval_xpath(item, publish_date_xpath)), "%b %d, %Y %I:%M %p %Z"
+                extract_text(eval_xpath(item, publish_date_xpath)),
+                "%b %d, %Y %I:%M %p %Z",
             )
         except ValueError:
             pass

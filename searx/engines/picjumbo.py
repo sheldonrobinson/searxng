@@ -46,13 +46,25 @@ def response(resp: "SXNG_Response"):
 
     doc = resp.html()
 
-    for result in eval_xpath_list(doc, "//div[contains(@class, 'photo_query')]/div[contains(@class, 'photo_item')]"):
-        thumbnail = extract_text(eval_xpath(result, ".//img[contains(@class, 'image')]/@src")) or ""
+    for result in eval_xpath_list(
+        doc,
+        "//div[contains(@class, 'photo_query')]/div[contains(@class, 'photo_item')]",
+    ):
+        thumbnail = (
+            extract_text(eval_xpath(result, ".//img[contains(@class, 'image')]/@src"))
+            or ""
+        )
         res.add(
             res.types.Image(
-                url=extract_text(eval_xpath(result, ".//a[contains(@class, 'image')]/@href")) or "",
+                url=extract_text(
+                    eval_xpath(result, ".//a[contains(@class, 'image')]/@href")
+                )
+                or "",
                 title=extract_text(eval_xpath(result, ".//h3")) or "",
-                content=extract_text(eval_xpath(result, ".//meta[@itemprop='keywords']/@content")) or "",
+                content=extract_text(
+                    eval_xpath(result, ".//meta[@itemprop='keywords']/@content")
+                )
+                or "",
                 thumbnail_src=thumbnail,
                 img_src=_get_max_res_url(thumbnail),
             )

@@ -56,7 +56,7 @@ def response(resp) -> EngineResults:
                 url=entry["play_url"],
                 title=html_to_text(entry["title"]),
                 content=html_to_text(entry["description"]),
-                template='videos.html',
+                template="videos.html",
                 publishedDate=published_date,
                 thumbnail=entry["cover_img"],
             )

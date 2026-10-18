@@ -20,29 +20,29 @@ from ._settings import SettingsPref
 
 searx_dir = abspath(dirname(__file__))
 
-logger = logging.getLogger('searx')
-OUTPUT_FORMATS = ['html', 'csv', 'json', 'rss']
-SXNG_LOCALE_TAGS = ['all', 'auto'] + list(l[0] for l in sxng_locales)
-SIMPLE_STYLE = ('auto', 'light', 'dark', 'black')
+logger = logging.getLogger("searx")
+OUTPUT_FORMATS = ["html", "csv", "json", "rss"]
+SXNG_LOCALE_TAGS = ["all", "auto"] + list(l[0] for l in sxng_locales)
+SIMPLE_STYLE = ("auto", "light", "dark", "black")
 CATEGORIES_AS_TABS: dict[str, dict[str, t.Any]] = {
-    'general': {},
-    'images': {},
-    'videos': {},
-    'news': {},
-    'map': {},
-    'music': {},
-    'it': {},
-    'science': {},
-    'files': {},
-    'social media': {},
+    "general": {},
+    "images": {},
+    "videos": {},
+    "news": {},
+    "map": {},
+    "music": {},
+    "it": {},
+    "science": {},
+    "files": {},
+    "social media": {},
 }
 STR_TO_BOOL = {
-    '0': False,
-    'false': False,
-    'off': False,
-    '1': True,
-    'true': True,
-    'on': True,
+    "0": False,
+    "false": False,
+    "off": False,
+    "1": True,
+    "true": True,
+    "on": True,
 }
 _UNDEFINED = object()
 
@@ -72,22 +72,31 @@ class SettingsValue:
         environ_name: str | None = None,
     ):
         self.type_definition: TypeDefinition = (
-            type_definition_arg if isinstance(type_definition_arg, tuple) else (type_definition_arg,)
+            type_definition_arg
+            if isinstance(type_definition_arg, tuple)
+            else (type_definition_arg,)
         )
         self.default: t.Any = default
         self.environ_name: str | None = environ_name
 
     @property
     def type_definition_repr(self):
-        types_str = [td.__name__ if isinstance(td, type) else repr(td) for td in self.type_definition]
-        return ', '.join(types_str)
+        types_str = [
+            td.__name__ if isinstance(td, type) else repr(td)
+            for td in self.type_definition
+        ]
+        return ", ".join(types_str)
 
     def check_type_definition(self, value: t.Any) -> None:
         if value in self.type_definition:
             return
         type_list = tuple(t for t in self.type_definition if isinstance(t, type))
         if not isinstance(value, type_list):
-            raise ValueError('The value has to be one of these types/values: {}'.format(self.type_definition_repr))
+            raise ValueError(
+                "The value has to be one of these types/values: {}".format(
+                    self.type_definition_repr
+                )
+            )
 
     def __call__(self, value: t.Any) -> t.Any:
         if value == _UNDEFINED:
@@ -108,10 +117,10 @@ class SettingSublistValue(SettingsValue):
     @override
     def check_type_definition(self, value: list[t.Any]) -> None:
         if not isinstance(value, list):
-            raise ValueError('The value has to a list')
+            raise ValueError("The value has to a list")
         for item in value:
             if not item in self.type_definition[0]:
-                raise ValueError('{} not in {}'.format(item, self.type_definition))
+                raise ValueError("{} not in {}".format(item, self.type_definition))
 
 
 class SettingsDirectoryValue(SettingsValue):
@@ -125,7 +134,7 @@ class SettingsDirectoryValue(SettingsValue):
 
     @override
     def __call__(self, value: t.Any) -> t.Any:
-        if value == '':
+        if value == "":
             value = self.default
         return super().__call__(value)
 
@@ -140,7 +149,9 @@ class SettingsBytesValue(SettingsValue):
         return super().__call__(value)
 
 
-def apply_schema(settings: dict[str, t.Any], schema: dict[str, t.Any], path_list: list[str]):
+def apply_schema(
+    settings: dict[str, t.Any], schema: dict[str, t.Any], path_list: list[str]
+):
     error = False
     for key, value in schema.items():
         if isinstance(value, type) and issubclass(value, msgspec.Struct):
@@ -172,7 +183,9 @@ def apply_schema(settings: dict[str, t.Any], schema: dict[str, t.Any], path_list
                 logger.error(msg)
                 error = True
         elif isinstance(value, dict):
-            error = error or apply_schema(settings.setdefault(key, {}), schema[key], [*path_list, key])
+            error = error or apply_schema(
+                settings.setdefault(key, {}), schema[key], [*path_list, key]
+            )
         else:
             settings.setdefault(key, value)
     if len(path_list) == 0 and error:
@@ -181,92 +194,96 @@ def apply_schema(settings: dict[str, t.Any], schema: dict[str, t.Any], path_list
 
 
 SCHEMA: dict[str, t.Any] = {
-    'general': {
-        'debug': SettingsValue(bool, False, 'SEARXNG_DEBUG'),
-        'instance_name': SettingsValue(str, 'SearXNG'),
-        'privacypolicy_url': SettingsValue((None, False, str), None),
-        'contact_url': SettingsValue((None, False, str), None),
-        'donation_url': SettingsValue((bool, str), "https://docs.searxng.org/donate.html"),
-        'enable_metrics': SettingsValue(bool, True),
-        'open_metrics': SettingsValue(str, ''),
+    "general": {
+        "debug": SettingsValue(bool, False, "SEARXNG_DEBUG"),
+        "instance_name": SettingsValue(str, "SearXNG"),
+        "privacypolicy_url": SettingsValue((None, False, str), None),
+        "contact_url": SettingsValue((None, False, str), None),
+        "donation_url": SettingsValue(
+            (bool, str), "https://docs.searxng.org/donate.html"
+        ),
+        "enable_metrics": SettingsValue(bool, True),
+        "open_metrics": SettingsValue(str, ""),
     },
-    'brand': SettingsBrand,
-    'search': {
-        'safe_search': SettingsValue((0, 1, 2), 0),
-        'autocomplete': SettingsValue(str, 'duckduckgo'),
-        'autocomplete_min': SettingsValue(int, 4),
-        'favicon_resolver': SettingsValue(str, ''),
-        'default_lang': SettingsValue(tuple(SXNG_LOCALE_TAGS + ['']), ''),
-        'languages': SettingSublistValue(SXNG_LOCALE_TAGS, SXNG_LOCALE_TAGS),  # type: ignore
-        'ban_time_on_fail': SettingsValue(numbers.Real, 5),
-        'max_ban_time_on_fail': SettingsValue(numbers.Real, 120),
-        'suspended_times': {
-            'SearxEngineAccessDenied': SettingsValue(numbers.Real, 86400),
-            'SearxEngineCaptcha': SettingsValue(numbers.Real, 86400),
-            'SearxEngineTooManyRequests': SettingsValue(numbers.Real, 3600),
-            'cf_SearxEngineCaptcha': SettingsValue(numbers.Real, 1296000),
-            'cf_SearxEngineAccessDenied': SettingsValue(numbers.Real, 86400),
-            'recaptcha_SearxEngineCaptcha': SettingsValue(numbers.Real, 604800),
+    "brand": SettingsBrand,
+    "search": {
+        "safe_search": SettingsValue((0, 1, 2), 0),
+        "autocomplete": SettingsValue(str, "duckduckgo"),
+        "autocomplete_min": SettingsValue(int, 4),
+        "favicon_resolver": SettingsValue(str, ""),
+        "default_lang": SettingsValue(tuple(SXNG_LOCALE_TAGS + [""]), ""),
+        "languages": SettingSublistValue(SXNG_LOCALE_TAGS, SXNG_LOCALE_TAGS),  # type: ignore
+        "ban_time_on_fail": SettingsValue(numbers.Real, 5),
+        "max_ban_time_on_fail": SettingsValue(numbers.Real, 120),
+        "suspended_times": {
+            "SearxEngineAccessDenied": SettingsValue(numbers.Real, 86400),
+            "SearxEngineCaptcha": SettingsValue(numbers.Real, 86400),
+            "SearxEngineTooManyRequests": SettingsValue(numbers.Real, 3600),
+            "cf_SearxEngineCaptcha": SettingsValue(numbers.Real, 1296000),
+            "cf_SearxEngineAccessDenied": SettingsValue(numbers.Real, 86400),
+            "recaptcha_SearxEngineCaptcha": SettingsValue(numbers.Real, 604800),
         },
-        'formats': SettingsValue(list, OUTPUT_FORMATS),
-        'max_page': SettingsValue(int, 0),
+        "formats": SettingsValue(list, OUTPUT_FORMATS),
+        "max_page": SettingsValue(int, 0),
     },
-    'server': {
-        'port': SettingsValue((int, str), 8888, 'SEARXNG_PORT'),
-        'bind_address': SettingsValue(str, '127.0.0.1', 'SEARXNG_BIND_ADDRESS'),
-        'limiter': SettingsValue(bool, False, 'SEARXNG_LIMITER'),
-        'public_instance': SettingsValue(bool, False, 'SEARXNG_PUBLIC_INSTANCE'),
-        'secret_key': SettingsValue(str, environ_name='SEARXNG_SECRET'),
-        'base_url': SettingsValue((False, str), False, 'SEARXNG_BASE_URL'),
-        'image_proxy': SettingsValue(bool, False, 'SEARXNG_IMAGE_PROXY'),
-        'http_protocol_version': SettingsValue(('1.0', '1.1'), '1.0'),
-        'method': SettingsValue(('POST', 'GET'), 'GET', 'SEARXNG_METHOD'),
-        'default_http_headers': SettingsValue(dict, {}),
+    "server": {
+        "port": SettingsValue((int, str), 8888, "SEARXNG_PORT"),
+        "bind_address": SettingsValue(str, "127.0.0.1", "SEARXNG_BIND_ADDRESS"),
+        "limiter": SettingsValue(bool, False, "SEARXNG_LIMITER"),
+        "public_instance": SettingsValue(bool, False, "SEARXNG_PUBLIC_INSTANCE"),
+        "secret_key": SettingsValue(str, environ_name="SEARXNG_SECRET"),
+        "base_url": SettingsValue((False, str), False, "SEARXNG_BASE_URL"),
+        "image_proxy": SettingsValue(bool, False, "SEARXNG_IMAGE_PROXY"),
+        "http_protocol_version": SettingsValue(("1.0", "1.1"), "1.0"),
+        "method": SettingsValue(("POST", "GET"), "GET", "SEARXNG_METHOD"),
+        "default_http_headers": SettingsValue(dict, {}),
     },
     # redis is deprecated ..
-    'redis': {
-        'url': SettingsValue((None, False, str), False, 'SEARXNG_REDIS_URL'),
+    "redis": {
+        "url": SettingsValue((None, False, str), False, "SEARXNG_REDIS_URL"),
     },
-    'valkey': {
-        'url': SettingsValue((None, False, str), False, 'SEARXNG_VALKEY_URL'),
+    "valkey": {
+        "url": SettingsValue((None, False, str), False, "SEARXNG_VALKEY_URL"),
     },
-    'ui': {
-        'static_path': SettingsDirectoryValue(str, os.path.join(searx_dir, 'static')),
-        'templates_path': SettingsDirectoryValue(str, os.path.join(searx_dir, 'templates')),
-        'default_theme': SettingsValue(str, 'simple'),
-        'default_locale': SettingsValue(str, ''),
-        'theme_args': {
-            'simple_style': SettingsValue(SIMPLE_STYLE, 'auto'),
+    "ui": {
+        "static_path": SettingsDirectoryValue(str, os.path.join(searx_dir, "static")),
+        "templates_path": SettingsDirectoryValue(
+            str, os.path.join(searx_dir, "templates")
+        ),
+        "default_theme": SettingsValue(str, "simple"),
+        "default_locale": SettingsValue(str, ""),
+        "theme_args": {
+            "simple_style": SettingsValue(SIMPLE_STYLE, "auto"),
         },
-        'center_alignment': SettingsValue(bool, False),
-        'results_on_new_tab': SettingsValue(bool, False),
-        'query_in_title': SettingsValue(bool, False),
-        'cache_url': SettingsValue(str, 'https://web.archive.org/web/'),
-        'search_on_category_select': SettingsValue(bool, True),
-        'hotkeys': SettingsValue(('default', 'vim'), 'default'),
-        'url_formatting': SettingsValue(('pretty', 'full', 'host'), 'pretty'),
+        "center_alignment": SettingsValue(bool, False),
+        "results_on_new_tab": SettingsValue(bool, False),
+        "query_in_title": SettingsValue(bool, False),
+        "cache_url": SettingsValue(str, "https://web.archive.org/web/"),
+        "search_on_category_select": SettingsValue(bool, True),
+        "hotkeys": SettingsValue(("default", "vim"), "default"),
+        "url_formatting": SettingsValue(("pretty", "full", "host"), "pretty"),
     },
     "preferences": SettingsPref,
-    'outgoing': {
-        'useragent_suffix': SettingsValue(str, ''),
-        'request_timeout': SettingsValue(numbers.Real, 3.0),
-        'enable_http2': SettingsValue(bool, True),
-        'verify': SettingsValue((bool, str), True),
-        'max_request_timeout': SettingsValue((None, numbers.Real), None),
-        'pool_connections': SettingsValue(int, 100),
+    "outgoing": {
+        "useragent_suffix": SettingsValue(str, ""),
+        "request_timeout": SettingsValue(numbers.Real, 3.0),
+        "enable_http2": SettingsValue(bool, True),
+        "verify": SettingsValue((bool, str), True),
+        "max_request_timeout": SettingsValue((None, numbers.Real), None),
+        "pool_connections": SettingsValue(int, 100),
         # default maximum redirect
         # from https://github.com/psf/requests/blob/8c211a96cdbe9fe320d63d9e1ae15c5c07e179f8/requests/models.py#L55
-        'max_redirects': SettingsValue(int, 30),
-        'retries': SettingsValue(int, 0),
-        'proxies': SettingsValue((None, str, dict), None),
-        'source_ips': SettingsValue((None, str, list), None),
+        "max_redirects": SettingsValue(int, 30),
+        "retries": SettingsValue(int, 0),
+        "proxies": SettingsValue((None, str, dict), None),
+        "source_ips": SettingsValue((None, str, list), None),
         # Tor configuration
-        'using_tor_proxy': SettingsValue(bool, False),
-        'extra_proxy_timeout': SettingsValue(int, 0),
-        'networks': {},
+        "using_tor_proxy": SettingsValue(bool, False),
+        "extra_proxy_timeout": SettingsValue(int, 0),
+        "networks": {},
     },
-    'plugins': SettingsValue(dict, {}),
-    'categories_as_tabs': SettingsValue(dict, CATEGORIES_AS_TABS),
-    'engines': SettingsValue(list, []),
-    'doi_resolvers': {},
+    "plugins": SettingsValue(dict, {}),
+    "categories_as_tabs": SettingsValue(dict, CATEGORIES_AS_TABS),
+    "engines": SettingsValue(list, []),
+    "doi_resolvers": {},
 }

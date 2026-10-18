@@ -98,7 +98,9 @@ class Image(MainResult, kw_only=True):
                 else:
                     self.img_format = subtype.upper()
 
-    def filter_urls(self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool ]"):
+    def filter_urls(
+        self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool ]"
+    ):
 
         for _ref in self.formats[:]:
             _name = f"Image.formats:{_ref.label}"
@@ -109,7 +111,13 @@ class Image(MainResult, kw_only=True):
                 _tb: types.TracebackType = exc.__traceback__.tb_next.tb_next  # type: ignore
                 _fn = _tb.tb_frame.f_code.co_filename
                 _lno = _tb.tb_lineno
-                log.error("filter_urls: [%s] ignore %s from callback %s:%s", _name, repr(exc), _fn, _lno)
+                log.error(
+                    "filter_urls: [%s] ignore %s from callback %s:%s",
+                    _name,
+                    repr(exc),
+                    _fn,
+                    _lno,
+                )
                 continue
 
             if isinstance(_url, str):

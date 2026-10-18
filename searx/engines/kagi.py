@@ -92,7 +92,9 @@ def setup(_: dict[str, t.Any]) -> bool | None:
         raise ValueError("api_key is required for using kagi")
 
     if kagi_categ not in ("search", "images", "news", "videos"):
-        raise ValueError(f"Unsupported category: {kagi_categ}")  # pyright: ignore[reportUnreachable]
+        raise ValueError(
+            f"Unsupported category: {kagi_categ}"
+        )  # pyright: ignore[reportUnreachable]
 
 
 def request(query: str, params: "OnlineParams"):
@@ -169,7 +171,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
                     title=html_to_text(result.get("title", "no title available")),
                     img_src=result.get("image", {}).get("url"),
                     resolution=f"{result.get('image', {}).get('width')}x{result.get('image', {}).get('height')}",
-                    thumbnail_src=result.get("props", {}).get("thumbnail", {}).get("url"),
+                    thumbnail_src=result.get("props", {})
+                    .get("thumbnail", {})
+                    .get("url"),
                 )
             )
         elif kagi_categ == "videos":

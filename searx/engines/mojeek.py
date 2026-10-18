@@ -87,7 +87,11 @@ def _captcha_token() -> str:
 
     solution = {
         "challenge": challenge,
-        "solution": {"counter": counter, "derivedKey": key, "time": random.randint(100, 200)},
+        "solution": {
+            "counter": counter,
+            "derivedKey": key,
+            "time": random.randint(100, 200),
+        },
     }
     solution_encoded = base64.b64encode(json.dumps(solution).encode())
     mp = curl_cffi.CurlMime()
@@ -119,8 +123,12 @@ def request(query: str, params: "OnlineParams"):
 
     params["url"] = f"{base_url}/search?{urlencode(args)}"
     params["cookies"] = {
-        language_param: traits.get_language(params["searxng_locale"], traits.custom["language_all"]),
-        region_param: traits.get_region(params["searxng_locale"], traits.custom["region_all"]),
+        language_param: traits.get_language(
+            params["searxng_locale"], traits.custom["language_all"]
+        ),
+        region_param: traits.get_region(
+            params["searxng_locale"], traits.custom["region_all"]
+        ),
         "chllg": _captcha_token(),
     }
 
@@ -208,7 +216,9 @@ def fetch_traits(engine_traits: EngineTraits):
 
     dom = resp.html()
 
-    languages = eval_xpath_list(dom, f'//select[@name="{language_param}"]/option/@value')
+    languages = eval_xpath_list(
+        dom, f'//select[@name="{language_param}"]/option/@value'
+    )
 
     engine_traits.custom["language_all"] = languages[0]
 

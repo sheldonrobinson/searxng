@@ -43,11 +43,20 @@ class ResultContainerTestCase(SearxTestCase):
     def test_merge_url_result(self):
         # from the merge of eng1 and eng2 we expect this result
         result = LegacyResult(
-            url="https://example.org", title="very long title, lorem ipsum", content="Lorem ipsum dolor sit amet .."
+            url="https://example.org",
+            title="very long title, lorem ipsum",
+            content="Lorem ipsum dolor sit amet ..",
         )
         result.normalize_result_fields()
-        eng1 = dict(url=result.url, title="short title", content=result.content, engine="google")
-        eng2 = dict(url="http://example.org", title=result.title, content="lorem ipsum", engine="duckduckgo")
+        eng1 = dict(
+            url=result.url, title="short title", content=result.content, engine="google"
+        )
+        eng2 = dict(
+            url="http://example.org",
+            title=result.title,
+            content="lorem ipsum",
+            engine="duckduckgo",
+        )
 
         container = ResultContainer()
         container.extend(None, [eng1, eng2])

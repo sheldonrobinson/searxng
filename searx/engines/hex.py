@@ -49,7 +49,14 @@ linked_terms = {
 
 
 def request(query: str, params):
-    args = urlencode({"page": params["pageno"], "per_page": page_size, "sort": sort_criteria, "search": query})
+    args = urlencode(
+        {
+            "page": params["pageno"],
+            "per_page": page_size,
+            "sort": sort_criteria,
+            "search": query,
+        }
+    )
     params["url"] = f"{search_url}?{args}"
     return params
 
@@ -60,7 +67,9 @@ def response(resp):
         meta = package["meta"]
         published_date = package.get("updated_at")
         published_date = parser.parse(published_date)
-        links = {linked_terms.get(k.lower(), k): v for k, v in meta.get("links").items()}
+        links = {
+            linked_terms.get(k.lower(), k): v for k, v in meta.get("links").items()
+        }
         results.append(
             {
                 "template": "packages.html",

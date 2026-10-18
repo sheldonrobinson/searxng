@@ -113,11 +113,17 @@ language_map = {
 def setup(_):
     """Validate credentials and paging limits when the engine is loaded."""
     if not api_key or not yandex_folder_id:
-        raise SearxEngineAPIException("missing 'api_key' and/or 'yandex_folder_id' in engine settings")
+        raise SearxEngineAPIException(
+            "missing 'api_key' and/or 'yandex_folder_id' in engine settings"
+        )
     if not 1 <= page_size <= 100:
-        raise SearxEngineAPIException("'page_size' must be in the range 1..100 (Yandex 'groupsOnPage')")
+        raise SearxEngineAPIException(
+            "'page_size' must be in the range 1..100 (Yandex 'groupsOnPage')"
+        )
     if yandex_default_language not in language_map:
-        raise SearxEngineAPIException(f"'yandex_default_language' must be one of {sorted(language_map)}")
+        raise SearxEngineAPIException(
+            f"'yandex_default_language' must be one of {sorted(language_map)}"
+        )
 
 
 def request(query: str, params: "OnlineParams"):
@@ -135,7 +141,9 @@ def request(query: str, params: "OnlineParams"):
         return
 
     lang = params["searxng_locale"].split("-")[0].lower()
-    req_search_type, req_l10n = language_map.get(lang, language_map[yandex_default_language])
+    req_search_type, req_l10n = language_map.get(
+        lang, language_map[yandex_default_language]
+    )
 
     body: dict[str, t.Any] = {
         "query": {
@@ -192,7 +200,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
     if error is not None:
         if error.get("code") == "15":
             return res
-        raise SearxEngineAPIException(f"Yandex Search API error {error.get('code')}: {error.text}")
+        raise SearxEngineAPIException(
+            f"Yandex Search API error {error.get('code')}: {error.text}"
+        )
 
     for doc in dom.iterfind(".//doc"):
         url = extract_text(doc.find("url"), allow_none=True)
@@ -204,7 +214,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
         if not content:
             passages = doc.find("passages")
             if passages is not None:
-                content = " ".join(extract_text(p) or "" for p in passages.iterfind("passage")).strip()
+                content = " ".join(
+                    extract_text(p) or "" for p in passages.iterfind("passage")
+                ).strip()
 
         res.add(
             res.types.MainResult(

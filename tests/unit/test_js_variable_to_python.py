@@ -22,11 +22,11 @@ from tests import SearxTestCase
 class TestParser(SearxTestCase):
     @parameterized.expand(
         [
-            ("{'hello': 'world'}", {'hello': 'world'}),
-            ("{'hello': 'world', 'my': 'master'}", {'hello': 'world', 'my': 'master'}),
+            ("{'hello': 'world'}", {"hello": "world"}),
+            ("{'hello': 'world', 'my': 'master'}", {"hello": "world", "my": "master"}),
             (
                 "{'hello': 'world', 'my': {'master': 'of Orion'}, 'test': 'xx'}",
-                {'hello': 'world', 'my': {'master': 'of Orion'}, 'test': 'xx'},
+                {"hello": "world", "my": {"master": "of Orion"}, "test": "xx"},
             ),
             ("{}", {}),
         ]
@@ -42,7 +42,7 @@ class TestParser(SearxTestCase):
             ("[[[1]]]", [[[1]]]),
             ("[1]", [1]),
             ("[1, 2, 3, 4]", [1, 2, 3, 4]),
-            ("['h', 'e', 'l', 'l', 'o']", ['h', 'e', 'l', 'l', 'o']),
+            ("['h', 'e', 'l', 'l', 'o']", ["h", "e", "l", "l", "o"]),
             ("[[[[[[[[[[[[[[[1]]]]]]]]]]]]]]]", [[[[[[[[[[[[[[[1]]]]]]]]]]]]]]]),
         ]
     )
@@ -52,20 +52,20 @@ class TestParser(SearxTestCase):
 
     @parameterized.expand(
         [
-            ("{'hello': [], 'world': [0]}", {'hello': [], 'world': [0]}),
-            ("{'hello': [1, 2, 3, 4]}", {'hello': [1, 2, 3, 4]}),
-            ("[{'a':12}, {'b':33}]", [{'a': 12}, {'b': 33}]),
+            ("{'hello': [], 'world': [0]}", {"hello": [], "world": [0]}),
+            ("{'hello': [1, 2, 3, 4]}", {"hello": [1, 2, 3, 4]}),
+            ("[{'a':12}, {'b':33}]", [{"a": 12}, {"b": 33}]),
             (
                 "[false, {'true': true, `pies`: \"kot\"}, false,]",
-                [False, {"true": True, 'pies': 'kot'}, False],
+                [False, {"true": True, "pies": "kot"}, False],
             ),
             (
                 "{a:1,b:1,c:1,d:1,e:1,f:1,g:1,h:1,i:1,j:1}",
-                {k: 1 for k in 'abcdefghij'},
+                {k: 1 for k in "abcdefghij"},
             ),
             (
                 "{'a':[{'b':1},{'c':[{'d':{'f':{'g':[1,2]}}},{'e':1}]}]}",
-                {'a': [{'b': 1}, {'c': [{'d': {'f': {'g': [1, 2]}}}, {'e': 1}]}]},
+                {"a": [{"b": 1}, {"c": [{"d": {"f": {"g": [1, 2]}}}, {"e": 1}]}]},
             ),
         ]
     )
@@ -75,19 +75,19 @@ class TestParser(SearxTestCase):
 
     @parameterized.expand(
         [
-            ("{'hello': 12, 'world': 10002.21}", {'hello': 12, 'world': 10002.21}),
+            ("{'hello': 12, 'world': 10002.21}", {"hello": 12, "world": 10002.21}),
             ("[12, -323, 0.32, -32.22, .2, - 4]", [12, -323, 0.32, -32.22, 0.2, -4]),
-            ('{"a": -12, "b": - 5}', {'a': -12, 'b': -5}),
-            ("{'a': true, 'b': false, 'c': null}", {'a': True, 'b': False, 'c': None}),
-            ("[\"\\uD834\\uDD1E\"]", ['𝄞']),
-            ("{'a': '123\\'456\\n'}", {'a': "123'456\n"}),
-            ("['\u00e9']", ['é']),
-            ('{"cache":{"\u002ftest\u002f": 0}}', {'cache': {'/test/': 0}}),
-            ('{"a": 3.125e7}', {'a': 3.125e7}),
-            ('''{"a": "b\\'"}''', {'a': "b'"}),
+            ('{"a": -12, "b": - 5}', {"a": -12, "b": -5}),
+            ("{'a': true, 'b': false, 'c': null}", {"a": True, "b": False, "c": None}),
+            ('["\\uD834\\uDD1E"]', ["𝄞"]),
+            ("{'a': '123\\'456\\n'}", {"a": "123'456\n"}),
+            ("['\u00e9']", ["é"]),
+            ('{"cache":{"\u002ftest\u002f": 0}}', {"cache": {"/test/": 0}}),
+            ('{"a": 3.125e7}', {"a": 3.125e7}),
+            ("""{"a": "b\\'"}""", {"a": "b'"}),
             ('{"a": .99, "b": -.1}', {"a": 0.99, "b": -0.1}),
             ('["/* ... */", "// ..."]', ["/* ... */", "// ..."]),
-            ('{"inclusions":["/*","/"]}', {'inclusions': ['/*', '/']}),
+            ('{"inclusions":["/*","/"]}', {"inclusions": ["/*", "/"]}),
         ]
     )
     def test_parse_standard_values(self, js, expected_py):
@@ -101,7 +101,7 @@ class TestParser(SearxTestCase):
 
     @parameterized.expand(
         [
-            ("{abc: 100, dev: 200}", {'abc': 100, 'dev': 200}),
+            ("{abc: 100, dev: 200}", {"abc": 100, "dev": 200}),
             ("{abcdefghijklmnopqrstuvwxyz: 12}", {"abcdefghijklmnopqrstuvwxyz": 12}),
             # (
             #     "{age: function(yearBorn,thisYear) {return thisYear - yearBorn;}}",
@@ -112,12 +112,15 @@ class TestParser(SearxTestCase):
             #     {"abc": "function() {return '])))))))))))))))';}"},
             # ),
             ('{"a": undefined}', {"a": None}),  # chompjs returns {"a": "undefined"}
-            ('[undefined, undefined]', [None, None]),  # chompjs returns ["undefined", "undefined"]
+            (
+                "[undefined, undefined]",
+                [None, None],
+            ),  # chompjs returns ["undefined", "undefined"]
             ("{_a: 1, $b: 2}", {"_a": 1, "$b": 2}),
             # ("{regex: /a[^d]{1,12}/i}", {'regex': '/a[^d]{1,12}/i'}),
             # ("{'a': function(){return '\"'}}", {'a': 'function(){return \'"\'}'}),
-            ("{1: 1, 2: 2, 3: 3, 4: 4}", {'1': 1, '2': 2, '3': 3, '4': 4}),
-            ("{'a': 121.}", {'a': 121.0}),
+            ("{1: 1, 2: 2, 3: 3, 4: 4}", {"1": 1, "2": 2, "3": 3, "4": 4}),
+            ("{'a': 121.}", {"a": 121.0}),
         ]
     )
     def test_parse_strange_values(self, js, expected_py):
@@ -128,9 +131,12 @@ class TestParser(SearxTestCase):
         [
             # ('{"a": {"b": [12, 13, 14]}}text text', {"a": {"b": [12, 13, 14]}}),
             # ('var test = {"a": {"b": [12, 13, 14]}}', {"a": {"b": [12, 13, 14]}}),
-            ('{"a":\r\n10}', {'a': 10}),
-            ("{'foo': 0,\r\n}", {'foo': 0}),
-            ("{truefalse: 0, falsefalse: 1, nullnull: 2}", {'truefalse': 0, 'falsefalse': 1, 'nullnull': 2}),
+            ('{"a":\r\n10}', {"a": 10}),
+            ("{'foo': 0,\r\n}", {"foo": 0}),
+            (
+                "{truefalse: 0, falsefalse: 1, nullnull: 2}",
+                {"truefalse": 0, "falsefalse": 1, "nullnull": 2},
+            ),
         ]
     )
     def test_strange_input(self, js, expected_py):
@@ -212,8 +218,8 @@ class TestParser(SearxTestCase):
 class TestParserExceptions(SearxTestCase):
     @parameterized.expand(
         [
-            ('}{', ValueError),
-            ('', ValueError),
+            ("}{", ValueError),
+            ("", ValueError),
             (None, ValueError),
         ]
     )
@@ -235,7 +241,7 @@ class TestParserExceptions(SearxTestCase):
             (
                 '{"test": """}',
                 ValueError,
-                'js_obj_str_to_python creates invalid JSON',
+                "js_obj_str_to_python creates invalid JSON",
             ),
         ]
     )
@@ -261,7 +267,7 @@ class TestParseJsonObjects(SearxTestCase):
             # ("", []),
             # ("aaaaaaaaaaaaaaaa", []),
             # ("         ", []),
-            ("      {'a': 12}", [{'a': 12}]),
+            ("      {'a': 12}", [{"a": 12}]),
             # ("[1, 2, 3, 4]xxxxxxxxxxxxxxxxxxxxxxxx", [[1, 2, 3, 4]]),
             # ("[12] [13] [14]", [[12], [13], [14]]),
             # ("[10] {'a': [1, 1, 1,]}", [[10], {'a': [1, 1, 1]}]),

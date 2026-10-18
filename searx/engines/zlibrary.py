@@ -122,7 +122,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
     if domain_is_seized(dom):
         raise SearxException(f"zlibrary domain is seized: {base_url}")
 
-    for item in dom.xpath('//div[@id="searchResultBox"]//div[contains(@class, "resItemBox")]'):
+    for item in dom.xpath(
+        '//div[@id="searchResultBox"]//div[contains(@class, "resItemBox")]'
+    ):
         kwargs = _parse_result(item)
         res.add(res.types.Paper(**kwargs))
 
@@ -130,7 +132,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
 
 def domain_is_seized(dom: ElementType):
-    return bool(dom.xpath("//title") and "seized" in dom.xpath("//title")[0].text.lower())
+    return bool(
+        dom.xpath("//title") and "seized" in dom.xpath("//title")[0].text.lower()
+    )
 
 
 def _text(item: ElementType, selector: str) -> str | None:
@@ -139,10 +143,13 @@ def _text(item: ElementType, selector: str) -> str | None:
 
 def _parse_result(item: ElementType) -> dict[str, t.Any]:
 
-    author_elements = eval_xpath_list(item, './/div[@class="authors"]//a[@itemprop="author"]')
+    author_elements = eval_xpath_list(
+        item, './/div[@class="authors"]//a[@itemprop="author"]'
+    )
 
     result = {
-        "url": base_url + item.xpath('(.//a[starts-with(@href, "/book/")])[1]/@href')[0],
+        "url": base_url
+        + item.xpath('(.//a[starts-with(@href, "/book/")])[1]/@href')[0],
         "title": _text(item, './/*[@itemprop="name"]'),
         "authors": [extract_text(author) for author in author_elements],
         "publisher": _text(item, './/a[@title="Publisher"]'),
@@ -206,19 +213,25 @@ def fetch_traits(engine_traits: EngineTraits) -> None:
     l: list[str]
     # years_from
     l = []
-    for year in eval_xpath_list(dom, "//div[@id='advSearch-noJS']//select[@id='sf_yearFrom']/option"):
+    for year in eval_xpath_list(
+        dom, "//div[@id='advSearch-noJS']//select[@id='sf_yearFrom']/option"
+    ):
         l.append(year.get("value") or "")
     engine_traits.custom["year_from"] = l
 
     # years_to
     l = []
-    for year in eval_xpath_list(dom, "//div[@id='advSearch-noJS']//select[@id='sf_yearTo']/option"):
+    for year in eval_xpath_list(
+        dom, "//div[@id='advSearch-noJS']//select[@id='sf_yearTo']/option"
+    ):
         l.append(year.get("value") or "")
     engine_traits.custom["year_to"] = l
 
     # ext (file extensions)
     l = []
-    for ext in eval_xpath_list(dom, "//div[@id='advSearch-noJS']//select[@id='sf_extensions']/option"):
+    for ext in eval_xpath_list(
+        dom, "//div[@id='advSearch-noJS']//select[@id='sf_extensions']/option"
+    ):
         l.append(ext.get("value") or "")
     engine_traits.custom["ext"] = l
 
@@ -232,7 +245,9 @@ def fetch_traits(engine_traits: EngineTraits) -> None:
             continue
         language_name_locale_map[loc.english_name.lower()] = loc
 
-    for x in eval_xpath_list(dom, "//div[@id='advSearch-noJS']//select[@id='sf_languages']/option"):
+    for x in eval_xpath_list(
+        dom, "//div[@id='advSearch-noJS']//select[@id='sf_languages']/option"
+    ):
         eng_lang = x.get("value")
         if eng_lang is None:
             continue

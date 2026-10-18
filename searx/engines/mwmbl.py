@@ -16,19 +16,19 @@ a focus on useability and speed.
 from urllib.parse import urlencode
 
 about = {
-    "website": 'https://github.com/mwmbl/mwmbl',
+    "website": "https://github.com/mwmbl/mwmbl",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 paging = False
-categories = ['general']
+categories = ["general"]
 
 api_url = "https://api.mwmbl.org/api/v1"
 
 
 def request(query, params):
-    params['url'] = f"{api_url}/search/?{urlencode({'s': query})}"
+    params["url"] = f"{api_url}/search/?{urlencode({'s': query})}"
     return params
 
 
@@ -38,13 +38,13 @@ def response(resp):
     json_results = resp.json()
 
     for result in json_results:
-        title_parts = [title['value'] for title in result['title']]
-        extract_parts = [extract['value'] for extract in result.get('extract', [])]
+        title_parts = [title["value"] for title in result["title"]]
+        extract_parts = [extract["value"] for extract in result.get("extract", [])]
         results.append(
             {
-                'url': result['url'],
-                'title': ''.join(title_parts),
-                'content': ''.join(extract_parts),
+                "url": result["url"],
+                "title": "".join(title_parts),
+                "content": "".join(extract_parts),
             }
         )
 

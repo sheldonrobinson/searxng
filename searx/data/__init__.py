@@ -99,7 +99,7 @@ def __getattr__(name: str) -> t.Any:
 
     log.debug("init searx.data.%s", name)
 
-    with open(data_dir / data_json_files[name], encoding='utf-8') as f:
+    with open(data_dir / data_json_files[name], encoding="utf-8") as f:
         lazy_globals[name] = json.load(f)
 
     return lazy_globals[name]
@@ -114,5 +114,5 @@ def ahmia_blacklist_loader() -> list[str]:
     This function is used by :py:mod:`searx.plugins.ahmia_filter`.
 
     """
-    with open(data_dir / 'ahmia_blacklist.txt', encoding='utf-8') as f:
+    with open(data_dir / "ahmia_blacklist.txt", encoding="utf-8") as f:
         return f.read().split()

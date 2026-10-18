@@ -16,7 +16,11 @@ from searx.result_types import EngineResults
 from searx.utils import eval_xpath_list, eval_xpath, extract_text
 
 # as it uses brave internally, it has the same locales and timerange/safesearch types
-from searx.engines.brave import safesearch_map, time_range_map, fetch_traits  # pylint: disable=unused-import
+from searx.engines.brave import (
+    safesearch_map,
+    time_range_map,
+    fetch_traits,
+)  # pylint: disable=unused-import
 
 if t.TYPE_CHECKING:
     from lxml.etree import ElementBase
@@ -86,7 +90,9 @@ def request(query: str, params: "OnlineParams") -> None:
     }
 
     # uses Brave's engine traits
-    ui_lang = locales.get_engine_locale(params["searxng_locale"], traits.custom["ui_lang"], "all")
+    ui_lang = locales.get_engine_locale(
+        params["searxng_locale"], traits.custom["ui_lang"], "all"
+    )
     if ui_lang and ui_lang != "all":
         args["search_lang"] = ui_lang.split("-")[0]
 
@@ -105,7 +111,8 @@ def request(query: str, params: "OnlineParams") -> None:
 def _general_results(doc: "ElementBase") -> EngineResults:
     res = EngineResults()
     for result in eval_xpath_list(
-        doc, "//div[contains(@class, 'organic-results-container')]/div/div[contains(@class, 'group')]"
+        doc,
+        "//div[contains(@class, 'organic-results-container')]/div/div[contains(@class, 'group')]",
     ):
         url = extract_text(eval_xpath(result, ".//a/@href"))
         if not url:
@@ -125,7 +132,8 @@ def _general_results(doc: "ElementBase") -> EngineResults:
 def _image_results(doc: "ElementBase") -> EngineResults:
     res = EngineResults()
     for result in eval_xpath_list(
-        doc, "//div[contains(@class, 'organic-results-container')]//a[contains(@class, 'group')]"
+        doc,
+        "//div[contains(@class, 'organic-results-container')]//a[contains(@class, 'group')]",
     ):
         (
             res.add(

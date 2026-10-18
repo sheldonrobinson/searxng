@@ -21,22 +21,22 @@ from flask_babel import gettext
 from searx.result_types import EngineResults
 
 about = {
-    "website": 'https://tineye.com',
-    "wikidata_id": 'Q2382535',
-    "official_api_documentation": 'https://api.tineye.com/python/docs/',
+    "website": "https://tineye.com",
+    "wikidata_id": "Q2382535",
+    "official_api_documentation": "https://api.tineye.com/python/docs/",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
-engine_type = 'online_url_search'
+engine_type = "online_url_search"
 """:py:obj:`searx.search.processors.online_url_search`"""
 
-categories = ['general']
+categories = ["general"]
 paging = True
 safesearch = False
-base_url = 'https://tineye.com'
-search_string = '/api/v1/result_json/?page={page}&{query}'
+base_url = "https://tineye.com"
+search_string = "/api/v1/result_json/?page={page}&{query}"
 
 FORMAT_NOT_SUPPORTED = gettext(
     "Could not read that image url. This may be due to an unsupported file"
@@ -57,25 +57,25 @@ DOWNLOAD_ERROR = gettext("The image could not be downloaded.")
 def request(query, params):
     """Build TinEye HTTP request using ``search_urls`` of a :py:obj:`engine_type`."""
 
-    params['raise_for_httperror'] = False
+    params["raise_for_httperror"] = False
 
-    if params['search_urls']['data:image']:
-        query = params['search_urls']['data:image']
-    elif params['search_urls']['http']:
-        query = params['search_urls']['http']
+    if params["search_urls"]["data:image"]:
+        query = params["search_urls"]["data:image"]
+    elif params["search_urls"]["http"]:
+        query = params["search_urls"]["http"]
 
     logger.debug("query URL: %s", query)
-    query = urlencode({'url': query})
+    query = urlencode({"url": query})
 
     # see https://github.com/TinEye/pytineye/blob/main/pytineye/api.py
-    params['url'] = base_url + search_string.format(query=query, page=params['pageno'])
+    params["url"] = base_url + search_string.format(query=query, page=params["pageno"])
 
-    params['headers'].update(
+    params["headers"].update(
         {
-            'Connection': 'keep-alive',
-            'Host': 'tineye.com',
-            'DNT': '1',
-            'TE': 'trailers',
+            "Connection": "keep-alive",
+            "Host": "tineye.com",
+            "DNT": "1",
+            "TE": "trailers",
         }
     )
     return params
@@ -127,25 +127,25 @@ def parse_tineye_match(match_json):
 
             backlinks.append(
                 {
-                    'url': backlink_json.get("url"),
-                    'backlink': backlink_json.get("backlink"),
-                    'crawl_date': crawl_date,
-                    'image_name': backlink_json.get("image_name"),
+                    "url": backlink_json.get("url"),
+                    "backlink": backlink_json.get("backlink"),
+                    "crawl_date": crawl_date,
+                    "image_name": backlink_json.get("image_name"),
                 }
             )
 
     return {
-        'image_url': match_json.get("image_url"),
-        'domain': match_json.get("domain"),
-        'score': match_json.get("score"),
-        'width': match_json.get("width"),
-        'height': match_json.get("height"),
-        'size': match_json.get("size"),
-        'image_format': match_json.get("format"),
-        'filesize': match_json.get("filesize"),
-        'overlay': match_json.get("overlay"),
-        'tags': match_json.get("tags"),
-        'backlinks': backlinks,
+        "image_url": match_json.get("image_url"),
+        "domain": match_json.get("domain"),
+        "score": match_json.get("score"),
+        "width": match_json.get("width"),
+        "height": match_json.get("height"),
+        "size": match_json.get("size"),
+        "image_format": match_json.get("format"),
+        "filesize": match_json.get("filesize"),
+        "overlay": match_json.get("overlay"),
+        "tags": match_json.get("tags"),
+        "backlinks": backlinks,
     }
 
 
@@ -156,26 +156,26 @@ def response(resp) -> EngineResults:
     # handle the 422 client side errors, and the possible 400 status code error
     if resp.status_code in (400, 422):
         json_data = resp.json()
-        suggestions = json_data.get('suggestions', {})
-        message = f'HTTP Status Code: {resp.status_code}'
+        suggestions = json_data.get("suggestions", {})
+        message = f"HTTP Status Code: {resp.status_code}"
 
         if resp.status_code == 422:
-            s_key = suggestions.get('key', '')
+            s_key = suggestions.get("key", "")
             if s_key == "Invalid image URL":
                 # test https://docs.searxng.org/_static/searxng-wordmark.svg
                 message = FORMAT_NOT_SUPPORTED
-            elif s_key == 'NO_SIGNATURE_ERROR':
+            elif s_key == "NO_SIGNATURE_ERROR":
                 # test https://pngimg.com/uploads/dot/dot_PNG4.png
                 message = NO_SIGNATURE_ERROR
-            elif s_key == 'Download Error':
+            elif s_key == "Download Error":
                 # test https://notexists
                 message = DOWNLOAD_ERROR
             else:
                 logger.warning("Unknown suggestion key encountered: %s", s_key)
         else:  # 400
-            description = suggestions.get('description')
+            description = suggestions.get("description")
             if isinstance(description, list):
-                message = ','.join(description)
+                message = ",".join(description)
 
         # see https://github.com/searxng/searxng/pull/1456#issuecomment-1193105023
         # results.add(results.types.Answer(answer=message))
@@ -187,25 +187,25 @@ def response(resp) -> EngineResults:
 
     json_data = resp.json()
 
-    for match_json in json_data['matches']:
+    for match_json in json_data["matches"]:
 
         tineye_match = parse_tineye_match(match_json)
-        if not tineye_match['backlinks']:
+        if not tineye_match["backlinks"]:
             continue
 
-        backlink = tineye_match['backlinks'][0]
+        backlink = tineye_match["backlinks"][0]
         results.append(
             {
-                'template': 'images.html',
-                'url': backlink['backlink'],
-                'thumbnail_src': tineye_match['image_url'],
-                'source': backlink['url'],
-                'title': backlink['image_name'],
-                'img_src': backlink['url'],
-                'format': tineye_match['image_format'],
-                'width': tineye_match['width'],
-                'height': tineye_match['height'],
-                'publishedDate': backlink['crawl_date'],
+                "template": "images.html",
+                "url": backlink["backlink"],
+                "thumbnail_src": tineye_match["image_url"],
+                "source": backlink["url"],
+                "title": backlink["image_name"],
+                "img_src": backlink["url"],
+                "format": tineye_match["image_format"],
+                "width": tineye_match["width"],
+                "height": tineye_match["height"],
+                "publishedDate": backlink["crawl_date"],
             }
         )
 

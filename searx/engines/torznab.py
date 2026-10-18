@@ -67,16 +67,16 @@ about: dict[str, t.Any] = {
     "official_api_documentation": "https://torznab.github.io/spec-1.3-draft",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'XML',
+    "results": "XML",
 }
-categories: list[str] = ['files']
+categories: list[str] = ["files"]
 paging: bool = False
 time_range_support: bool = False
 
 # defined in settings.yml
 # example (Jackett): "http://localhost:9117/api/v2.0/indexers/all/results/torznab"
-base_url: str = ''
-api_key: str = ''
+base_url: str = ""
+api_key: str = ""
 # https://newznab.readthedocs.io/en/latest/misc/api/#predefined-categories
 torznab_categories: list[str] = []
 show_torrent_files: bool = False
@@ -86,20 +86,22 @@ show_magnet_links: bool = True
 def setup(_: dict[str, t.Any]) -> bool | None:
     """Initialize the engine."""
     if len(base_url) < 1:
-        raise ValueError('missing torznab base_url')
+        raise ValueError("missing torznab base_url")
 
 
 def request(query: str, params: dict[str, t.Any]) -> dict[str, t.Any]:
     """Build the request params."""
-    search_url: str = base_url + '?t=search&q={search_query}'
+    search_url: str = base_url + "?t=search&q={search_query}"
 
     if len(api_key) > 0:
-        search_url += '&apikey={api_key}'
+        search_url += "&apikey={api_key}"
     if len(torznab_categories) > 0:
-        search_url += '&cat={torznab_categories}'
+        search_url += "&cat={torznab_categories}"
 
-    params['url'] = search_url.format(
-        search_query=quote(query), api_key=api_key, torznab_categories=",".join([str(x) for x in torznab_categories])
+    params["url"] = search_url.format(
+        search_query=quote(query),
+        api_key=api_key,
+        torznab_categories=",".join([str(x) for x in torznab_categories]),
     )
 
     return params
@@ -117,7 +119,7 @@ def response(resp: "SXNG_Response") -> list[dict[str, t.Any]]:
     channel: etree.Element = search_results[0]
 
     item: etree.Element
-    for item in channel.iterfind('item'):
+    for item in channel.iterfind("item"):
         result: dict[str, t.Any] = build_result(item)
         results.append(result)
 
@@ -129,54 +131,56 @@ def build_result(item: etree.Element) -> dict[str, t.Any]:
 
     # extract attributes from XML
     # see https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html#predefined-attributes
-    enclosure: etree.Element | None = item.find('enclosure')
+    enclosure: etree.Element | None = item.find("enclosure")
     enclosure_url: str | None = None
     if enclosure is not None:
-        enclosure_url = enclosure.get('url')
+        enclosure_url = enclosure.get("url")
 
-    filesize = get_attribute(item, 'size')
+    filesize = get_attribute(item, "size")
     if not filesize and enclosure:
-        filesize = enclosure.get('length')
+        filesize = enclosure.get("length")
 
-    guid = get_attribute(item, 'guid')
-    comments = get_attribute(item, 'comments')
-    pubDate = get_attribute(item, 'pubDate')
-    seeders = get_torznab_attribute(item, 'seeders')
-    leechers = get_torznab_attribute(item, 'leechers')
-    peers = get_torznab_attribute(item, 'peers')
+    guid = get_attribute(item, "guid")
+    comments = get_attribute(item, "comments")
+    pubDate = get_attribute(item, "pubDate")
+    seeders = get_torznab_attribute(item, "seeders")
+    leechers = get_torznab_attribute(item, "leechers")
+    peers = get_torznab_attribute(item, "peers")
 
     # map attributes to SearXNG result
     result: dict[str, t.Any] = {
-        'template': 'torrent.html',
-        'title': get_attribute(item, 'title'),
-        'filesize': humanize_bytes(int(filesize)) if filesize else None,
-        'files': get_attribute(item, 'files'),
-        'seed': seeders,
-        'leech': _map_leechers(leechers, seeders, peers),
-        'url': _map_result_url(guid, comments),
-        'publishedDate': _map_published_date(pubDate),
-        'torrentfile': None,
-        'magnetlink': None,
+        "template": "torrent.html",
+        "title": get_attribute(item, "title"),
+        "filesize": humanize_bytes(int(filesize)) if filesize else None,
+        "files": get_attribute(item, "files"),
+        "seed": seeders,
+        "leech": _map_leechers(leechers, seeders, peers),
+        "url": _map_result_url(guid, comments),
+        "publishedDate": _map_published_date(pubDate),
+        "torrentfile": None,
+        "magnetlink": None,
     }
 
-    link = get_attribute(item, 'link')
+    link = get_attribute(item, "link")
     if show_torrent_files:
-        result['torrentfile'] = _map_torrent_file(link, enclosure_url)
+        result["torrentfile"] = _map_torrent_file(link, enclosure_url)
     if show_magnet_links:
-        magneturl = get_torznab_attribute(item, 'magneturl')
-        result['magnetlink'] = _map_magnet_link(magneturl, guid, enclosure_url, link)
+        magneturl = get_torznab_attribute(item, "magneturl")
+        result["magnetlink"] = _map_magnet_link(magneturl, guid, enclosure_url, link)
     return result
 
 
 def _map_result_url(guid: str | None, comments: str | None) -> str | None:
-    if guid and guid.startswith('http'):
+    if guid and guid.startswith("http"):
         return guid
-    if comments and comments.startswith('http'):
+    if comments and comments.startswith("http"):
         return comments
     return None
 
 
-def _map_leechers(leechers: str | None, seeders: str | None, peers: str | None) -> str | None:
+def _map_leechers(
+    leechers: str | None, seeders: str | None, peers: str | None
+) -> str | None:
     if leechers:
         return leechers
     if seeders and peers:
@@ -187,16 +191,16 @@ def _map_leechers(leechers: str | None, seeders: str | None, peers: str | None) 
 def _map_published_date(pubDate: str | None) -> datetime | None:
     if pubDate is not None:
         try:
-            return datetime.strptime(pubDate, '%a, %d %b %Y %H:%M:%S %z')
+            return datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
         except (ValueError, TypeError) as e:
             logger.debug("ignore exception (publishedDate): %s", e)
     return None
 
 
 def _map_torrent_file(link: str | None, enclosure_url: str | None) -> str | None:
-    if link and link.startswith('http'):
+    if link and link.startswith("http"):
         return link
-    if enclosure_url and enclosure_url.startswith('http'):
+    if enclosure_url and enclosure_url.startswith("http"):
         return enclosure_url
     return None
 
@@ -207,13 +211,13 @@ def _map_magnet_link(
     enclosure_url: str | None,
     link: str | None,
 ) -> str | None:
-    if magneturl and magneturl.startswith('magnet'):
+    if magneturl and magneturl.startswith("magnet"):
         return magneturl
-    if guid and guid.startswith('magnet'):
+    if guid and guid.startswith("magnet"):
         return guid
-    if enclosure_url and enclosure_url.startswith('magnet'):
+    if enclosure_url and enclosure_url.startswith("magnet"):
         return enclosure_url
-    if link and link.startswith('magnet'):
+    if link and link.startswith("magnet"):
         return link
     return None
 
@@ -229,8 +233,10 @@ def get_attribute(item: etree.Element, property_name: str) -> str | None:
 def get_torznab_attribute(item: etree.Element, attribute_name: str) -> str | None:
     """Get torznab special attribute from item."""
     element: etree.Element | None = item.find(
-        './/torznab:attr[@name="{attribute_name}"]'.format(attribute_name=attribute_name),
-        {'torznab': 'http://torznab.com/schemas/2015/feed'},
+        './/torznab:attr[@name="{attribute_name}"]'.format(
+            attribute_name=attribute_name
+        ),
+        {"torznab": "http://torznab.com/schemas/2015/feed"},
     )
     if element is not None:
         return element.get("value")

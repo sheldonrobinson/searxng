@@ -55,7 +55,7 @@ from ._helpers import (
     logger,
 )
 
-logger = logger.getChild('ip_limit')
+logger = logger.getChild("ip_limit")
 
 BURST_WINDOW = 20
 """Time (sec) before sliding window for *burst* requests expires."""
@@ -97,50 +97,76 @@ def filter_request(
     # pylint: disable=too-many-return-statements
     valkey_client = valkeydb.get_valkey_client()
 
-    if network.is_link_local and not cfg['botdetection.ip_limit.filter_link_local']:
-        logger.debug("network %s is link-local -> not monitored by ip_limit method", network.compressed)
+    if network.is_link_local and not cfg["botdetection.ip_limit.filter_link_local"]:
+        logger.debug(
+            "network %s is link-local -> not monitored by ip_limit method",
+            network.compressed,
+        )
         return None
 
-    if request.args.get('format', 'html') != 'html':
-        c = incr_sliding_window(valkey_client, 'ip_limit.API_WINDOW:' + network.compressed, API_WINDOW)
+    if request.args.get("format", "html") != "html":
+        c = incr_sliding_window(
+            valkey_client, "ip_limit.API_WINDOW:" + network.compressed, API_WINDOW
+        )
         if c > API_MAX:
             return too_many_requests(network, "too many request in API_WINDOW")
 
-    if cfg['botdetection.ip_limit.link_token']:
+    if cfg["botdetection.ip_limit.link_token"]:
 
         suspicious = link_token.is_suspicious(network, request, True)
 
         if not suspicious:
             # this IP is no longer suspicious: release ip again / delete the counter of this IP
-            drop_counter(valkey_client, 'ip_limit.SUSPICIOUS_IP_WINDOW' + network.compressed)
+            drop_counter(
+                valkey_client, "ip_limit.SUSPICIOUS_IP_WINDOW" + network.compressed
+            )
             return None
 
         # this IP is suspicious: count requests from this IP
         c = incr_sliding_window(
-            valkey_client, 'ip_limit.SUSPICIOUS_IP_WINDOW' + network.compressed, SUSPICIOUS_IP_WINDOW
+            valkey_client,
+            "ip_limit.SUSPICIOUS_IP_WINDOW" + network.compressed,
+            SUSPICIOUS_IP_WINDOW,
         )
         if c > SUSPICIOUS_IP_MAX:
-            logger.error("BLOCK: too many request from %s in SUSPICIOUS_IP_WINDOW (redirect to /)", network)
-            response = flask.redirect(flask.url_for('index'), code=302)
+            logger.error(
+                "BLOCK: too many request from %s in SUSPICIOUS_IP_WINDOW (redirect to /)",
+                network,
+            )
+            response = flask.redirect(flask.url_for("index"), code=302)
             response.headers["Cache-Control"] = "no-store, max-age=0"
             return response
 
-        c = incr_sliding_window(valkey_client, 'ip_limit.BURST_WINDOW' + network.compressed, BURST_WINDOW)
+        c = incr_sliding_window(
+            valkey_client, "ip_limit.BURST_WINDOW" + network.compressed, BURST_WINDOW
+        )
         if c > BURST_MAX_SUSPICIOUS:
-            return too_many_requests(network, "too many request in BURST_WINDOW (BURST_MAX_SUSPICIOUS)")
+            return too_many_requests(
+                network, "too many request in BURST_WINDOW (BURST_MAX_SUSPICIOUS)"
+            )
 
-        c = incr_sliding_window(valkey_client, 'ip_limit.LONG_WINDOW' + network.compressed, LONG_WINDOW)
+        c = incr_sliding_window(
+            valkey_client, "ip_limit.LONG_WINDOW" + network.compressed, LONG_WINDOW
+        )
         if c > LONG_MAX_SUSPICIOUS:
-            return too_many_requests(network, "too many request in LONG_WINDOW (LONG_MAX_SUSPICIOUS)")
+            return too_many_requests(
+                network, "too many request in LONG_WINDOW (LONG_MAX_SUSPICIOUS)"
+            )
 
         return None
 
     # vanilla limiter without extensions counts BURST_MAX and LONG_MAX
-    c = incr_sliding_window(valkey_client, 'ip_limit.BURST_WINDOW' + network.compressed, BURST_WINDOW)
+    c = incr_sliding_window(
+        valkey_client, "ip_limit.BURST_WINDOW" + network.compressed, BURST_WINDOW
+    )
     if c > BURST_MAX:
-        return too_many_requests(network, "too many request in BURST_WINDOW (BURST_MAX)")
+        return too_many_requests(
+            network, "too many request in BURST_WINDOW (BURST_MAX)"
+        )
 
-    c = incr_sliding_window(valkey_client, 'ip_limit.LONG_WINDOW' + network.compressed, LONG_WINDOW)
+    c = incr_sliding_window(
+        valkey_client, "ip_limit.LONG_WINDOW" + network.compressed, LONG_WINDOW
+    )
     if c > LONG_MAX:
         return too_many_requests(network, "too many request in LONG_WINDOW (LONG_MAX)")
 

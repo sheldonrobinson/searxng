@@ -186,14 +186,24 @@ max_difficulty = 4
 
 def _solve_anubis(resp) -> str:
     """Anubis POW solver"""
-    payload = loads(extr(resp.text, '<script id="anubis_challenge" type="application/json">', "</script>"))
+    payload = loads(
+        extr(
+            resp.text,
+            '<script id="anubis_challenge" type="application/json">',
+            "</script>",
+        )
+    )
     challenge = payload["challenge"]
     difficulty = int(payload["rules"]["difficulty"])
     if difficulty > max_difficulty:
-        raise SearxEngineCaptchaException(message="startpage: Anubis difficulty too high")
+        raise SearxEngineCaptchaException(
+            message="startpage: Anubis difficulty too high"
+        )
     prefix = "0" * difficulty
     blob = challenge["randomData"].encode()
-    for nonce in range(16**difficulty * 8):  # max search is 8x average search, e^-8 = 0.034% will fail
+    for nonce in range(
+        16**difficulty * 8
+    ):  # max search is 8x average search, e^-8 = 0.034% will fail
         digest = hashlib.sha256(blob + str(nonce).encode()).hexdigest()
         if digest.startswith(prefix):
             break
@@ -214,7 +224,9 @@ def _solve_anubis(resp) -> str:
     )
     auth = pass_resp.cookies.get("spchal-auth")
     if not auth:
-        raise SearxEngineCaptchaException(message="startpage: Anubis pass-challenge failed")
+        raise SearxEngineCaptchaException(
+            message="startpage: Anubis pass-challenge failed"
+        )
     auth = str(auth)
     CACHE.set("SPCHAL_AUTH", auth, expire=240)
     return auth
@@ -245,7 +257,9 @@ def get_sc_code(params):
     resp = get(get_sc_url, headers=headers)
 
     if 'id="anubis_challenge"' in resp.text:
-        resp = get(get_sc_url, headers=headers, cookies={"spchal-auth": _solve_anubis(resp)})
+        resp = get(
+            get_sc_url, headers=headers, cookies={"spchal-auth": _solve_anubis(resp)}
+        )
 
     # ?? x = network.get('https://www.startpage.com/sp/cdn/images/filter-chevron.svg', headers=headers)
     # ?? https://www.startpage.com/sp/cdn/images/filter-chevron.svg
@@ -261,9 +275,12 @@ def get_sc_code(params):
     try:
         sc_code = eval_xpath(dom, search_form_xpath + '//input[@name="sc"]/@value')[0]
     except IndexError as exc:
-        logger.debug("suspend startpage API --> https://github.com/searxng/searxng/pull/695")
+        logger.debug(
+            "suspend startpage API --> https://github.com/searxng/searxng/pull/695"
+        )
         raise SearxEngineCaptchaException(
-            message="get_sc_code: [PR-695] querying new sc timestamp failed! (%s)" % resp.url,
+            message="get_sc_code: [PR-695] querying new sc timestamp failed! (%s)"
+            % resp.url,
         ) from exc
 
     sc_code = str(sc_code)
@@ -334,7 +351,9 @@ def request(query, params):
     if engine_region:
         cookie["search_results_region"] = engine_region
 
-    params["cookies"]["preferences"] = "N1N".join(["%sEEE%s" % x for x in cookie.items()])
+    params["cookies"]["preferences"] = "N1N".join(
+        ["%sEEE%s" % x for x in cookie.items()]
+    )
     if auth := CACHE.get("SPCHAL_AUTH"):
         params["cookies"]["spchal-auth"] = auth
     logger.debug("cookie preferences: %s", params["cookies"]["preferences"])
@@ -461,9 +480,15 @@ def response(resp):
             raise SearxEngineCaptchaException()
 
     categ = startpage_categ.capitalize()
-    results_raw = "{" + extr(resp.text, f"React.createElement(UIStartpage.AppSerp{categ}, {{", "}})") + "}}"
+    results_raw = (
+        "{"
+        + extr(resp.text, f"React.createElement(UIStartpage.AppSerp{categ}, {{", "}})")
+        + "}}"
+    )
 
-    if resp.headers.get("Location", "").startswith("https://www.startpage.com/sp/captcha"):
+    if resp.headers.get("Location", "").startswith(
+        "https://www.startpage.com/sp/captcha"
+    ):
         raise SearxEngineCaptchaException()
 
     results_json = loads(results_raw)
@@ -507,7 +532,9 @@ def fetch_traits(engine_traits: EngineTraits):
     # regions
 
     sp_region_names = []
-    for option in dom.xpath('//form[@name="settings"]//select[@name="search_results_region"]/option'):
+    for option in dom.xpath(
+        '//form[@name="settings"]//select[@name="search_results_region"]/option'
+    ):
         sp_region_names.append(option.get("value"))
 
     for eng_tag in sp_region_names:
@@ -525,7 +552,10 @@ def fetch_traits(engine_traits: EngineTraits):
                 sxng_tag = region_tag(babel.Locale.parse(babel_region_tag, sep="_"))
 
             except babel.UnknownLocaleError:
-                print("IGNORE: can't determine babel locale of startpage's locale %s" % eng_tag)
+                print(
+                    "IGNORE: can't determine babel locale of startpage's locale %s"
+                    % eng_tag
+                )
                 continue
 
         conflict = engine_traits.regions.get(sxng_tag)
@@ -537,7 +567,10 @@ def fetch_traits(engine_traits: EngineTraits):
 
     # languages
 
-    catalog_engine2code = {name.lower(): lang_code for lang_code, name in babel.Locale("en").languages.items()}
+    catalog_engine2code = {
+        name.lower(): lang_code
+        for lang_code, name in babel.Locale("en").languages.items()
+    }
 
     # get the native name of every language known by babel
 
@@ -547,14 +580,18 @@ def fetch_traits(engine_traits: EngineTraits):
     ):
         native_name = babel.Locale(lang_code).get_language_name()
         if not native_name:
-            print(f"IGNORE: language name of startpage's language {lang_code} is unknown by babel")
+            print(
+                f"IGNORE: language name of startpage's language {lang_code} is unknown by babel"
+            )
             continue
         native_name = native_name.lower()
         # add native name exactly as it is
         catalog_engine2code[native_name] = lang_code
 
         # add "normalized" language name (i.e. français becomes francais and español becomes espanol)
-        unaccented_name = "".join(filter(lambda c: not combining(c), normalize("NFKD", native_name)))
+        unaccented_name = "".join(
+            filter(lambda c: not combining(c), normalize("NFKD", native_name))
+        )
         if len(unaccented_name) == len(unaccented_name.encode()):
             # add only if result is ascii (otherwise "normalization" didn't work)
             catalog_engine2code[unaccented_name] = lang_code
@@ -580,7 +617,9 @@ def fetch_traits(engine_traits: EngineTraits):
         "english_uk",  # SearXNG lang 'en' already maps to 'english'
     }
 
-    for option in dom.xpath('//form[@name="settings"]//select[@name="language"]/option'):
+    for option in dom.xpath(
+        '//form[@name="settings"]//select[@name="language"]/option'
+    ):
         eng_tag = option.get("value")
         if eng_tag in skip_eng_tags:
             continue

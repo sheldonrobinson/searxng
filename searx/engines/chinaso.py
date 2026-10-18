@@ -61,7 +61,7 @@ results_per_page = 10
 categories = []
 language = "zh"
 
-ChinasoNewsSourceType = t.Literal['CENTRAL', 'LOCAL', 'BUSINESS', 'EPAPER', 'all']
+ChinasoNewsSourceType = t.Literal["CENTRAL", "LOCAL", "BUSINESS", "EPAPER", "all"]
 """Filtering ChinaSo-News results by source:
 
 - ``CENTRAL``: central publication
@@ -70,10 +70,10 @@ ChinasoNewsSourceType = t.Literal['CENTRAL', 'LOCAL', 'BUSINESS', 'EPAPER', 'all
 - ``EPAPER``: E-Paper
 - ``all``: all sources
 """
-chinaso_news_source: ChinasoNewsSourceType = 'all'
+chinaso_news_source: ChinasoNewsSourceType = "all"
 """Configure ChinaSo-News type (:py:obj:`ChinasoNewsSourceType`)."""
 
-time_range_dict = {'day': '24h', 'week': '1w', 'month': '1m', 'year': '1y'}
+time_range_dict = {"day": "24h", "week": "1w", "month": "1m", "year": "1y"}
 
 base_url = "https://www.chinaso.com"
 
@@ -84,15 +84,15 @@ def setup(_: dict[str, t.Any]) -> bool | None:
 
 
 def request(query, params):
-    query_params = {'q': query, 'pn': params["pageno"], 'ps': results_per_page}
+    query_params = {"q": query, "pn": params["pageno"], "ps": results_per_page}
 
-    if time_range_dict.get(params['time_range']):
-        query_params["stime"] = time_range_dict[params['time_range']]
-        query_params["etime"] = 'now'
+    if time_range_dict.get(params["time_range"]):
+        query_params["stime"] = time_range_dict[params["time_range"]]
+        query_params["etime"] = "now"
 
-    if chinaso_news_source != 'all':
-        if chinaso_news_source == 'EPAPER':
-            query_params["type"] = 'EPAPER'
+    if chinaso_news_source != "all":
+        if chinaso_news_source == "EPAPER":
+            query_params["type"] = "EPAPER"
         else:
             query_params["cate"] = chinaso_news_source
 
@@ -132,10 +132,10 @@ def response(resp):
 
         results.append(
             {
-                'title': html_to_text(entry["title"]),
-                'url': entry["url"],
-                'content': html_to_text(entry["snippet"]),
-                'publishedDate': published_date,
+                "title": html_to_text(entry["title"]),
+                "url": entry["url"],
+                "content": html_to_text(entry["snippet"]),
+                "publishedDate": published_date,
             }
         )
     return results

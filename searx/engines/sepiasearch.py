@@ -18,20 +18,20 @@ from searx.engines.peertube import (
 
 about = {
     # pylint: disable=line-too-long
-    "website": 'https://sepiasearch.org',
+    "website": "https://sepiasearch.org",
     "wikidata_id": None,
-    "official_api_documentation": 'https://docs.joinpeertube.org/api-rest-reference.html#tag/Search/operation/searchVideos',
+    "official_api_documentation": "https://docs.joinpeertube.org/api-rest-reference.html#tag/Search/operation/searchVideos",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 language_support = True
 
 # engine dependent config
-categories = ['videos']
+categories = ["videos"]
 paging = True
 
-base_url = 'https://sepiasearch.org'
+base_url = "https://sepiasearch.org"
 
 time_range_support = True
 safesearch = True
@@ -44,30 +44,30 @@ def request(query, params):
         return False
 
     # eng_region = traits.get_region(params['searxng_locale'], 'en_US')
-    eng_lang = traits.get_language(params['searxng_locale'], None)
+    eng_lang = traits.get_language(params["searxng_locale"], None)
 
-    params['url'] = (
+    params["url"] = (
         base_url.rstrip("/")
         + "/api/v1/search/videos?"
         + urlencode(
             {
-                'search': query,
-                'start': (params['pageno'] - 1) * 10,
-                'count': 10,
+                "search": query,
+                "start": (params["pageno"] - 1) * 10,
+                "count": 10,
                 # -createdAt: sort by date ascending / createdAt: date descending
-                'sort': '-match',  # sort by *match descending*
-                'nsfw': safesearch_table[params['safesearch']],
+                "sort": "-match",  # sort by *match descending*
+                "nsfw": safesearch_table[params["safesearch"]],
             }
         )
     )
 
     if eng_lang is not None:
-        params['url'] += '&languageOneOf[]=' + eng_lang
-        params['url'] += '&boostLanguages[]=' + eng_lang
+        params["url"] += "&languageOneOf[]=" + eng_lang
+        params["url"] += "&boostLanguages[]=" + eng_lang
 
-    if params['time_range'] in time_range_table:
-        time = datetime.now().date() + time_range_table[params['time_range']]
-        params['url'] += '&startDate=' + time.isoformat()
+    if params["time_range"] in time_range_table:
+        time = datetime.now().date() + time_range_table[params["time_range"]]
+        params["url"] += "&startDate=" + time.isoformat()
 
     return params
 

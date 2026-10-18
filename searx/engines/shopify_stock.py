@@ -45,13 +45,27 @@ def response(resp: "SXNG_Response"):
 
     doc = resp.html()
 
-    for result in eval_xpath_list(doc, "//div[contains(@class, 'js-masonry-grid')]/div"):
-        url = base_url + (extract_text(eval_xpath(result, ".//a[contains(@class, 'photo-tile')]/@href")) or "")
+    for result in eval_xpath_list(
+        doc, "//div[contains(@class, 'js-masonry-grid')]/div"
+    ):
+        url = base_url + (
+            extract_text(
+                eval_xpath(result, ".//a[contains(@class, 'photo-tile')]/@href")
+            )
+            or ""
+        )
         res.add(
             res.types.Image(
                 url=url,
-                title=extract_text(eval_xpath(result, ".//p[contains(@class, 'photo-tile__title')]")) or "",
-                thumbnail_src=extract_text(eval_xpath(result, ".//img[contains(@class, 'photo-card__image')]/@src"))
+                title=extract_text(
+                    eval_xpath(result, ".//p[contains(@class, 'photo-tile__title')]")
+                )
+                or "",
+                thumbnail_src=extract_text(
+                    eval_xpath(
+                        result, ".//img[contains(@class, 'photo-card__image')]/@src"
+                    )
+                )
                 or "",
                 img_src=_get_download_url(url),
             )

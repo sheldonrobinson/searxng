@@ -20,17 +20,17 @@ def calculate_score(
 ) -> float:
     weight = 1.0
 
-    for result_engine in result['engines']:
-        if hasattr(searx.engines.engines.get(result_engine), 'weight'):
+    for result_engine in result["engines"]:
+        if hasattr(searx.engines.engines.get(result_engine), "weight"):
             weight *= float(searx.engines.engines[result_engine].weight)
 
-    weight *= len(result['positions'])
+    weight *= len(result["positions"])
     score = 0
 
-    for position in result['positions']:
-        if priority == 'low':
+    for position in result["positions"]:
+        if priority == "low":
             continue
-        if priority == 'high':
+        if priority == "high":
             score += weight
         else:
             score += weight / position
@@ -102,11 +102,15 @@ class ResultContainer:
                     self._merge_main_result(result, main_count)
                 else:
                     # more types need to be implemented in the future ..
-                    raise NotImplementedError(f"no handler implemented to process the result of type {result}")
+                    raise NotImplementedError(
+                        f"no handler implemented to process the result of type {result}"
+                    )
 
             else:
                 result["engine"] = result.get("engine") or engine_name or ""
-                result = LegacyResult(result)  # for backward compatibility, will be romeved one day
+                result = LegacyResult(
+                    result
+                )  # for backward compatibility, will be romeved one day
                 result.normalize_result_fields()
 
                 if "suggestion" in result:
@@ -137,7 +141,9 @@ class ResultContainer:
                 if "engine_data" in result:
                     if self.on_result(result):
                         if result.engine:
-                            self.engine_data[result.engine][result["key"]] = result["engine_data"]
+                            self.engine_data[result.engine][result["key"]] = result[
+                                "engine_data"
+                            ]
                     continue
 
                 if self.on_result(result):
@@ -188,7 +194,7 @@ class ResultContainer:
         for result in self.main_results_map.values():
             result.score = calculate_score(result, result.priority)
             for eng_name in result.engines:
-                counter_add(result.score, 'engine', eng_name, 'score')
+                counter_add(result.score, "engine", eng_name, "score")
 
     def get_ordered_results(self) -> list[MainResult | LegacyResult]:
         """Returns a sorted list of results to be displayed in the main result
@@ -201,7 +207,9 @@ class ResultContainer:
             return self._main_results_sorted
 
         # first pass, sort results by "score" (descanding)
-        results = sorted(self.main_results_map.values(), key=lambda x: x.score, reverse=True)
+        results = sorted(
+            self.main_results_map.values(), key=lambda x: x.score, reverse=True
+        )
 
         # pass 2 : group results by category and template
         gresults: list[MainResult | LegacyResult] = []
@@ -213,7 +221,9 @@ class ResultContainer:
             # do we need to handle more than one category per engine?
             engine = searx.engines.engines.get(res.engine or "")
             if engine:
-                res.category = engine.categories[0] if len(engine.categories) > 0 else ""
+                res.category = (
+                    engine.categories[0] if len(engine.categories) > 0 else ""
+                )
 
             # do we need to handle more than one category per engine?
             category = f"{res.category}:{res.template}:{'img_src' if (res.thumbnail or res.img_src) else ''}"
@@ -223,7 +233,11 @@ class ResultContainer:
             # can accept more result and is not too far from the current
             # position
 
-            if (grp is not None) and (grp["count"] > 0) and (len(gresults) - grp["index"] < max_distance):
+            if (
+                (grp is not None)
+                and (grp["count"] > 0)
+                and (len(gresults) - grp["index"] < max_distance)
+            ):
                 # group with the previous results using the same category with
                 # this one
                 index = grp["index"]
@@ -242,31 +256,46 @@ class ResultContainer:
             else:
                 gresults.append(res)
                 # update categoryIndex
-                categoryPositions[category] = {"index": len(gresults), "count": max_count}
+                categoryPositions[category] = {
+                    "index": len(gresults),
+                    "count": max_count,
+                }
                 continue
 
         self._main_results_sorted = gresults
         return self._main_results_sorted
 
-    def add_unresponsive_engine(self, engine_name: str, error_type: str, suspended: bool = False):
+    def add_unresponsive_engine(
+        self, engine_name: str, error_type: str, suspended: bool = False
+    ):
         with self._lock:
             if self._closed:
-                log.error("call to ResultContainer.add_unresponsive_engine after ResultContainer.close")
+                log.error(
+                    "call to ResultContainer.add_unresponsive_engine after ResultContainer.close"
+                )
                 return
             if searx.engines.engines[engine_name].display_error_messages:
-                self.unresponsive_engines.add(UnresponsiveEngine(engine_name, error_type, suspended))
+                self.unresponsive_engines.add(
+                    UnresponsiveEngine(engine_name, error_type, suspended)
+                )
 
     def add_timing(self, engine_name: str, engine_time: float, page_load_time: float):
         with self._lock:
             if self._closed:
-                log.error("call to ResultContainer.add_timing after ResultContainer.close")
+                log.error(
+                    "call to ResultContainer.add_timing after ResultContainer.close"
+                )
                 return
-            self.timings.append(Timing(engine_name, total=engine_time, load=page_load_time))
+            self.timings.append(
+                Timing(engine_name, total=engine_time, load=page_load_time)
+            )
 
     def get_timings(self) -> list[Timing]:
         with self._lock:
             if not self._closed:
-                log.error("call to ResultContainer.get_timings before ResultContainer.close")
+                log.error(
+                    "call to ResultContainer.get_timings before ResultContainer.close"
+                )
                 return []
             return self.timings
 
@@ -321,7 +350,10 @@ def merge_two_infoboxes(origin: LegacyResult, other: LegacyResult):
                     attr_names_1.add(entity)
 
             for attr in other.attributes:
-                if attr.get("label") not in attr_names_1 and attr.get('entity') not in attr_names_1:
+                if (
+                    attr.get("label") not in attr_names_1
+                    and attr.get("entity") not in attr_names_1
+                ):
                     origin.attributes.append(attr)
 
     if other.content:
@@ -331,7 +363,9 @@ def merge_two_infoboxes(origin: LegacyResult, other: LegacyResult):
             origin.content = other.content
 
 
-def merge_two_main_results(origin: MainResult | LegacyResult, other: MainResult | LegacyResult):
+def merge_two_main_results(
+    origin: MainResult | LegacyResult, other: MainResult | LegacyResult
+):
     """Merges the values from ``other`` into ``origin``."""
 
     if len(other.content or "") > len(origin.content or ""):
@@ -354,5 +388,7 @@ def merge_two_main_results(origin: MainResult | LegacyResult, other: MainResult 
     # use https, ftps, .. if possible
     if origin.parsed_url and not origin.parsed_url.scheme.endswith("s"):
         if other.parsed_url and other.parsed_url.scheme.endswith("s"):
-            origin.parsed_url = origin.parsed_url._replace(scheme=other.parsed_url.scheme)
+            origin.parsed_url = origin.parsed_url._replace(
+                scheme=other.parsed_url.scheme
+            )
             origin.url = origin.parsed_url.geturl()

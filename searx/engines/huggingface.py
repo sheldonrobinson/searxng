@@ -50,11 +50,11 @@ about = {
     "results": "JSON",
 }
 
-categories = ['it', 'repos']
+categories = ["it", "repos"]
 
 base_url = "https://huggingface.co"
 
-huggingface_endpoint = 'models'
+huggingface_endpoint = "models"
 """Hugging Face supports datasets, models, spaces as search endpoint.
 
 - ``datasets``: search for datasets
@@ -64,8 +64,10 @@ huggingface_endpoint = 'models'
 
 
 def setup(_: dict[str, t.Any]) -> bool | None:
-    if huggingface_endpoint not in ('datasets', 'models', 'spaces'):
-        raise SearxEngineAPIException(f"Unsupported Hugging Face endpoint: {huggingface_endpoint}")
+    if huggingface_endpoint not in ("datasets", "models", "spaces"):
+        raise SearxEngineAPIException(
+            f"Unsupported Hugging Face endpoint: {huggingface_endpoint}"
+        )
 
 
 def request(query, params):
@@ -85,7 +87,7 @@ def response(resp) -> EngineResults:
     data = resp.json()
 
     for entry in data:
-        if huggingface_endpoint != 'models':
+        if huggingface_endpoint != "models":
             url = f"{base_url}/{huggingface_endpoint}/{entry['id']}"
         else:
             url = f"{base_url}/{entry['id']}"

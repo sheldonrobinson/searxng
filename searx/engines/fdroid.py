@@ -8,27 +8,27 @@ from searx.utils import extract_text
 
 # about
 about = {
-    "website": 'https://f-droid.org/',
-    "wikidata_id": 'Q1386210',
+    "website": "https://f-droid.org/",
+    "wikidata_id": "Q1386210",
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
 # engine dependent config
-categories = ['it', 'apps']
+categories = ["it", "apps"]
 paging = True
 
 # search-url
-base_url = 'https://search.f-droid.org/'
-search_url = base_url + '?{query}'
+base_url = "https://search.f-droid.org/"
+search_url = base_url + "?{query}"
 
 
 # do search-request
 def request(query, params):
-    query = urlencode({'q': query, 'page': params['pageno'], 'lang': ''})
-    params['url'] = search_url.format(query=query)
+    query = urlencode({"q": query, "page": params["pageno"], "lang": ""})
+    params["url"] = search_url.format(query=query)
     return params
 
 
@@ -39,15 +39,24 @@ def response(resp):
     dom = resp.html()
 
     for app in dom.xpath('//a[@class="package-header"]'):
-        app_url = app.xpath('./@href')[0]
+        app_url = app.xpath("./@href")[0]
         app_title = extract_text(app.xpath('./div/h4[@class="package-name"]/text()'))
         app_content = (
             extract_text(app.xpath('./div/div/span[@class="package-summary"]')).strip()
-            + ' - '
-            + extract_text(app.xpath('./div/div/span[@class="package-license"]')).strip()
+            + " - "
+            + extract_text(
+                app.xpath('./div/div/span[@class="package-license"]')
+            ).strip()
         )
         thumbnail = app.xpath('./img[@class="package-icon"]/@src')[0]
 
-        results.append({'url': app_url, 'title': app_title, 'content': app_content, 'thumbnail': thumbnail})
+        results.append(
+            {
+                "url": app_url,
+                "title": app_title,
+                "content": app_content,
+                "thumbnail": thumbnail,
+            }
+        )
 
     return results

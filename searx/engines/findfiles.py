@@ -77,7 +77,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
     dom = resp.html()
     if findfiles_categ == "image":
         for result in eval_xpath_list(
-            dom, "//div[contains(@class, 'image-mosaic')]/div[contains(@class, 'image-item')]"
+            dom,
+            "//div[contains(@class, 'image-mosaic')]/div[contains(@class, 'image-item')]",
         ):
             res.add(
                 res.types.Image(
@@ -88,24 +89,33 @@ def response(resp: "SXNG_Response") -> EngineResults:
             )
     elif findfiles_categ == "video":
         for result in eval_xpath_list(
-            dom, "//div[contains(@class, 'video-mosaic')]/div[contains(@class, 'video-item')]"
+            dom,
+            "//div[contains(@class, 'video-mosaic')]/div[contains(@class, 'video-item')]",
         ):
             video_src = extract_text(eval_xpath(result, ".//video/@src")) or ""
             res.add(
                 res.types.Video(
                     url=video_src,
-                    title=extract_text(eval_xpath(result, ".//div[contains(@class, 'caption')]/span")) or "",
+                    title=extract_text(
+                        eval_xpath(result, ".//div[contains(@class, 'caption')]/span")
+                    )
+                    or "",
                     iframe_src=video_src or "",
                 )
             )
     else:
-        for result in eval_xpath_list(dom, "//ol/li[contains(@class, 'result-item')]/article"):
+        for result in eval_xpath_list(
+            dom, "//ol/li[contains(@class, 'result-item')]/article"
+        ):
             filename = basename(extract_text(eval_xpath(result, ".//h3")) or "")
             res.add(
                 res.types.File(
                     url=extract_text(eval_xpath(result, ".//h3/a/@href")) or "",
                     title=filename,
-                    content=" ".join(extract_text(el) or "" for el in eval_xpath_list(result, "./div/span")),
+                    content=" ".join(
+                        extract_text(el) or ""
+                        for el in eval_xpath_list(result, "./div/span")
+                    ),
                     filename=filename,
                     size=extract_text(eval_xpath(result, "(.//span[@id])[1]")) or "",
                     embedded=extract_text(eval_xpath(result, ".//audio/@src")) or "",

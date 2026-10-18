@@ -94,7 +94,7 @@ def response(resp: "SXNG_Response"):
 
     result: dict[str, t.Any]
     for result in resp.json()["data"]:
-        img = result['images']['original']
+        img = result["images"]["original"]
         formats = [
             ImageRef(url=img["mp4"], subtype="mp4"),  # type: ignore
             ImageRef(url=img["webp"], subtype="webp"),  # type: ignore

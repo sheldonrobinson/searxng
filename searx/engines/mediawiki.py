@@ -42,18 +42,18 @@ from searx.utils import html_to_text
 about = {
     "website": None,
     "wikidata_id": None,
-    "official_api_documentation": 'https://www.mediawiki.org/w/api.php?action=help&modules=query',
+    "official_api_documentation": "https://www.mediawiki.org/w/api.php?action=help&modules=query",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
-categories = ['general']
+categories = ["general"]
 paging = True
 page_size = 5
 
-search_type: str = 'nearmatch'
+search_type: str = "nearmatch"
 """Which type of search to perform.  One of the following values: ``nearmatch``,
 ``text`` or ``title``.
 
@@ -68,7 +68,7 @@ instance by correcting spelling errors.
 See ``srenablerewrites`` argument in `list=search`_ documentation.
 """
 
-srsort: str = 'relevance'
+srsort: str = "relevance"
 """Set the sort order of returned results.  One of the following values:
 ``create_timestamp_asc``, ``create_timestamp_desc``, ``incoming_links_asc``,
 ``incoming_links_desc``, ``just_match``, ``last_edit_asc``, ``last_edit_desc``,
@@ -77,26 +77,26 @@ srsort: str = 'relevance'
 See ``srenablerewrites`` argument in `list=search`_ documentation.
 """
 
-srprop: str = 'sectiontitle|snippet|timestamp|categorysnippet'
+srprop: str = "sectiontitle|snippet|timestamp|categorysnippet"
 """Which properties to return.
 
 See ``srprop`` argument in `list=search`_ documentation.
 """
 
-base_url: str = 'https://{language}.wikipedia.org/'
+base_url: str = "https://{language}.wikipedia.org/"
 """Base URL of the Wikimedia wiki.
 
 ``{language}``:
   ISO 639-1 language code (en, de, fr ..) of the search language.
 """
 
-api_path: str = 'w/api.php'
+api_path: str = "w/api.php"
 """The path the PHP api is listening on.
 
 The default path should work fine usually.
 """
 
-timestamp_format = '%Y-%m-%dT%H:%M:%SZ'
+timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
 """The longhand version of MediaWiki time strings."""
 
 
@@ -104,29 +104,29 @@ def request(query, params):
 
     # write search-language back to params, required in response
 
-    if params['language'] == 'all':
-        params['language'] = 'en'
+    if params["language"] == "all":
+        params["language"] = "en"
     else:
-        params['language'] = params['language'].split('-')[0]
+        params["language"] = params["language"].split("-")[0]
 
-    api_url = f"{base_url.rstrip('/')}/{api_path}?".format(language=params['language'])
-    offset = (params['pageno'] - 1) * page_size
+    api_url = f"{base_url.rstrip('/')}/{api_path}?".format(language=params["language"])
+    offset = (params["pageno"] - 1) * page_size
 
     args = {
-        'action': 'query',
-        'list': 'search',
-        'format': 'json',
-        'srsearch': query,
-        'sroffset': offset,
-        'srlimit': page_size,
-        'srwhat': search_type,
-        'srprop': srprop,
-        'srsort': srsort,
+        "action": "query",
+        "list": "search",
+        "format": "json",
+        "srsearch": query,
+        "sroffset": offset,
+        "srlimit": page_size,
+        "srwhat": search_type,
+        "srprop": srprop,
+        "srsort": srsort,
     }
     if srenablerewrites:
-        args['srenablerewrites'] = '1'
+        args["srenablerewrites"] = "1"
 
-    params['url'] = api_url + urlencode(args)
+    params["url"] = api_url + urlencode(args)
     return params
 
 
@@ -137,32 +137,34 @@ def response(resp):
     search_results = resp.json()
 
     # return empty array if there are no results
-    if not search_results.get('query', {}).get('search'):
+    if not search_results.get("query", {}).get("search"):
         return []
 
-    for result in search_results['query']['search']:
+    for result in search_results["query"]["search"]:
 
-        if result.get('snippet', '').startswith('#REDIRECT'):
+        if result.get("snippet", "").startswith("#REDIRECT"):
             continue
 
-        title = result['title']
-        sectiontitle = result.get('sectiontitle')
-        content = html_to_text(result.get('snippet', ''))
-        metadata = html_to_text(result.get('categorysnippet', ''))
-        timestamp = result.get('timestamp')
+        title = result["title"]
+        sectiontitle = result.get("sectiontitle")
+        content = html_to_text(result.get("snippet", ""))
+        metadata = html_to_text(result.get("categorysnippet", ""))
+        timestamp = result.get("timestamp")
 
         url = (
-            base_url.format(language=resp.search_params['language']) + 'wiki/' + quote(title.replace(' ', '_').encode())
+            base_url.format(language=resp.search_params["language"])
+            + "wiki/"
+            + quote(title.replace(" ", "_").encode())
         )
         if sectiontitle:
             # in case of sectiontitle create a link to the section in the wiki page
-            url += '#' + quote(sectiontitle.replace(' ', '_').encode())
-            title += ' / ' + sectiontitle
+            url += "#" + quote(sectiontitle.replace(" ", "_").encode())
+            title += " / " + sectiontitle
 
-        item = {'url': url, 'title': title, 'content': content, 'metadata': metadata}
+        item = {"url": url, "title": title, "content": content, "metadata": metadata}
 
         if timestamp:
-            item['publishedDate'] = datetime.strptime(timestamp, timestamp_format)
+            item["publishedDate"] = datetime.strptime(timestamp, timestamp_format)
 
         results.append(item)
 

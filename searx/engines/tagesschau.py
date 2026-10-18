@@ -23,16 +23,16 @@ import re
 from searx.result_types import Video
 
 about = {
-    'website': "https://tagesschau.de",
-    'wikidata_id': "Q703907",
-    'official_api_documentation': None,
-    'use_official_api': True,
-    'require_api_key': False,
-    'results': 'JSON',
+    "website": "https://tagesschau.de",
+    "wikidata_id": "Q703907",
+    "official_api_documentation": None,
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": "JSON",
 }
 language = "de"
 
-categories = ['general', 'news']
+categories = ["general", "news"]
 paging = True
 
 results_per_page = 10
@@ -52,12 +52,12 @@ use_source_url = True
 
 def request(query, params):
     args = {
-        'searchText': query,
-        'pageSize': results_per_page,
-        'resultPage': params['pageno'] - 1,
+        "searchText": query,
+        "pageSize": results_per_page,
+        "resultPage": params["pageno"] - 1,
     }
 
-    params['url'] = f"{base_url}/api2u/search?{urlencode(args)}"
+    params["url"] = f"{base_url}/api2u/search?{urlencode(args)}"
 
     return params
 
@@ -67,11 +67,11 @@ def response(resp):
 
     json = resp.json()
 
-    for item in json['searchResults']:
-        item_type = item.get('type')
-        if item_type in ('story', 'webview'):
+    for item in json["searchResults"]:
+        item_type = item.get("type")
+        if item_type in ("story", "webview"):
             results.append(_story(item))
-        elif item_type == 'video':
+        elif item_type == "video":
             results.append(_video(item))
         else:
             logger.error("unknown result type: %s", item_type)
@@ -81,18 +81,25 @@ def response(resp):
 
 def _story(item):
     return {
-        'title': item['title'],
-        'thumbnail': item.get('teaserImage', {}).get('imageVariants', {}).get('16x9-256'),
-        'publishedDate': datetime.fromisoformat(item['date'][:19]),
-        'content': item.get('firstSentence'),
-        'url': item['shareURL'] if use_source_url else item['detailsweb'],
+        "title": item["title"],
+        "thumbnail": item.get("teaserImage", {})
+        .get("imageVariants", {})
+        .get("16x9-256"),
+        "publishedDate": datetime.fromisoformat(item["date"][:19]),
+        "content": item.get("firstSentence"),
+        "url": item["shareURL"] if use_source_url else item["detailsweb"],
     }
 
 
 def _video(item) -> Video:
-    streams = item['streams']
-    video_url = streams.get('h264s') or streams.get('h264m') or streams.get('h264l') or streams.get('h264xl')
-    title = item['title']
+    streams = item["streams"]
+    video_url = (
+        streams.get("h264s")
+        or streams.get("h264m")
+        or streams.get("h264l")
+        or streams.get("h264xl")
+    )
+    title = item["title"]
 
     if "_vapp.mxf" in title:
         title = title.replace("_vapp.mxf", "")
@@ -103,9 +110,9 @@ def _video(item) -> Video:
 
     return Video(
         title=title,
-        thumbnail=item.get('teaserImage', {}).get('imageVariants', {}).get('16x9-256'),
-        publishedDate=datetime.fromisoformat(item['date'][:19]),
-        content=item.get('firstSentence', ''),
+        thumbnail=item.get("teaserImage", {}).get("imageVariants", {}).get("16x9-256"),
+        publishedDate=datetime.fromisoformat(item["date"][:19]),
+        content=item.get("firstSentence", ""),
         iframe_src=video_url,
         url=url,
     )

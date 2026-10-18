@@ -12,12 +12,12 @@ from searx.utils import humanize_bytes
 
 # about
 about = {
-    "website": 'https://thepiratebay.org',
-    "wikidata_id": 'Q22663',
-    "official_api_documentation": 'https://apibay.org/',
+    "website": "https://thepiratebay.org",
+    "wikidata_id": "Q22663",
+    "official_api_documentation": "https://apibay.org/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
@@ -66,7 +66,12 @@ def response(resp):
     for result in search_res:
         link = url + "description.php?id=" + result["id"]
         magnetlink = (
-            "magnet:?xt=urn:btih:" + result["info_hash"] + "&dn=" + result["name"] + "&tr=" + "&tr=".join(trackers)
+            "magnet:?xt=urn:btih:"
+            + result["info_hash"]
+            + "&dn="
+            + result["name"]
+            + "&tr="
+            + "&tr=".join(trackers)
         )
 
         params = {
@@ -80,12 +85,12 @@ def response(resp):
 
         # extract and convert creation date
         try:
-            params['publishedDate'] = datetime.fromtimestamp(float(result["added"]))
+            params["publishedDate"] = datetime.fromtimestamp(float(result["added"]))
         except:  # pylint: disable=bare-except
             pass
 
         # let's try to calculate the torrent size
-        params['filesize'] = humanize_bytes(int(result["size"]))
+        params["filesize"] = humanize_bytes(int(result["size"]))
 
         # append result
         results.append(params)

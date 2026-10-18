@@ -10,12 +10,12 @@ from searx import logger
 
 __all__ = ["Histogram", "HistogramStorage", "CounterStorage"]
 
-logger = logger.getChild('searx.metrics')
+logger = logger.getChild("searx.metrics")
 
 
 class Histogram:  # pylint: disable=missing-class-docstring
 
-    _slots__ = '_lock', '_size', '_sum', '_quartiles', '_count', '_width'
+    _slots__ = "_lock", "_size", "_sum", "_quartiles", "_count", "_width"
 
     def __init__(self, width=10, size=200):
         self._lock = threading.Lock()
@@ -59,7 +59,7 @@ class Histogram:  # pylint: disable=missing-class-docstring
 
     @property
     def quartile_percentage(self):
-        '''Quartile in percentage'''
+        """Quartile in percentage"""
         with self._lock:
             if self._count > 0:
                 return [int(q * 100 / self._count) for q in self._quartiles]
@@ -97,12 +97,14 @@ class Histogram:  # pylint: disable=missing-class-docstring
         return None
 
     def __repr__(self):
-        return "Histogram<avg: " + str(self.average) + ", count: " + str(self._count) + ">"
+        return (
+            "Histogram<avg: " + str(self.average) + ", count: " + str(self._count) + ">"
+        )
 
 
 class HistogramStorage:  # pylint: disable=missing-class-docstring
 
-    __slots__ = 'measures', 'histogram_class'
+    __slots__ = "measures", "histogram_class"
 
     def __init__(self, histogram_class=Histogram):
         self.clear()
@@ -121,14 +123,14 @@ class HistogramStorage:  # pylint: disable=missing-class-docstring
 
     def dump(self):
         logger.debug("Histograms:")
-        ks = sorted(self.measures.keys(), key='/'.join)  # pylint: disable=invalid-name
+        ks = sorted(self.measures.keys(), key="/".join)  # pylint: disable=invalid-name
         for k in ks:
-            logger.debug("- %-60s %s", '|'.join(k), self.measures[k])
+            logger.debug("- %-60s %s", "|".join(k), self.measures[k])
 
 
 class CounterStorage:  # pylint: disable=missing-class-docstring
 
-    __slots__ = 'counters', 'lock'
+    __slots__ = "counters", "lock"
 
     def __init__(self):
         self.lock = threading.Lock()
@@ -151,10 +153,12 @@ class CounterStorage:  # pylint: disable=missing-class-docstring
 
     def dump(self):
         with self.lock:
-            ks = sorted(self.counters.keys(), key='/'.join)  # pylint: disable=invalid-name
+            ks = sorted(
+                self.counters.keys(), key="/".join
+            )  # pylint: disable=invalid-name
         logger.debug("Counters:")
         for k in ks:
-            logger.debug("- %-60s %s", '|'.join(k), self.counters[k])
+            logger.debug("- %-60s %s", "|".join(k), self.counters[k])
 
 
 class VoidHistogram(Histogram):  # pylint: disable=missing-class-docstring

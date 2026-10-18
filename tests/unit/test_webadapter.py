@@ -17,24 +17,36 @@ SEARCHQUERY = [EngineRef(PRIVATE_ENGINE_NAME, "general")]
 class ValidateQueryCase(SearxTestCase):
 
     def test_without_token(self):
-        preferences = Preferences(['simple'], ['general'], engines, searx.plugins.STORAGE)
-        valid, unknown, invalid_token = validate_engineref_list(SEARCHQUERY, preferences)
+        preferences = Preferences(
+            ["simple"], ["general"], engines, searx.plugins.STORAGE
+        )
+        valid, unknown, invalid_token = validate_engineref_list(
+            SEARCHQUERY, preferences
+        )
         self.assertEqual(len(valid), 0)
         self.assertEqual(len(unknown), 0)
         self.assertEqual(len(invalid_token), 1)
 
     def test_with_incorrect_token(self):
-        preferences_with_tokens = Preferences(['simple'], ['general'], engines, searx.plugins.STORAGE)
-        preferences_with_tokens.parse_dict({'tokens': 'bad-token'})
-        valid, unknown, invalid_token = validate_engineref_list(SEARCHQUERY, preferences_with_tokens)
+        preferences_with_tokens = Preferences(
+            ["simple"], ["general"], engines, searx.plugins.STORAGE
+        )
+        preferences_with_tokens.parse_dict({"tokens": "bad-token"})
+        valid, unknown, invalid_token = validate_engineref_list(
+            SEARCHQUERY, preferences_with_tokens
+        )
         self.assertEqual(len(valid), 0)
         self.assertEqual(len(unknown), 0)
         self.assertEqual(len(invalid_token), 1)
 
     def test_with_correct_token(self):
-        preferences_with_tokens = Preferences(['simple'], ['general'], engines, searx.plugins.STORAGE)
-        preferences_with_tokens.parse_dict({'tokens': 'my-token'})
-        valid, unknown, invalid_token = validate_engineref_list(SEARCHQUERY, preferences_with_tokens)
+        preferences_with_tokens = Preferences(
+            ["simple"], ["general"], engines, searx.plugins.STORAGE
+        )
+        preferences_with_tokens.parse_dict({"tokens": "my-token"})
+        valid, unknown, invalid_token = validate_engineref_list(
+            SEARCHQUERY, preferences_with_tokens
+        )
         self.assertEqual(len(valid), 1)
         self.assertEqual(len(unknown), 0)
         self.assertEqual(len(invalid_token), 0)

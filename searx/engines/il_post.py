@@ -49,7 +49,9 @@ def request(query, params):
     if params["time_range"]:
         if params["time_range"] not in time_range_args:
             return None
-        query_params["filters"] += f";{time_range_args.get(params['time_range'], 'pub_date:da_sempre')}"
+        query_params[
+            "filters"
+        ] += f";{time_range_args.get(params['time_range'], 'pub_date:da_sempre')}"
     params["url"] = search_api + urlencode(query_params)
     return params
 

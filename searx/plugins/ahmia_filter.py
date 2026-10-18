@@ -31,14 +31,18 @@ class SXNGPlugin(Plugin):
         self.info = PluginInfo(
             id=self.id,
             name=gettext("Ahmia blacklist"),
-            description=gettext("Filter out onion results that appear in Ahmia's blacklist."),
+            description=gettext(
+                "Filter out onion results that appear in Ahmia's blacklist."
+            ),
             preference_section="general",
         )
 
     def on_result(
         self, request: "SXNG_Request", search: "SearchWithPlugins", result: "Result"
     ) -> bool:  # pylint: disable=unused-argument
-        if not getattr(result, "is_onion", False) or not getattr(result, "parsed_url", False):
+        if not getattr(result, "is_onion", False) or not getattr(
+            result, "parsed_url", False
+        ):
             return True
         result_hash = md5(result["parsed_url"].hostname.encode()).hexdigest()
         return result_hash not in ahmia_blacklist

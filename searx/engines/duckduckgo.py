@@ -474,7 +474,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     if is_ddg_captcha(doc):
         # set suspend time to zero is OK --> ddg does not block the IP
-        raise SearxEngineCaptchaException(suspended_time=0, message=f"CAPTCHA ({params['data'].get('kl')})")
+        raise SearxEngineCaptchaException(
+            suspended_time=0, message=f"CAPTCHA ({params['data'].get('kl')})"
+        )
 
     form = eval_xpath(doc, '//input[@name="vqd"]/..')
 
@@ -491,9 +493,13 @@ def response(resp: "SXNG_Response") -> EngineResults:
         )
 
     # just select "web-result" and ignore results of class "result--ad result--ad--small"
-    for div_result in eval_xpath(doc, '//div[@id="links"]/div[contains(@class, "web-result")]'):
+    for div_result in eval_xpath(
+        doc, '//div[@id="links"]/div[contains(@class, "web-result")]'
+    ):
         _title = eval_xpath(div_result, ".//h2/a")
-        _content = eval_xpath_getindex(div_result, './/a[contains(@class, "result__snippet")]', 0, [])
+        _content = eval_xpath_getindex(
+            div_result, './/a[contains(@class, "result__snippet")]', 0, []
+        )
         res.add(
             res.types.MainResult(
                 title=extract_text(_title) or "",
@@ -513,7 +519,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
         res.add(
             res.types.Answer(
                 answer=zero_click,
-                url=eval_xpath_getindex(doc, '//div[@id="zero_click_abstract"]/a/@href', 0),
+                url=eval_xpath_getindex(
+                    doc, '//div[@id="zero_click_abstract"]/a/@href', 0
+                ),
             )
         )
     return res

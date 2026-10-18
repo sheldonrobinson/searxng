@@ -29,10 +29,10 @@ base_url = "https://hn.algolia.com/api/v1"
 
 
 def request(query, params):
-    search_type = 'search'
+    search_type = "search"
     if not query:
         # if search query is empty show results from HN's front page
-        search_type = 'search_by_date'
+        search_type = "search_by_date"
         query_params = {
             "tags": "front_page",
             "page": (params["pageno"] - 1),
@@ -47,7 +47,7 @@ def request(query, params):
             "advancedSyntax": "true",
             "ignorePlurals": "false",
             "minProximity": 7,
-            "numericFilters": '[]',
+            "numericFilters": "[]",
             "tagFilters": '["story",[]]',
             "typoTolerance": "true",
             "queryType": "prefixLast",
@@ -55,8 +55,8 @@ def request(query, params):
             "getRankingInfo": "true",
         }
 
-        if params['time_range']:
-            search_type = 'search_by_date'
+        if params["time_range"]:
+            search_type = "search_by_date"
             timestamp = (
                 # pylint: disable=unexpected-keyword-arg
                 datetime.now()
@@ -76,11 +76,18 @@ def response(resp):
         object_id = hit["objectID"]
         points = hit.get("points") or 0
         num_comments = hit.get("num_comments") or 0
-        content = hit.get("url") or html_to_text(hit.get("comment_text")) or html_to_text(hit.get("story_text"))
+        content = (
+            hit.get("url")
+            or html_to_text(hit.get("comment_text"))
+            or html_to_text(hit.get("story_text"))
+        )
 
         metadata = ""
         if points != 0 or num_comments != 0:
-            metadata = f"{gettext('points')}: {points}" f" | {gettext('comments')}: {num_comments}"
+            metadata = (
+                f"{gettext('points')}: {points}"
+                f" | {gettext('comments')}: {num_comments}"
+            )
         results.append(
             {
                 "title": hit.get("title") or f"{gettext('author')}: {hit['author']}",

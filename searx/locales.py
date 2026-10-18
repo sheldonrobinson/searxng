@@ -43,7 +43,7 @@ from searx import (
 )
 from searx.extended_types import sxng_request
 
-logger = logger.getChild('locales')
+logger = logger.getChild("locales")
 
 
 # safe before monkey patching flask_babel.get_translations
@@ -71,7 +71,7 @@ python-babel (see :py:obj:`locales_initialize`)."""
 
 LOCALE_BEST_MATCH = {
     "dv": "si",
-    "oc": 'fr-FR',
+    "oc": "fr-FR",
     "szl": "pl",
     "nl-BE": "nl",
     "zh-HK": "zh-Hant-TW",
@@ -83,36 +83,38 @@ Kong."""
 
 
 def localeselector():
-    locale: str = 'en'
+    locale: str = "en"
     if has_request_context():
-        value: str = sxng_request.preferences.get_value('locale')
+        value: str = sxng_request.preferences.get_value("locale")
         if value:
             locale = value
 
     # first, set the language that is not supported by babel
     if locale in ADDITIONAL_TRANSLATIONS:
-        sxng_request.form['use-translation'] = locale
+        sxng_request.form["use-translation"] = locale
 
     # second, map locale to a value python-babel supports
     locale = LOCALE_BEST_MATCH.get(locale, locale)
 
-    if locale == '':
+    if locale == "":
         # if there is an error loading the preferences
         # the locale is going to be ''
-        locale = 'en'
+        locale = "en"
 
     # babel uses underscore instead of hyphen.
-    locale = locale.replace('-', '_')
+    locale = locale.replace("-", "_")
     return locale
 
 
 def get_translations():
     """Monkey patch of :py:obj:`flask_babel.get_translations`"""
     if has_request_context():
-        use_translation = sxng_request.form.get('use-translation')
+        use_translation = sxng_request.form.get("use-translation")
         if use_translation in ADDITIONAL_TRANSLATIONS:
-            babel_ext = flask_babel.current_app.extensions['babel']
-            return Translations.load(babel_ext.translation_directories[0], use_translation)
+            babel_ext = flask_babel.current_app.extensions["babel"]
+            return Translations.load(
+                babel_ext.translation_directories[0], use_translation
+            )
     return _flask_babel_get_translations()
 
 
@@ -128,10 +130,10 @@ def get_translation_locales() -> list[str]:
         return _TR_LOCALES
 
     tr_locales: list[str] = []
-    for folder in (Path(searx_dir) / 'translations').iterdir():
+    for folder in (Path(searx_dir) / "translations").iterdir():
         if not folder.is_dir():
             continue
-        if not (folder / 'LC_MESSAGES').is_dir():
+        if not (folder / "LC_MESSAGES").is_dir():
             continue
         tr_locales.append(folder.name)
     _TR_LOCALES = sorted(tr_locales)
@@ -152,8 +154,8 @@ def locales_initialize():
 def region_tag(locale: babel.Locale) -> str:
     """Returns SearXNG's region tag from the locale (e.g. zh-TW , en-US)."""
     if not locale.territory:
-        raise ValueError('babel.Locale %s: missed a territory' % locale)
-    return locale.language + '-' + locale.territory
+        raise ValueError("babel.Locale %s: missed a territory" % locale)
+    return locale.language + "-" + locale.territory
 
 
 def language_tag(locale: babel.Locale) -> str:
@@ -162,7 +164,7 @@ def language_tag(locale: babel.Locale) -> str:
     """
     sxng_lang = locale.language
     if locale.script:
-        sxng_lang += '_' + locale.script
+        sxng_lang += "_" + locale.script
     return sxng_lang
 
 
@@ -170,7 +172,7 @@ def get_locale(locale_tag: str) -> babel.Locale | None:
     """Returns a :py:obj:`babel.Locale` object parsed from argument
     ``locale_tag``"""
     try:
-        locale = babel.Locale.parse(locale_tag, sep='-')
+        locale = babel.Locale.parse(locale_tag, sep="-")
         return locale
 
     except babel.core.UnknownLocaleError:
@@ -178,7 +180,10 @@ def get_locale(locale_tag: str) -> babel.Locale | None:
 
 
 def get_official_locales(
-    territory: str, languages: list[str] | None = None, regional: bool = False, de_facto: bool = True
+    territory: str,
+    languages: list[str] | None = None,
+    regional: bool = False,
+    de_facto: bool = True,
 ) -> set[babel.Locale]:
     """Returns a list of :py:obj:`babel.Locale` with languages from
     :py:obj:`babel.languages.get_official_languages`.
@@ -198,7 +203,9 @@ def get_official_locales(
 
     """
     ret_val: set[babel.Locale] = set()
-    o_languages = babel.languages.get_official_languages(territory, regional=regional, de_facto=de_facto)
+    o_languages = babel.languages.get_official_languages(
+        territory, regional=regional, de_facto=de_facto
+    )
 
     if languages:
         languages = [l.lower() for l in languages]
@@ -206,7 +213,7 @@ def get_official_locales(
 
     for lang in o_languages:
         try:
-            locale = babel.Locale.parse(lang + '_' + territory)
+            locale = babel.Locale.parse(lang + "_" + territory)
             ret_val.add(locale)
         except babel.UnknownLocaleError:
             continue
@@ -214,7 +221,9 @@ def get_official_locales(
     return ret_val
 
 
-def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], default: str | None = None) -> str | None:
+def get_engine_locale(
+    searxng_locale: str, engine_locales: dict[str, str], default: str | None = None
+) -> str | None:
     """Return engine's language (aka locale) string that best fits to argument
     ``searxng_locale``.
 
@@ -278,10 +287,10 @@ def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], defau
         return engine_locale
 
     try:
-        locale = babel.Locale.parse(searxng_locale, sep='-')
+        locale = babel.Locale.parse(searxng_locale, sep="-")
     except babel.core.UnknownLocaleError:
         try:
-            locale = babel.Locale.parse(searxng_locale.split('-')[0])
+            locale = babel.Locale.parse(searxng_locale.split("-")[0])
         except babel.core.UnknownLocaleError:
             return default
 
@@ -296,8 +305,10 @@ def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], defau
     if locale.territory:
         # Try to narrow by *official* languages in the territory (??-XX).
 
-        for official_language in babel.languages.get_official_languages(locale.territory, de_facto=True):
-            searxng_locale = official_language + '-' + locale.territory
+        for official_language in babel.languages.get_official_languages(
+            locale.territory, de_facto=True
+        ):
+            searxng_locale = official_language + "-" + locale.territory
             engine_locale = engine_locales.get(searxng_locale)
             if engine_locale is not None:
                 return engine_locale
@@ -316,7 +327,7 @@ def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], defau
         langs: dict[str, dict[str, t.Any]]
         for territory, langs in babel.core.get_global("territory_languages").items():
             _lang = langs.get(searxng_lang)
-            if _lang is None or _lang.get('official_status') is None:
+            if _lang is None or _lang.get("official_status") is None:
                 continue
             terr_lang_dict[territory] = _lang
 
@@ -324,11 +335,11 @@ def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], defau
         # exception: 'en' --> 'en-US'
 
         territory = locale.language.upper()
-        if territory == 'EN':
-            territory = 'US'
+        if territory == "EN":
+            territory = "US"
 
         if terr_lang_dict.get(territory):
-            searxng_locale = locale.language + '-' + territory
+            searxng_locale = locale.language + "-" + territory
             engine_locale = engine_locales.get(searxng_locale)
             if engine_locale is not None:
                 return engine_locale
@@ -353,8 +364,10 @@ def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], defau
         for k, v in terr_lang_dict.items():
             terr_lang_list.append((k, v))
 
-        for territory, _lang in sorted(terr_lang_list, key=lambda item: item[1]['population_percent'], reverse=True):
-            searxng_locale = locale.language + '-' + territory
+        for territory, _lang in sorted(
+            terr_lang_list, key=lambda item: item[1]["population_percent"], reverse=True
+        ):
+            searxng_locale = locale.language + "-" + territory
             engine_locale = engine_locales.get(searxng_locale)
             if engine_locale is not None:
                 return engine_locale
@@ -368,7 +381,9 @@ def get_engine_locale(searxng_locale: str, engine_locales: dict[str, str], defau
     return engine_locale
 
 
-def match_locale(searxng_locale: str, locale_tag_list: list[str], fallback: str | None = None) -> str | None:
+def match_locale(
+    searxng_locale: str, locale_tag_list: list[str], fallback: str | None = None
+) -> str | None:
     """Return tag from ``locale_tag_list`` that best fits to ``searxng_locale``.
 
     :param str searxng_locale: SearXNG's internal representation of locale (de,
@@ -408,7 +423,7 @@ def match_locale(searxng_locale: str, locale_tag_list: list[str], fallback: str 
 
     tag_list: list[str] = []
     for tag in locale_tag_list:
-        if tag in ('all', 'auto') or tag in ADDITIONAL_TRANSLATIONS:
+        if tag in ("all", "auto") or tag in ADDITIONAL_TRANSLATIONS:
             continue
         tag_list.append(tag)
 
@@ -452,7 +467,9 @@ def build_engine_locales(tag_list: list[str]) -> dict[str, str]:
     for tag in tag_list:
         locale = get_locale(tag)
         if locale is None:
-            logger.warning("build_engine_locales: skip locale tag %s / unknown by babel", tag)
+            logger.warning(
+                "build_engine_locales: skip locale tag %s / unknown by babel", tag
+            )
             continue
         if locale.territory:
             engine_locales[region_tag(locale)] = tag

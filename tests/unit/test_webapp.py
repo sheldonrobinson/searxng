@@ -24,7 +24,7 @@ class ViewsTestCase(SearxTestCase):  # pylint: disable=too-many-public-methods
         def dummy(*args, **kwargs):  # pylint: disable=unused-argument
             pass
 
-        self.setattr4test(searx.search.processors.PROCESSORS, 'init', dummy)
+        self.setattr4test(searx.search.processors.PROCESSORS, "init", dummy)
 
         # set some defaults
         test_results = [
@@ -44,8 +44,8 @@ class ViewsTestCase(SearxTestCase):  # pylint: disable=too-many-public-methods
         for r in test_results:
             r.normalize_result_fields()
         timings = [
-            Timing(engine='startpage', total=0.8, load=0.7),
-            Timing(engine='youtube', total=0.9, load=0.6),
+            Timing(engine="startpage", total=0.8, load=0.7),
+            Timing(engine="youtube", total=0.9, load=0.6),
         ]
 
         def search_mock(search_self, *args):  # pylint: disable=unused-argument
@@ -62,24 +62,24 @@ class ViewsTestCase(SearxTestCase):  # pylint: disable=too-many-public-methods
                 redirect_url=None,
                 engine_data={},
             )
-            search_self.search_query.locale = babel.Locale.parse("en-US", sep='-')
+            search_self.search_query.locale = babel.Locale.parse("en-US", sep="-")
 
-        self.setattr4test(searx.search.Search, 'search', search_mock)
+        self.setattr4test(searx.search.Search, "search", search_mock)
 
         original_preferences_get_value = Preferences.get_value
 
         def preferences_get_value(preferences_self, user_setting_name: str):
-            if user_setting_name == 'theme':
-                return 'simple'
+            if user_setting_name == "theme":
+                return "simple"
             return original_preferences_get_value(preferences_self, user_setting_name)
 
-        self.setattr4test(Preferences, 'get_value', preferences_get_value)
+        self.setattr4test(Preferences, "get_value", preferences_get_value)
 
         # to see full diffs
         self.maxDiff = None  # pylint: disable=invalid-name
 
     def test_index_empty(self):
-        result = self.client.post('/')
+        result = self.client.post("/")
         self.assertEqual(result.status_code, 200)
         self.assertIn(
             b'<div class="title"><h1>SearXNG</h1></div>',
@@ -87,34 +87,34 @@ class ViewsTestCase(SearxTestCase):  # pylint: disable=too-many-public-methods
         )
 
     def test_index_html_post(self):
-        result = self.client.post('/', data={'q': 'test'})
+        result = self.client.post("/", data={"q": "test"})
         self.assertEqual(result.status_code, 308)
-        self.assertEqual(result.location, '/search')
+        self.assertEqual(result.location, "/search")
 
     def test_index_html_get(self):
-        result = self.client.post('/?q=test')
+        result = self.client.post("/?q=test")
         self.assertEqual(result.status_code, 308)
-        self.assertEqual(result.location, '/search?q=test')
+        self.assertEqual(result.location, "/search?q=test")
 
     def test_search_empty_html(self):
-        result = self.client.post('/search', data={'q': ''})
+        result = self.client.post("/search", data={"q": ""})
         self.assertEqual(result.status_code, 200)
         self.assertIn(b'<div class="title"><h1>SearXNG</h1></div>', result.data)
 
     def test_search_empty_json(self):
-        result = self.client.post('/search', data={'q': '', 'format': 'json'})
+        result = self.client.post("/search", data={"q": "", "format": "json"})
         self.assertEqual(result.status_code, 400)
 
     def test_search_empty_csv(self):
-        result = self.client.post('/search', data={'q': '', 'format': 'csv'})
+        result = self.client.post("/search", data={"q": "", "format": "csv"})
         self.assertEqual(result.status_code, 400)
 
     def test_search_empty_rss(self):
-        result = self.client.post('/search', data={'q': '', 'format': 'rss'})
+        result = self.client.post("/search", data={"q": "", "format": "rss"})
         self.assertEqual(result.status_code, 400)
 
     def test_search_html(self):
-        result = self.client.post('/search', data={'q': 'test'})
+        result = self.client.post("/search", data={"q": "test"})
 
         self.assertIn(
             b'<span class="url_o1"><span class="url_i1">http://second.test.xyz</span></span>',
@@ -126,119 +126,133 @@ class ViewsTestCase(SearxTestCase):  # pylint: disable=too-many-public-methods
         )
 
     def test_index_json(self):
-        result = self.client.post('/', data={'q': 'test', 'format': 'json'})
+        result = self.client.post("/", data={"q": "test", "format": "json"})
         self.assertEqual(result.status_code, 308)
 
     def test_search_json(self):
-        result = self.client.post('/search', data={'q': 'test', 'format': 'json'})
+        result = self.client.post("/search", data={"q": "test", "format": "json"})
         result_dict = json.loads(result.data.decode())
 
-        self.assertEqual('test', result_dict['query'])
-        self.assertEqual(len(result_dict['results']), 2)
-        self.assertEqual(result_dict['results'][0]['content'], 'first test content')
-        self.assertEqual(result_dict['results'][0]['url'], 'http://first.test.xyz')
+        self.assertEqual("test", result_dict["query"])
+        self.assertEqual(len(result_dict["results"]), 2)
+        self.assertEqual(result_dict["results"][0]["content"], "first test content")
+        self.assertEqual(result_dict["results"][0]["url"], "http://first.test.xyz")
 
     def test_index_csv(self):
-        result = self.client.post('/', data={'q': 'test', 'format': 'csv'})
+        result = self.client.post("/", data={"q": "test", "format": "csv"})
         self.assertEqual(result.status_code, 308)
 
     def test_search_csv(self):
-        result = self.client.post('/search', data={'q': 'test', 'format': 'csv'})
+        result = self.client.post("/search", data={"q": "test", "format": "csv"})
         self.assertEqual(
-            b'title,url,content,host,engine,score,type\r\n'
-            + b'First Test,http://first.test.xyz,first test content,first.test.xyz,startpage,0,result\r\n'
-            + b'Second Test,http://second.test.xyz,second test content,second.test.xyz,youtube,0,result\r\n',
+            b"title,url,content,host,engine,score,type\r\n"
+            + b"First Test,http://first.test.xyz,first test content,first.test.xyz,startpage,0,result\r\n"
+            + b"Second Test,http://second.test.xyz,second test content,second.test.xyz,youtube,0,result\r\n",
             result.data,
         )
 
     def test_index_rss(self):
-        result = self.client.post('/', data={'q': 'test', 'format': 'rss'})
+        result = self.client.post("/", data={"q": "test", "format": "rss"})
         self.assertEqual(result.status_code, 308)
 
     def test_search_rss(self):
-        result = self.client.post('/search', data={'q': 'test', 'format': 'rss'})
+        result = self.client.post("/search", data={"q": "test", "format": "rss"})
 
-        self.assertIn(b'<description>Search results for "test" - SearXNG</description>', result.data)
+        self.assertIn(
+            b'<description>Search results for "test" - SearXNG</description>',
+            result.data,
+        )
 
-        self.assertIn(b'<title>First Test</title>', result.data)
+        self.assertIn(b"<title>First Test</title>", result.data)
 
-        self.assertIn(b'<link>http://first.test.xyz</link>', result.data)
+        self.assertIn(b"<link>http://first.test.xyz</link>", result.data)
 
-        self.assertIn(b'<description>first test content</description>', result.data)
+        self.assertIn(b"<description>first test content</description>", result.data)
 
     def test_redirect_about(self):
-        result = self.client.get('/about')
+        result = self.client.get("/about")
         self.assertEqual(result.status_code, 302)
 
     def test_info_page(self):
-        result = self.client.get('/info/en/search-syntax')
+        result = self.client.get("/info/en/search-syntax")
         self.assertEqual(result.status_code, 200)
-        self.assertIn(b'<h1>Search syntax</h1>', result.data)
+        self.assertIn(b"<h1>Search syntax</h1>", result.data)
 
     def test_health(self):
-        result = self.client.get('/healthz')
+        result = self.client.get("/healthz")
         self.assertEqual(result.status_code, 200)
-        self.assertIn(b'OK', result.data)
+        self.assertIn(b"OK", result.data)
 
     def test_preferences(self):
-        result = self.client.get('/preferences')
+        result = self.client.get("/preferences")
         self.assertEqual(result.status_code, 200)
-        self.assertIn(b'<form id="search_form" method="post" action="/preferences"', result.data)
+        self.assertIn(
+            b'<form id="search_form" method="post" action="/preferences"', result.data
+        )
         self.assertIn(b'<div id="categories_container">', result.data)
-        self.assertIn(b'<legend id="pref_ui_locale">Interface language</legend>', result.data)
+        self.assertIn(
+            b'<legend id="pref_ui_locale">Interface language</legend>', result.data
+        )
 
     def test_browser_locale(self):
-        result = self.client.get('/preferences', headers={'Accept-Language': 'zh-tw;q=0.8'})
+        result = self.client.get(
+            "/preferences", headers={"Accept-Language": "zh-tw;q=0.8"}
+        )
         self.assertEqual(result.status_code, 200)
         self.assertIn(
             b'<option value="zh-Hant-TW" selected="selected">',
             result.data,
-            'Interface locale ignored browser preference.',
+            "Interface locale ignored browser preference.",
         )
         self.assertIn(
             b'<option value="zh-Hant-TW" selected="selected">',
             result.data,
-            'Search language ignored browser preference.',
+            "Search language ignored browser preference.",
         )
 
     def test_browser_empty_locale(self):
-        result = self.client.get('/preferences', headers={'Accept-Language': ''})
+        result = self.client.get("/preferences", headers={"Accept-Language": ""})
         self.assertEqual(result.status_code, 200)
         self.assertIn(
-            b'<option value="en" selected="selected">', result.data, 'Interface locale ignored browser preference.'
+            b'<option value="en" selected="selected">',
+            result.data,
+            "Interface locale ignored browser preference.",
         )
 
     def test_locale_occitan(self):
-        result = self.client.get('/preferences?locale=oc')
+        result = self.client.get("/preferences?locale=oc")
         self.assertEqual(result.status_code, 200)
         self.assertIn(
-            b'<option value="oc" selected="selected">', result.data, 'Interface locale ignored browser preference.'
+            b'<option value="oc" selected="selected">',
+            result.data,
+            "Interface locale ignored browser preference.",
         )
 
     def test_stats(self):
-        result = self.client.get('/stats')
+        result = self.client.get("/stats")
         self.assertEqual(result.status_code, 200)
-        self.assertIn(b'<h1>Engine stats</h1>', result.data)
+        self.assertIn(b"<h1>Engine stats</h1>", result.data)
 
     def test_robots_txt(self):
-        result = self.client.get('/robots.txt')
+        result = self.client.get("/robots.txt")
         self.assertEqual(result.status_code, 200)
-        self.assertIn(b'Allow: /', result.data)
+        self.assertIn(b"Allow: /", result.data)
 
     def test_opensearch_xml(self):
-        result = self.client.get('/opensearch.xml')
+        result = self.client.get("/opensearch.xml")
         self.assertEqual(result.status_code, 200)
         self.assertIn(
-            b'<Description>SearXNG is a metasearch engine that respects your privacy.</Description>', result.data
+            b"<Description>SearXNG is a metasearch engine that respects your privacy.</Description>",
+            result.data,
         )
 
     def test_favicon(self):
-        result = self.client.get('/favicon.ico')
+        result = self.client.get("/favicon.ico")
         result.close()
         self.assertEqual(result.status_code, 200)
 
     def test_config(self):
-        result = self.client.get('/config')
+        result = self.client.get("/config")
         self.assertEqual(result.status_code, 200)
         json_result = result.get_json()
         self.assertTrue(json_result)

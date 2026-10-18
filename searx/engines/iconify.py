@@ -28,7 +28,11 @@ page_size = 20
 
 def request(query: str, params: "OnlineParams"):
     # actual number of results isn't exaxctly the same as the page size, only approximately
-    args = {"query": query, "start": (params["pageno"] - 1) * page_size, "limit": page_size}
+    args = {
+        "query": query,
+        "start": (params["pageno"] - 1) * page_size,
+        "limit": page_size,
+    }
     params["url"] = f"{base_url}/search?{urlencode(args)}"
 
 

@@ -41,12 +41,16 @@ def request(query: str, params: "OnlineParams") -> None:
 def response(resp: "SXNG_Response"):
     res = EngineResults()
 
-    json_results: list[dict[str, str]] = resp.json()["entities"]  # pyright: ignore[reportAny]
+    json_results: list[dict[str, str]] = resp.json()[
+        "entities"
+    ]  # pyright: ignore[reportAny]
 
     for result in json_results:
         metadata = [f"{result['number_of_episodes']} episodes"]
         if result["categories"]:
-            metadata.append(", ".join(c["text"] for c in result["categories"]))  # pyright: ignore[reportArgumentType]
+            metadata.append(
+                ", ".join(c["text"] for c in result["categories"])
+            )  # pyright: ignore[reportArgumentType]
 
         res.add(
             res.types.MainResult(

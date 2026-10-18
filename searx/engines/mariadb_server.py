@@ -37,7 +37,7 @@ except ImportError:
 
 from searx.result_types import EngineResults
 
-engine_type = 'offline'
+engine_type = "offline"
 
 host = "127.0.0.1"
 """Hostname of the DB connector"""
@@ -63,22 +63,26 @@ _connection = None
 
 
 def setup(engine_settings: dict[str, t.Any]) -> bool | None:
-    if 'query_str' not in engine_settings:
-        raise ValueError('query_str cannot be empty')
+    if "query_str" not in engine_settings:
+        raise ValueError("query_str cannot be empty")
 
-    if not engine_settings['query_str'].lower().startswith('select '):
-        raise ValueError('only SELECT query is supported')
+    if not engine_settings["query_str"].lower().startswith("select "):
+        raise ValueError("only SELECT query is supported")
 
 
 def init(_):
     global _connection  # pylint: disable=global-statement
 
-    _connection = mariadb.connect(database=database, user=username, password=password, host=host, port=port)
+    _connection = mariadb.connect(
+        database=database, user=username, password=password, host=host, port=port
+    )
 
 
 def search(query, params) -> EngineResults:
-    query_params = {'query': query}
-    query_to_run = query_str + ' LIMIT {0} OFFSET {1}'.format(limit, (params['pageno'] - 1) * limit)
+    query_params = {"query": query}
+    query_to_run = query_str + " LIMIT {0} OFFSET {1}".format(
+        limit, (params["pageno"] - 1) * limit
+    )
     logger.debug("SQL Query: %s", query_to_run)
     res = EngineResults()
 

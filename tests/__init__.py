@@ -5,14 +5,14 @@ import pathlib
 import os
 import aiounittest
 
-os.environ.pop('SEARXNG_SETTINGS_PATH', None)
-os.environ['SEARXNG_DISABLE_ETC_SETTINGS'] = '1'
+os.environ.pop("SEARXNG_SETTINGS_PATH", None)
+os.environ["SEARXNG_DISABLE_ETC_SETTINGS"] = "1"
 
 
 class SearxTestLayer:
     """Base layer for non-robot tests."""
 
-    __name__ = 'SearxTestLayer'
+    __name__ = "SearxTestLayer"
 
     @classmethod
     def setUp(cls):
@@ -59,7 +59,9 @@ class SearxTestCase(aiounittest.AsyncTestCase):
         :origin:`tests/unit/settings/`.
         """
 
-        os.environ['SEARXNG_SETTINGS_PATH'] = str(self.SETTINGS_FOLDER / self.TEST_SETTINGS)
+        os.environ["SEARXNG_SETTINGS_PATH"] = str(
+            self.SETTINGS_FOLDER / self.TEST_SETTINGS
+        )
 
         # pylint: disable=import-outside-toplevel
         import searx

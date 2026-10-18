@@ -5,12 +5,12 @@ from urllib.parse import urlunparse
 
 # about
 about = {
-    "website": 'https://metacpan.org/',
-    "wikidata_id": 'Q841507',
-    "official_api_documentation": 'https://github.com/metacpan/metacpan-api/blob/master/docs/API-docs.md',
+    "website": "https://metacpan.org/",
+    "wikidata_id": "Q841507",
+    "official_api_documentation": "https://github.com/metacpan/metacpan-api/blob/master/docs/API-docs.md",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
@@ -21,20 +21,20 @@ shortcut = "cpan"
 paging = True
 
 query_data_template = {
-    'query': {
-        'multi_match': {
-            'type': 'most_fields',
-            'fields': ['documentation', 'documentation.*'],
-            'analyzer': 'camelcase',
+    "query": {
+        "multi_match": {
+            "type": "most_fields",
+            "fields": ["documentation", "documentation.*"],
+            "analyzer": "camelcase",
         }
     },
-    'filter': {
-        'bool': {
-            'must': [
-                {'exists': {'field': 'documentation'}},
-                {'term': {'status': 'latest'}},
-                {'term': {'indexed': 1}},
-                {'term': {'authorized': 1}},
+    "filter": {
+        "bool": {
+            "must": [
+                {"exists": {"field": "documentation"}},
+                {"term": {"status": "latest"}},
+                {"term": {"indexed": 1}},
+                {"term": {"authorized": 1}},
             ]
         }
     },
@@ -42,10 +42,12 @@ query_data_template = {
         {"_score": {"order": "desc"}},
         {"date": {"order": "desc"}},
     ],
-    '_source': ['documentation', "abstract"],
-    'size': page_size,
+    "_source": ["documentation", "abstract"],
+    "size": page_size,
 }
-search_url = urlunparse(["https", "fastapi.metacpan.org", "/v1/file/_search", "", "", ""])
+search_url = urlunparse(
+    ["https", "fastapi.metacpan.org", "/v1/file/_search", "", "", ""]
+)
 
 
 def request(query, params):

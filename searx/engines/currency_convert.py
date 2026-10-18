@@ -29,7 +29,9 @@ ddg_link_url = "https://duckduckgo.com/?q=%(from_iso4217)s+to+%(to_iso4217)s"
 weight = 100
 
 
-def request(query: str, params: "OnlineCurrenciesParams") -> None:  # pylint: disable=unused-argument
+def request(
+    query: str, params: "OnlineCurrenciesParams"
+) -> None:  # pylint: disable=unused-argument
     params["url"] = base_url % params
 
 
@@ -43,7 +45,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
     except IndexError:
         return res
 
-    params: OnlineCurrenciesParams = resp.search_params  # pyright: ignore[reportAssignmentType]
+    params: OnlineCurrenciesParams = (
+        resp.search_params
+    )  # pyright: ignore[reportAssignmentType]
     answer = "{0} {1} = {2} {3} (1 {5} : {4} {6})".format(
         params["amount"],
         params["from_iso4217"],

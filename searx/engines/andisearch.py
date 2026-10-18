@@ -47,7 +47,11 @@ def _obtain_api_token() -> str:
         return token
 
     # user agent for token request must be the same as for the main request
-    token_resp = get(f"{base_url}/api/token", headers={"Referer": f"{base_url}/"}, impersonate="firefox")
+    token_resp = get(
+        f"{base_url}/api/token",
+        headers={"Referer": f"{base_url}/"},
+        impersonate="firefox",
+    )
     if not token_resp.ok:
         raise SearxEngineAPIException("failed to obtain api key")
 
@@ -82,7 +86,9 @@ def request(query: str, params: "OnlineParams"):
 def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
 
-    results_json = resp.json()["sessionState"]["sessionAttributes"]["currentSearchResult"]
+    results_json = resp.json()["sessionState"]["sessionAttributes"][
+        "currentSearchResult"
+    ]
     parsed = json.loads(results_json)
 
     if answer := parsed.get("answer"):
@@ -110,7 +116,10 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 resolution = f"{result['width']}x{result['height']}"
             res.add(
                 res.types.Image(
-                    url=result["link"], title=result["title"], img_src=result["image"], resolution=resolution
+                    url=result["link"],
+                    title=result["title"],
+                    img_src=result["image"],
+                    resolution=resolution,
                 )
             )
 

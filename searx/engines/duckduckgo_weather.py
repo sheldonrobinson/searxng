@@ -18,8 +18,8 @@ from searx.extended_types import SXNG_Response
 from searx import weather
 
 about = {
-    "website": 'https://duckduckgo.com/',
-    "wikidata_id": 'Q12805',
+    "website": "https://duckduckgo.com/",
+    "wikidata_id": "Q12805",
     "official_api_documentation": None,
     "use_official_api": True,
     "require_api_key": False,
@@ -74,9 +74,9 @@ def _weather_data(location: weather.GeoLocation, data: dict[str, t.Any]):
 
     return EngineResults.types.WeatherAnswer.Item(
         location=location,
-        temperature=weather.Temperature(val=data['temperature'], unit="°C"),
+        temperature=weather.Temperature(val=data["temperature"], unit="°C"),
         condition=WEATHERKIT_TO_CONDITION[data["conditionCode"]],
-        feels_like=weather.Temperature(val=data['temperatureApparent'], unit="°C"),
+        feels_like=weather.Temperature(val=data["temperatureApparent"], unit="°C"),
         wind_from=weather.Compass(data["windDirection"]),
         wind_speed=weather.WindSpeed(val=data["windSpeed"], unit="mi/h"),
         pressure=weather.Pressure(val=data["pressure"], unit="hPa"),
@@ -87,16 +87,16 @@ def _weather_data(location: weather.GeoLocation, data: dict[str, t.Any]):
 
 def request(query: str, params: dict[str, t.Any]):
 
-    eng_region = traits.get_region(params['searxng_locale'], traits.all_locale)
-    eng_lang = get_ddg_lang(traits, params['searxng_locale'])
+    eng_region = traits.get_region(params["searxng_locale"], traits.all_locale)
+    eng_lang = get_ddg_lang(traits, params["searxng_locale"])
 
     # !ddw paris :es-AR --> {'ad': 'es_AR', 'ah': 'ar-es', 'l': 'ar-es'}
-    params['cookies']['ad'] = eng_lang
-    params['cookies']['ah'] = eng_region
-    params['cookies']['l'] = eng_region
-    logger.debug("cookies: %s", params['cookies'])
+    params["cookies"]["ad"] = eng_lang
+    params["cookies"]["ah"] = eng_region
+    params["cookies"]["l"] = eng_region
+    logger.debug("cookies: %s", params["cookies"])
 
-    params["url"] = base_url.format(query=quote(query), lang=eng_lang.split('_')[0])
+    params["url"] = base_url.format(query=quote(query), lang=eng_lang.split("_")[0])
     return params
 
 
@@ -106,7 +106,7 @@ def response(resp: SXNG_Response):
     if resp.text.strip() == "ddg_spice_forecast();":
         return res
 
-    json_data = loads(resp.text[resp.text.find('\n') + 1 : resp.text.rfind('\n') - 2])
+    json_data = loads(resp.text[resp.text.find("\n") + 1 : resp.text.rfind("\n") - 2])
 
     location = json_data.get("location")
     if not location:
@@ -127,8 +127,8 @@ def response(resp: SXNG_Response):
         service="duckduckgo weather",
     )
 
-    for forecast in json_data['forecastHourly']['hours']:
-        forecast_time = date_parser.parse(forecast['forecastStart'])
+    for forecast in json_data["forecastHourly"]["hours"]:
+        forecast_time = date_parser.parse(forecast["forecastStart"])
         forecast_data = _weather_data(geoloc, forecast)
         forecast_data.datetime = weather.DateTime(forecast_time)
         weather_answer.forecasts.append(forecast_data)

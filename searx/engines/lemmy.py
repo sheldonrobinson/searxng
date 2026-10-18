@@ -46,15 +46,15 @@ from flask_babel import gettext
 from searx.utils import markdown_to_text
 
 about = {
-    "website": 'https://lemmy.ml/',
-    "wikidata_id": 'Q84777032',
+    "website": "https://lemmy.ml/",
+    "wikidata_id": "Q84777032",
     "official_api_documentation": "https://join-lemmy.org/api/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 paging = True
-categories = ['social media']
+categories = ["social media"]
 
 base_url = "https://lemmy.ml/"
 """By default, https://lemmy.ml is used for providing the results.  If you want
@@ -67,12 +67,12 @@ lemmy_type = "Communities"
 
 def request(query, params):
     args = {
-        'q': query,
-        'page': params['pageno'],
-        'type_': lemmy_type,
+        "q": query,
+        "page": params["pageno"],
+        "type_": lemmy_type,
     }
 
-    params['url'] = f"{base_url}api/v3/search?{urlencode(args)}"
+    params["url"] = f"{base_url}api/v3/search?{urlencode(args)}"
     return params
 
 
@@ -80,7 +80,7 @@ def _get_communities(json):
     results = []
 
     for result in json["communities"]:
-        counts = result['counts']
+        counts = result["counts"]
         metadata = (
             f"{gettext('subscribers')}: {counts.get('subscribers', 0)}"
             f" | {gettext('posts')}: {counts.get('posts', 0)}"
@@ -88,12 +88,14 @@ def _get_communities(json):
         )
         results.append(
             {
-                'url': result['community']['actor_id'],
-                'title': result['community']['title'],
-                'content': markdown_to_text(result['community'].get('description', '')),
-                'thumbnail': result['community'].get('icon', result['community'].get('banner')),
-                'publishedDate': datetime.fromisoformat(counts['published'][:19]),
-                'metadata': metadata,
+                "url": result["community"]["actor_id"],
+                "title": result["community"]["title"],
+                "content": markdown_to_text(result["community"].get("description", "")),
+                "thumbnail": result["community"].get(
+                    "icon", result["community"].get("banner")
+                ),
+                "publishedDate": datetime.fromisoformat(counts["published"][:19]),
+                "metadata": metadata,
             }
         )
     return results
@@ -105,9 +107,9 @@ def _get_users(json):
     for result in json["users"]:
         results.append(
             {
-                'url': result['person']['actor_id'],
-                'title': result['person']['name'],
-                'content': markdown_to_text(result['person'].get('bio', '')),
+                "url": result["person"]["actor_id"],
+                "title": result["person"]["name"],
+                "content": markdown_to_text(result["person"].get("bio", "")),
             }
         )
 
@@ -118,11 +120,11 @@ def _get_posts(json):
     results = []
 
     for result in json["posts"]:
-        user = result['creator'].get('display_name', result['creator']['name'])
+        user = result["creator"].get("display_name", result["creator"]["name"])
 
         thumbnail = None
-        if result['post'].get('thumbnail_url'):
-            thumbnail = result['post']['thumbnail_url'] + '?format=webp&thumbnail=208'
+        if result["post"].get("thumbnail_url"):
+            thumbnail = result["post"]["thumbnail_url"] + "?format=webp&thumbnail=208"
 
         metadata = (
             f"&#x25B2; {result['counts']['upvotes']} &#x25BC; {result['counts']['downvotes']}"
@@ -131,18 +133,20 @@ def _get_posts(json):
             f" | {gettext('community')}: {result['community']['title']}"
         )
 
-        content = result['post'].get('body', '').strip()
+        content = result["post"].get("body", "").strip()
         if content:
             content = markdown_to_text(content)
 
         results.append(
             {
-                'url': result['post']['ap_id'],
-                'title': result['post']['name'],
-                'content': content,
-                'thumbnail': thumbnail,
-                'publishedDate': datetime.fromisoformat(result['post']['published'][:19]),
-                'metadata': metadata,
+                "url": result["post"]["ap_id"],
+                "title": result["post"]["name"],
+                "content": content,
+                "thumbnail": thumbnail,
+                "publishedDate": datetime.fromisoformat(
+                    result["post"]["published"][:19]
+                ),
+                "metadata": metadata,
             }
         )
 
@@ -153,9 +157,9 @@ def _get_comments(json):
     results = []
 
     for result in json["comments"]:
-        user = result['creator'].get('display_name', result['creator']['name'])
+        user = result["creator"].get("display_name", result["creator"]["name"])
 
-        content = result['comment'].get('content', '').strip()
+        content = result["comment"].get("content", "").strip()
         if content:
             content = markdown_to_text(content)
 
@@ -167,11 +171,13 @@ def _get_comments(json):
 
         results.append(
             {
-                'url': result['comment']['ap_id'],
-                'title': result['post']['name'],
-                'content': markdown_to_text(result['comment']['content']),
-                'publishedDate': datetime.fromisoformat(result['comment']['published'][:19]),
-                'metadata': metadata,
+                "url": result["comment"]["ap_id"],
+                "title": result["post"]["name"],
+                "content": markdown_to_text(result["comment"]["content"]),
+                "publishedDate": datetime.fromisoformat(
+                    result["comment"]["published"][:19]
+                ),
+                "metadata": metadata,
             }
         )
 

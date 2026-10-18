@@ -13,26 +13,26 @@ from searx.external_bang import LEAF_KEY
 from searx.data import data_dir
 from searx.network import get as http_get
 
-DATA_FILE = data_dir / 'external_bangs.json'
+DATA_FILE = data_dir / "external_bangs.json"
 
-BANGS_URL = 'https://duckduckgo.com/bang.js'
+BANGS_URL = "https://duckduckgo.com/bang.js"
 """JSON file which contains the bangs."""
 
-HTTPS_COLON = 'https:'
-HTTP_COLON = 'http:'
+HTTPS_COLON = "https:"
+HTTP_COLON = "http:"
 
 
 def main():
-    print(f'fetch bangs from {BANGS_URL}')
+    print(f"fetch bangs from {BANGS_URL}")
     response = http_get(BANGS_URL)
     response.raise_for_status()
     ddg_bangs = json.loads(response.content.decode())
     trie = parse_ddg_bangs(ddg_bangs)
     output = {
-        'version': 0,
-        'trie': trie,
+        "version": 0,
+        "trie": trie,
     }
-    with DATA_FILE.open('w', encoding="utf8") as f:
+    with DATA_FILE.open("w", encoding="utf8") as f:
         json.dump(output, f, indent=4, sort_keys=True, ensure_ascii=False)
 
 
@@ -99,32 +99,35 @@ def parse_ddg_bangs(ddg_bangs):
 
     for bang_definition in ddg_bangs:
         # bang_list
-        bang_url = bang_definition['u']
-        if '{{{s}}}' not in bang_url:
+        bang_url = bang_definition["u"]
+        if "{{{s}}}" not in bang_url:
             # ignore invalid bang
             continue
 
-        bang_url = bang_url.replace('{{{s}}}', chr(2))
+        bang_url = bang_url.replace("{{{s}}}", chr(2))
 
         # only for the https protocol: "https://example.com" becomes "//example.com"
-        if bang_url.startswith(HTTPS_COLON + '//'):
+        if bang_url.startswith(HTTPS_COLON + "//"):
             bang_url = bang_url[len(HTTPS_COLON) :]
 
         #
-        if bang_url.startswith(HTTP_COLON + '//') and bang_url[len(HTTP_COLON) :] in bang_urls:
+        if (
+            bang_url.startswith(HTTP_COLON + "//")
+            and bang_url[len(HTTP_COLON) :] in bang_urls
+        ):
             # if the bang_url uses the http:// protocol, and the same URL exists in https://
             # then reuse the https:// bang definition. (written //example.com)
             bang_def_output = bang_urls[bang_url[len(HTTP_COLON) :]]
         else:
             # normal use case : new http:// URL or https:// URL (without "https:", see above)
-            bang_rank = str(bang_definition['r'])
+            bang_rank = str(bang_definition["r"])
             bang_def_output = bang_url + chr(1) + bang_rank
             bang_def_output = bang_urls.setdefault(bang_url, bang_def_output)
 
         bang_urls[bang_url] = bang_def_output
 
         # bang name
-        bang = bang_definition['t']
+        bang = bang_definition["t"]
 
         # bang_trie
         t = bang_trie
@@ -139,5 +142,5 @@ def parse_ddg_bangs(ddg_bangs):
     return bang_trie
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

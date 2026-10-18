@@ -9,7 +9,7 @@ from searx import settings
 
 
 class ReverseProxyPathFix:
-    '''Wrap the application in this middleware and configure the
+    """Wrap the application in this middleware and configure the
     front-end server to add these headers, to let you quietly bind
     this to a URL other than / and to an HTTP scheme that is
     different than what is used locally.
@@ -26,7 +26,7 @@ class ReverseProxyPathFix:
         }
 
     :param wsgi_app: the WSGI application
-    '''
+    """
 
     # pylint: disable=too-few-public-methods
 
@@ -37,14 +37,14 @@ class ReverseProxyPathFix:
         self.scheme = None
         self.server = None
 
-        if settings['server']['base_url']:
+        if settings["server"]["base_url"]:
 
             # If base_url is specified, then these values from are given
             # preference over any Flask's generics.
 
-            base_url = urlparse(settings['server']['base_url'])
+            base_url = urlparse(settings["server"]["base_url"])
             self.script_name = base_url.path
-            if self.script_name.endswith('/'):
+            if self.script_name.endswith("/"):
                 # remove trailing slash to avoid infinite redirect on the index
                 # see https://github.com/searx/searx/issues/2729
                 self.script_name = self.script_name[:-1]
@@ -52,25 +52,31 @@ class ReverseProxyPathFix:
             self.server = base_url.netloc
 
     def __call__(self, environ, start_response):
-        script_name = self.script_name or environ.get('HTTP_X_SCRIPT_NAME', '')
+        script_name = self.script_name or environ.get("HTTP_X_SCRIPT_NAME", "")
         if script_name:
-            environ['SCRIPT_NAME'] = script_name
-            path_info = environ['PATH_INFO']
+            environ["SCRIPT_NAME"] = script_name
+            path_info = environ["PATH_INFO"]
             if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name) :]
+                environ["PATH_INFO"] = path_info[len(script_name) :]
 
-        scheme = self.scheme or environ.get('HTTP_X_SCHEME') or environ.get('HTTP_X_FORWARDED_PROTO')
+        scheme = (
+            self.scheme
+            or environ.get("HTTP_X_SCHEME")
+            or environ.get("HTTP_X_FORWARDED_PROTO")
+        )
         if scheme:
-            environ['wsgi.url_scheme'] = scheme
+            environ["wsgi.url_scheme"] = scheme
 
-        server = self.server or environ.get('HTTP_X_FORWARDED_HOST', '')
+        server = self.server or environ.get("HTTP_X_FORWARDED_HOST", "")
         if server:
-            environ['HTTP_HOST'] = server
+            environ["HTTP_HOST"] = server
         return self.wsgi_app(environ, start_response)
 
 
 def patch_application(app):
     # serve pages with HTTP/1.1
-    WSGIRequestHandler.protocol_version = "HTTP/{}".format(settings['server']['http_protocol_version'])
+    WSGIRequestHandler.protocol_version = "HTTP/{}".format(
+        settings["server"]["http_protocol_version"]
+    )
     # patch app to handle non root url-s behind proxy
     app.wsgi_app = ReverseProxyPathFix(app.wsgi_app)

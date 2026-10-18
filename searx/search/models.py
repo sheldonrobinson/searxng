@@ -8,7 +8,7 @@ import babel
 class EngineRef:
     """Reference by names to an engine and category"""
 
-    __slots__ = 'name', 'category'
+    __slots__ = "name", "category"
 
     def __init__(self, name: str, category: str):
         self.name = name
@@ -32,7 +32,7 @@ class SearchQuery:
         self,
         query: str,
         engineref_list: list[EngineRef],
-        lang: str = 'all',
+        lang: str = "all",
         safesearch: typing.Literal[0, 1, 2] = 0,
         pageno: int = 1,
         time_range: typing.Literal["day", "week", "month", "year"] | None = None,
@@ -46,7 +46,9 @@ class SearchQuery:
         self.lang = lang
         self.safesearch: typing.Literal[0, 1, 2] = safesearch
         self.pageno = pageno
-        self.time_range: typing.Literal["day", "week", "month", "year"] | None = time_range
+        self.time_range: typing.Literal["day", "week", "month", "year"] | None = (
+            time_range
+        )
         self.timeout_limit = timeout_limit
         self.external_bang = external_bang
         self.engine_data = engine_data or {}
@@ -55,7 +57,7 @@ class SearchQuery:
         self.locale = None
         if self.lang:
             try:
-                self.locale = babel.Locale.parse(self.lang, sep='-')
+                self.locale = babel.Locale.parse(self.lang, sep="-")
             except babel.core.UnknownLocaleError:
                 pass
 
@@ -64,16 +66,18 @@ class SearchQuery:
         return list(set(map(lambda engineref: engineref.category, self.engineref_list)))
 
     def __repr__(self):
-        return "SearchQuery({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})".format(
-            self.query,
-            self.engineref_list,
-            self.lang,
-            self.safesearch,
-            self.pageno,
-            self.time_range,
-            self.timeout_limit,
-            self.external_bang,
-            self.redirect_to_first_result,
+        return (
+            "SearchQuery({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})".format(
+                self.query,
+                self.engineref_list,
+                self.lang,
+                self.safesearch,
+                self.pageno,
+                self.time_range,
+                self.timeout_limit,
+                self.external_bang,
+                self.redirect_to_first_result,
+            )
         )
 
     def __eq__(self, other):

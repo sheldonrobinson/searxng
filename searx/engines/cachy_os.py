@@ -6,7 +6,7 @@ from datetime import datetime
 from searx.result_types import EngineResults
 
 about = {
-    "website": 'https://cachyos.org',
+    "website": "https://cachyos.org",
     "wikidata_id": "Q116777127",
     "official_api_documentation": None,
     "use_official_api": False,
@@ -15,7 +15,7 @@ about = {
 }
 
 base_url = "https://packages.cachyos.org/api/search"
-categories = ['packages', 'it']
+categories = ["packages", "it"]
 paging = True
 results_per_page = 15
 
@@ -44,7 +44,7 @@ def response(resp) -> EngineResults:
         results.add(
             results.types.LegacyResult(
                 {
-                    "template": 'packages.html',
+                    "template": "packages.html",
                     "url": f"https://packages.cachyos.org/package/{repo}/{arch}/{package_name}",
                     "title": f"{package_name} ({repo})",
                     "package_name": package_name,

@@ -35,6 +35,7 @@ except Exception:  # pylint: disable=broad-except
 # Settings - fall back gracefully when searx package is not importable
 try:
     from searx import get_setting
+
     _docs_url = get_setting("brand.docs_url")
     _issue_url = get_setting("brand.issue_url")
 except Exception:  # pylint: disable=broad-except
@@ -68,9 +69,7 @@ setup(
         "Programming Language :: Python :: 3.13",
     ],
     project_urls={"Code": GIT_URL, "Issue tracker": _issue_url},
-    entry_points={
-        "console_scripts": ["searxng-run = searx.webapp:run"]
-    },
+    entry_points={"console_scripts": ["searxng-run = searx.webapp:run"]},
     packages=find_packages(
         include=[
             "searx",

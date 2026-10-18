@@ -221,7 +221,9 @@ def request(query: str, params: dict[str, t.Any]) -> None:
     engine_region = traits.get_region(params["searxng_locale"], "all")
     params["cookies"]["country"] = engine_region.split("-")[-1].lower()  # type: ignore
 
-    ui_lang = locales.get_engine_locale(params["searxng_locale"], traits.custom["ui_lang"], "en-us")
+    ui_lang = locales.get_engine_locale(
+        params["searxng_locale"], traits.custom["ui_lang"], "en-us"
+    )
     params["cookies"]["ui_lang"] = ui_lang
     logger.debug("cookies %s", params["cookies"])
 
@@ -269,7 +271,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
         case "videos":
             return _parse_results(parse_video_result, resp)
         case _:
-            raise ValueError(f"Unsupported brave category: {brave_category}")  # pyright: ignore[reportUnreachable]
+            raise ValueError(
+                f"Unsupported brave category: {brave_category}"
+            )  # pyright: ignore[reportUnreachable]
 
 
 def parse_search_result(result: dict[str, t.Any]) -> MainResult:
@@ -281,7 +285,9 @@ def parse_search_result(result: dict[str, t.Any]) -> MainResult:
         url=result.get("url", ""),
         publishedDate=_extract_published_date(result.get("page_age")),
         pubdate=result.get("age", ""),
-        thumbnail=thumbnail.get("src", "") if thumbnail and not thumbnail.get("logo") else "",
+        thumbnail=(
+            thumbnail.get("src", "") if thumbnail and not thumbnail.get("logo") else ""
+        ),
     )
 
 
@@ -343,7 +349,9 @@ def parse_video_result(result: dict[str, t.Any]) -> Video:
     )
 
 
-def _get_response_data(json_data: dict[str, t.Any], category: str | None = None) -> dict[str, t.Any]:
+def _get_response_data(
+    json_data: dict[str, t.Any], category: str | None = None
+) -> dict[str, t.Any]:
     """Navigate the Brave embedded JSON to the category-specific response object."""
     # Brave’s structure is mostly consistent but has a couple of quirks:
     # - most categories live under data[1].data.body.response.<category>
@@ -363,13 +371,18 @@ def _get_response_data(json_data: dict[str, t.Any], category: str | None = None)
         # images / videos / secondary items
         return body_resp
     except (KeyError, IndexError, TypeError) as e:
-        raise SearxEngineResponseException(f"Unexpected Brave JSON structure for category {category!r}") from e
+        raise SearxEngineResponseException(
+            f"Unexpected Brave JSON structure for category {category!r}"
+        ) from e
 
 
-def _parse_results(parse_func: Callable[..., MainResult | Image], resp: "SXNG_Response") -> EngineResults:
+def _parse_results(
+    parse_func: Callable[..., MainResult | Image], resp: "SXNG_Response"
+) -> EngineResults:
     """Extract json data and loop through result list
     The suppled :py.obj:`parse_func` parses individual result items
-    General search / goggle search relies on :py.obj:`_parse_secondary_items` for mixed result-types"""
+    General search / goggle search relies on :py.obj:`_parse_secondary_items` for mixed result-types
+    """
     # Example script source containing the data:
     #
     # kit.start(app, element, {
@@ -455,10 +468,14 @@ def fetch_traits(engine_traits: EngineTraits):
         country_tag = v["value"]
 
         # add official languages of the country ..
-        for lang_tag in babel.languages.get_official_languages(country_tag, de_facto=True):
+        for lang_tag in babel.languages.get_official_languages(
+            country_tag, de_facto=True
+        ):
             lang_tag = lang_map.get(lang_tag, lang_tag)
             try:
-                sxng_tag = region_tag(babel.Locale.parse(f"{lang_tag}_{country_tag.upper()}"))
+                sxng_tag = region_tag(
+                    babel.Locale.parse(f"{lang_tag}_{country_tag.upper()}")
+                )
             except babel.UnknownLocaleError:
                 # silently ignore unknown languages
                 continue

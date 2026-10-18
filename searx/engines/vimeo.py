@@ -10,18 +10,18 @@ from searx.enginelib import EngineCache
 
 # Engine metadata
 about = {
-    "website": 'https://vimeo.com/',
-    "wikidata_id": 'Q156376',
-    "official_api_documentation": 'http://developer.vimeo.com/api',
+    "website": "https://vimeo.com/",
+    "wikidata_id": "Q156376",
+    "official_api_documentation": "http://developer.vimeo.com/api",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 
 # Engine configuration
 paging = True
-categories = ['videos']
+categories = ["videos"]
 results_per_page = 20
 
 # Search URL
@@ -47,13 +47,15 @@ def fetch_json_web_token():
     jwt_url = "https://vimeo.com/_next/jwt"
 
     jwt_headers = {
-        'x-requested-with': "XMLHttpRequest",
+        "x-requested-with": "XMLHttpRequest",
     }
 
     resp = get(url=jwt_url, headers=jwt_headers, timeout=5)
     json_web_token = resp.json()["token"]
 
-    CACHE.set(key=JWT_CACHE_KEY, value=json_web_token, expire=JWT_CACHE_EXPIRATION_SECONDS)
+    CACHE.set(
+        key=JWT_CACHE_KEY, value=json_web_token, expire=JWT_CACHE_EXPIRATION_SECONDS
+    )
 
     return json_web_token
 
@@ -80,7 +82,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
     search_res = resp.json()
 
     for item in search_res["data"]:
-        video_id = urlparse(item["clip"]["link"]).path.strip('/')
+        video_id = urlparse(item["clip"]["link"]).path.strip("/")
 
         results.add(
             results.types.LegacyResult(

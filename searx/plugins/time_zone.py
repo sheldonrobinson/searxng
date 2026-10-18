@@ -36,7 +36,9 @@ class SXNGPlugin(Plugin):
             examples=["time Berlin", "clock Los Angeles"],
         )
 
-    def post_search(self, request: "SXNG_Request", search: "SearchWithPlugins") -> EngineResults:
+    def post_search(
+        self, request: "SXNG_Request", search: "SearchWithPlugins"
+    ) -> EngineResults:
         """The plugin uses the :py:obj:`searx.weather.GeoLocation` class, which
         is already implemented in the context of weather forecasts, to determine
         the time zone. The :py:obj:`searx.weather.DateTime` class is used for
@@ -48,7 +50,9 @@ class SXNGPlugin(Plugin):
 
         # remove keywords from the query
         query = search.search_query.query
-        query_parts = filter(lambda part: part.lower() not in self.keywords, query.split(" "))
+        query_parts = filter(
+            lambda part: part.lower() not in self.keywords, query.split(" ")
+        )
         search_term = " ".join(query_parts).strip()
 
         if not search_term:
@@ -59,10 +63,13 @@ class SXNGPlugin(Plugin):
         geo = GeoLocation.by_query(search_term=search_term)
         if geo:
             date_time = DateTime(datetime.datetime.now(tz=geo.zoneinfo))
-            tz_name = geo.timezone.replace('_', ' ')
+            tz_name = geo.timezone.replace("_", " ")
             results.add(
                 results.types.Answer(
-                    answer=(f"{tz_name}:" f" {date_time.l10n()} ({date_time.datetime.strftime('%Z')})")
+                    answer=(
+                        f"{tz_name}:"
+                        f" {date_time.l10n()} ({date_time.datetime.strftime('%Z')})"
+                    )
                 )
             )
 

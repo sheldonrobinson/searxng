@@ -80,13 +80,19 @@ def _fetch_first_page_link(
         logger.error("vqd: got HTTP %s from duckduckgo.com", resp.status_code)
 
     dom = resp.html()
-    first_page_link = extract_text(eval_xpath(dom, "//link[@id='deep_preload_link']/@href"))
+    first_page_link = extract_text(
+        eval_xpath(dom, "//link[@id='deep_preload_link']/@href")
+    )
 
     if not first_page_link:
-        logger.error("vqd: failed to load first page JS url from ddg response (return empty string)")
+        logger.error(
+            "vqd: failed to load first page JS url from ddg response (return empty string)"
+        )
         return ""
 
-    logger.debug("got link to first page from duckduckgo.com request: '%s'", first_page_link)
+    logger.debug(
+        "got link to first page from duckduckgo.com request: '%s'", first_page_link
+    )
     CACHE.set(cache_key, first_page_link, expire=7200)
 
     return first_page_link
@@ -108,7 +114,9 @@ def _solve_jsa(resp: "SXNG_Response") -> "SXNG_Response":
     }
 
     js = resp.text or ""
-    jsa_match = re.search(r"let jsa = (\d+);.*?DDG\.deep\.initialize\('([^']+)'", js, re.S)
+    jsa_match = re.search(
+        r"let jsa = (\d+);.*?DDG\.deep\.initialize\('([^']+)'", js, re.S
+    )
     if not jsa_match:
         return resp
 
@@ -118,7 +126,11 @@ def _solve_jsa(resp: "SXNG_Response") -> "SXNG_Response":
         for name in re.findall(r"jsa = (\w+)\(jsa\);", js):
             body = js_functions[name]
             mul = re.search(r"num \* (\d+)", body)
-            jsa = jsa * int(mul.group(1)) if mul else jsa + html_len[re.search(r"`([^`]+)`", body).group(1)]
+            jsa = (
+                jsa * int(mul.group(1))
+                if mul
+                else jsa + html_len[re.search(r"`([^`]+)`", body).group(1)]
+            )
     except (KeyError, AttributeError):
         return resp
 
@@ -181,14 +193,20 @@ def response(resp: "SXNG_Response"):
             continue
 
         res.add(
-            res.types.MainResult(url=result["u"], title=html_to_text(result["t"]), content=html_to_text(result["a"]))
+            res.types.MainResult(
+                url=result["u"],
+                title=html_to_text(result["t"]),
+                content=html_to_text(result["a"]),
+            )
         )
 
     if results:
         next_page_path = results[-1].get("n")
         if next_page_path:
             CACHE.set(
-                _cache_key(resp.search_params["query"], resp.search_params["pageno"] + 1),
+                _cache_key(
+                    resp.search_params["query"], resp.search_params["pageno"] + 1
+                ),
                 base_url + next_page_path,
                 expire=60 * 60,
             )

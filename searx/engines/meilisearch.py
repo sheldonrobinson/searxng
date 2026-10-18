@@ -40,40 +40,40 @@ from json import dumps
 from searx.result_types import EngineResults
 from searx.extended_types import SXNG_Response
 
-base_url = 'http://localhost:7700'
-index = ''
-auth_key = ''
+base_url = "http://localhost:7700"
+index = ""
+auth_key = ""
 facet_filters = []
-_search_url = ''
-categories = ['general']
+_search_url = ""
+categories = ["general"]
 paging = True
 
 
 def setup(_: dict[str, t.Any]) -> bool | None:
-    if index == '':
-        raise ValueError('index cannot be empty')
+    if index == "":
+        raise ValueError("index cannot be empty")
 
     global _search_url
-    _search_url = base_url + '/indexes/' + index + '/search'
+    _search_url = base_url + "/indexes/" + index + "/search"
 
 
 def request(query, params):
-    if auth_key != '':
-        params['headers']['Authorization'] = auth_key
+    if auth_key != "":
+        params["headers"]["Authorization"] = auth_key
 
-    params['headers']['Content-Type'] = 'application/json'
-    params['url'] = _search_url
-    params['method'] = 'POST'
+    params["headers"]["Content-Type"] = "application/json"
+    params["url"] = _search_url
+    params["method"] = "POST"
 
     data = {
-        'q': query,
-        'offset': 10 * (params['pageno'] - 1),
-        'limit': 10,
+        "q": query,
+        "offset": 10 * (params["pageno"] - 1),
+        "limit": 10,
     }
     if len(facet_filters) > 0:
-        data['facetFilters'] = facet_filters
+        data["facetFilters"] = facet_filters
 
-    params['data'] = dumps(data)
+    params["data"] = dumps(data)
 
     return params
 
@@ -82,7 +82,7 @@ def response(resp: SXNG_Response) -> EngineResults:
     res = EngineResults()
 
     resp_json = resp.json()
-    for row in resp_json['hits']:
+    for row in resp_json["hits"]:
         kvmap = {key: str(value) for key, value in row.items()}
         res.add(res.types.KeyValue(kvmap=kvmap))
 

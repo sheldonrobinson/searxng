@@ -123,13 +123,17 @@ def sha256_hash_b64_url(s: str) -> str:
 
     # hashlib generates a byte digest, but since we need to convert it to base64, we
     # need to do that by hand
-    hash_base64 = codecs.encode(hashed_bytes, "base64").decode("utf-8").rstrip('\n')
+    hash_base64 = codecs.encode(hashed_bytes, "base64").decode("utf-8").rstrip("\n")
 
-    hash_base64_url_encoded = hash_base64.replace("=", "").replace("+", '-').replace("/", '_')
+    hash_base64_url_encoded = (
+        hash_base64.replace("=", "").replace("+", "-").replace("/", "_")
+    )
     return hash_base64_url_encoded
 
 
-def generate_nonce_and_signature(base_path: str, args: dict[str, t.Any]) -> tuple[str, str]:
+def generate_nonce_and_signature(
+    base_path: str, args: dict[str, t.Any]
+) -> tuple[str, str]:
     """
     Generate "X-Request-Nonce" and "X-Request-Signature" which are required for accessing
     Swisscows images (reverse engineered from their official website).
@@ -222,7 +226,9 @@ def _video_result(result: dict[str, str]) -> Video:
 
     view_count = ""
     if result.get("viewCount"):
-        view_count = humanize_number(result["viewCount"])  # pyright: ignore[reportArgumentType]
+        view_count = humanize_number(
+            result["viewCount"]
+        )  # pyright: ignore[reportArgumentType]
 
     return Video(
         url=result["url"],
@@ -248,7 +254,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
     if "payload" in json_data:
         payload = json_data["payload"].split(".")[1]
         # pad with '=' to be valid base64
-        payload = payload + '=' * (4 - len(payload) % 4)
+        payload = payload + "=" * (4 - len(payload) % 4)
         decoded = base64.urlsafe_b64decode(payload)
         json_data = json.loads(decoded.decode())
 

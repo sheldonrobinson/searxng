@@ -124,7 +124,9 @@ class Translations(BaseAnswer, kw_only=True):
 
     def __post_init__(self):
         if not self.translations:
-            raise ValueError("Translation does not have an item in the list translations")
+            raise ValueError(
+                "Translation does not have an item in the list translations"
+            )
 
     class Item(msgspec.Struct, kw_only=True):
         """A single element of the translations / a translation.  A translation

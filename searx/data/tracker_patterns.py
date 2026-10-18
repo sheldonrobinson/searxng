@@ -89,11 +89,17 @@ class TrackerPatternsDB:
                 resp = http_get(url, timeout=3)
 
             except RequestException as exc:
-                log.warning("TRACKER_PATTERNS: RequestException while fetching %s: %s", url, exc)
+                log.warning(
+                    "TRACKER_PATTERNS: RequestException while fetching %s: %s", url, exc
+                )
                 continue
 
             if resp.status_code != 200:
-                log.warning("TRACKER_PATTERNS: ClearURL ignore HTTP %s %s", resp.status_code, url)
+                log.warning(
+                    "TRACKER_PATTERNS: ClearURL ignore HTTP %s %s",
+                    resp.status_code,
+                    url,
+                )
                 continue
 
             break
@@ -152,7 +158,10 @@ class TrackerPatternsDB:
                     for pattern in rule[self.Fields.del_args]:
                         if re.match(pattern, name):
                             log.debug(
-                                "TRACKER_PATTERNS: %s remove tracker arg: %s='%s'", parsed_new_url.netloc, name, val
+                                "TRACKER_PATTERNS: %s remove tracker arg: %s='%s'",
+                                parsed_new_url.netloc,
+                                name,
+                                val,
                             )
                             query_args.remove((name, val))
 
@@ -166,7 +175,11 @@ class TrackerPatternsDB:
                 # is a simple string and not a key/value dict.
                 for pattern in rule[self.Fields.del_args]:
                     if re.match(pattern, query_str):
-                        log.debug("TRACKER_PATTERNS: %s remove tracker arg: '%s'", parsed_new_url.netloc, query_str)
+                        log.debug(
+                            "TRACKER_PATTERNS: %s remove tracker arg: '%s'",
+                            parsed_new_url.netloc,
+                            query_str,
+                        )
                         parsed_new_url = parsed_new_url._replace(query="")
                         new_url = urlunparse(parsed_new_url)
                         break

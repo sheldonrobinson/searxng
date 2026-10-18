@@ -25,19 +25,19 @@ from . import config
 from ._helpers import too_many_requests
 
 USER_AGENT = (
-    r'('
-    + r'unknown'
-    + r'|[Cc][Uu][Rr][Ll]|[wW]get|Scrapy|splash|JavaFX|FeedFetcher|python-requests|Go-http-client|Java|Jakarta|okhttp'
-    + r'|HttpClient|Jersey|Python|libwww-perl|Ruby|SynHttpClient|UniversalFeedParser|Googlebot|GoogleImageProxy'
-    + r'|bingbot|Baiduspider|yacybot|YandexMobileBot|YandexBot|Yahoo! Slurp|MJ12bot|AhrefsBot|archive.org_bot|msnbot'
-    + r'|MJ12bot|SeznamBot|linkdexbot|Netvibes|SMTBot|zgrab|James BOT|Sogou|Abonti|Pixray|Spinn3r|SemrushBot|Exabot'
-    + r'|ZmEu|BLEXBot|bitlybot|HeadlessChrome'
+    r"("
+    + r"unknown"
+    + r"|[Cc][Uu][Rr][Ll]|[wW]get|Scrapy|splash|JavaFX|FeedFetcher|python-requests|Go-http-client|Java|Jakarta|okhttp"
+    + r"|HttpClient|Jersey|Python|libwww-perl|Ruby|SynHttpClient|UniversalFeedParser|Googlebot|GoogleImageProxy"
+    + r"|bingbot|Baiduspider|yacybot|YandexMobileBot|YandexBot|Yahoo! Slurp|MJ12bot|AhrefsBot|archive.org_bot|msnbot"
+    + r"|MJ12bot|SeznamBot|linkdexbot|Netvibes|SMTBot|zgrab|James BOT|Sogou|Abonti|Pixray|Spinn3r|SemrushBot|Exabot"
+    + r"|ZmEu|BLEXBot|bitlybot|HeadlessChrome"
     # unmaintained Farside instances
-    + r'|'
-    + re.escape(r'Mozilla/5.0 (compatible; Farside/0.1.0; +https://farside.link)')
+    + r"|"
+    + re.escape(r"Mozilla/5.0 (compatible; Farside/0.1.0; +https://farside.link)")
     # other bots and client to block
-    + '|.*PetalBot.*'
-    + r')'
+    + "|.*PetalBot.*"
+    + r")"
 )
 """Regular expression that matches to User-Agent_ from known *bots*"""
 
@@ -57,7 +57,9 @@ def filter_request(
     cfg: config.Config,  # pylint: disable=unused-argument
 ) -> werkzeug.Response | None:
 
-    user_agent = request.headers.get('User-Agent', 'unknown')
+    user_agent = request.headers.get("User-Agent", "unknown")
     if regexp_user_agent().match(user_agent):
-        return too_many_requests(network, f"bot detected, HTTP header User-Agent: {user_agent}")
+        return too_many_requests(
+            network, f"bot detected, HTTP header User-Agent: {user_agent}"
+        )
     return None

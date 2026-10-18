@@ -75,14 +75,25 @@ def _solve_captcha(original_resp: "SXNG_Response") -> "SXNG_Response":
         cookies=original_resp.cookies,
     )
 
-    resp = get(original_resp.url, headers=original_resp.search_params["headers"], cookies=challenge_resp.cookies)
+    resp = get(
+        original_resp.url,
+        headers=original_resp.search_params["headers"],
+        cookies=challenge_resp.cookies,
+    )
     # cookie is valid for 2 hours
-    CACHE.set(_CAPTCHA_COOKIE_NAME, challenge_resp.cookies[_CAPTCHA_COOKIE_NAME], expire=7200)
+    CACHE.set(
+        _CAPTCHA_COOKIE_NAME, challenge_resp.cookies[_CAPTCHA_COOKIE_NAME], expire=7200
+    )
     return resp
 
 
 def request(query: str, params: "OnlineParams") -> None:
-    args = {"term": query, "filters[ai-generated][excluded]": 1, "page": params["pageno"], "locale": "en"}
+    args = {
+        "term": query,
+        "filters[ai-generated][excluded]": 1,
+        "page": params["pageno"],
+        "locale": "en",
+    }
     if free_images_only:
         args["filters[license]"] = "free"
 

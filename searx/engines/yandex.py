@@ -10,7 +10,13 @@ from lxml import html
 from searx.search.processors.abstract import TimeRangeType
 from searx.exceptions import SearxEngineCaptchaException, SearxEngineResponseException
 from searx.result_types import EngineResults
-from searx.utils import humanize_bytes, eval_xpath, eval_xpath_list, extract_text, html_to_text
+from searx.utils import (
+    humanize_bytes,
+    eval_xpath,
+    eval_xpath_list,
+    extract_text,
+    html_to_text,
+)
 
 if t.TYPE_CHECKING:
     from searx import logger  # logger is injected by searx.engines.set_loggers()
@@ -55,9 +61,11 @@ yandex_supported_langs = [
 
 results_xpath = '//li[contains(@class, "serp-item")]'
 url_xpath = './/a[@class="b-serp-item__title-link"]/@href'
-title_xpath = './/h3[@class="b-serp-item__title"]/a[@class="b-serp-item__title-link"]/span'
+title_xpath = (
+    './/h3[@class="b-serp-item__title"]/a[@class="b-serp-item__title-link"]/span'
+)
 content_xpath = './/div[@class="b-serp-item__content"]//div[@class="b-serp-item__text"]'
-date_xpath = './/span[@data-mtime]/@data-mtime'
+date_xpath = ".//span[@data-mtime]/@data-mtime"
 
 
 def catch_bad_response(resp: "SXNG_Response") -> None:
@@ -82,10 +90,10 @@ def request(query: str, params: "OnlineParams") -> None:
     args: dict[str, t.Any] = {
         "text": query,
     }
-    if params['pageno'] > 1:
+    if params["pageno"] > 1:
         args["p"] = params["pageno"] - 1
 
-    if search_type == 'web':
+    if search_type == "web":
         lang = params["searxng_locale"].split("-")[0]
         if lang in yandex_supported_langs:
             args["lang"] = lang
@@ -113,9 +121,9 @@ def request(query: str, params: "OnlineParams") -> None:
                 "searchid": "3131712",
             }
         )
-        params['url'] = f"{base_url_web}?{urlencode(args)}"
-    elif search_type == 'images':
-        params['url'] = f"{base_url_images}?{urlencode(args)}"
+        params["url"] = f"{base_url_web}?{urlencode(args)}"
+    elif search_type == "images":
+        params["url"] = f"{base_url_images}?{urlencode(args)}"
 
 
 def _parse_json_results(dom: html.HtmlElement) -> dict[str, t.Any]:
@@ -150,19 +158,26 @@ def response(resp: "SXNG_Response") -> EngineResults:
                     publishedDate = datetime.utcfromtimestamp(int(publishedDateMillis))
                 results.add(
                     results.types.MainResult(
-                        url=url, title=str(title), content=str(content), publishedDate=publishedDate
+                        url=url,
+                        title=str(title),
+                        content=str(content),
+                        publishedDate=publishedDate,
                     )
                 )
         case "images":
             json_resp = _parse_json_results(dom)
 
             # build results from loaded json values
-            for item_data in json_resp["initialState"]["serpList"]["items"]["entities"].values():
+            for item_data in json_resp["initialState"]["serpList"]["items"][
+                "entities"
+            ].values():
                 viewerData: dict[str, t.Any] = item_data["viewerData"]
                 snippet: dict[str, str] = viewerData.get("snippet", {})
 
                 # return the image with largest dimensions
-                image_sources = viewerData.get("dups", []) + viewerData.get("preview", [])
+                image_sources = viewerData.get("dups", []) + viewerData.get(
+                    "preview", []
+                )
                 image_source = max(image_sources, key=lambda x: x["h"] * x["w"])
 
                 humanized_filesize = None

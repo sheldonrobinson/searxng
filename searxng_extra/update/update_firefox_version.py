@@ -18,12 +18,12 @@ import requests
 from lxml import html
 from searx.data import data_dir
 
-DATA_FILE = data_dir / 'useragents.json'
+DATA_FILE = data_dir / "useragents.json"
 
-URL = 'https://ftp.mozilla.org/pub/firefox/releases/'
-RELEASE_PATH = '/pub/firefox/releases/'
+URL = "https://ftp.mozilla.org/pub/firefox/releases/"
+RELEASE_PATH = "/pub/firefox/releases/"
 
-NORMAL_REGEX = re.compile(r'^[0-9]+\.[0-9](\.[0-9])?$')
+NORMAL_REGEX = re.compile(r"^[0-9]+\.[0-9](\.[0-9])?$")
 # BETA_REGEX = re.compile(r'.*[0-9]b([0-9\-a-z]+)$')
 # ESR_REGEX = re.compile(r'^[0-9]+\.[0-9](\.[0-9])?esr$')
 
@@ -46,7 +46,7 @@ def fetch_firefox_versions():
     dom = html.fromstring(resp.text)
     versions = []
 
-    for link in dom.xpath('//a/@href'):
+    for link in dom.xpath("//a/@href"):
         url = urlparse(urljoin(URL, link))
         path = url.path
         if path.startswith(RELEASE_PATH):
@@ -68,14 +68,14 @@ def fetch_firefox_last_versions():
         major_current = version.major
         minor_current = version.minor
         if major_current in major_list:
-            user_agent_version = f'{major_current}.{minor_current}'
+            user_agent_version = f"{major_current}.{minor_current}"
             if user_agent_version not in result:
                 result.append(user_agent_version)
 
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     useragents["versions"] = fetch_firefox_last_versions()
-    with DATA_FILE.open('w', encoding='utf-8') as f:
+    with DATA_FILE.open("w", encoding="utf-8") as f:
         json.dump(useragents, f, indent=4, sort_keys=True, ensure_ascii=False)

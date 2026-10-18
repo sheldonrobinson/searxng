@@ -43,7 +43,9 @@ class CurrenciesParams(t.TypedDict):
     """Name of the currency of the currency to be converted."""
 
 
-class OnlineCurrenciesParams(CurrenciesParams, OnlineParams):  # pylint: disable=duplicate-bases
+class OnlineCurrenciesParams(
+    CurrenciesParams, OnlineParams
+):  # pylint: disable=duplicate-bases
     """Request parameters of a ``online_currency`` engine."""
 
 
@@ -52,12 +54,16 @@ class OnlineCurrencyProcessor(OnlineProcessor):
 
     engine_type: str = "online_currency"
 
-    def get_params(self, search_query: "SearchQuery", engine_category: str) -> OnlineCurrenciesParams | None:
+    def get_params(
+        self, search_query: "SearchQuery", engine_category: str
+    ) -> OnlineCurrenciesParams | None:
         """Returns a dictionary with the :ref:`request params <engine request
         online_currency>` (:py:obj:`OnlineCurrenciesParams`).  ``None`` is
         returned if the search query does not match :py:obj:`search_syntax`."""
 
-        online_params: OnlineParams | None = super().get_params(search_query, engine_category)
+        online_params: OnlineParams | None = super().get_params(
+            search_query, engine_category
+        )
 
         if online_params is None:
             return None

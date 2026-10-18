@@ -27,7 +27,9 @@ import yaml
 
 from searx.exceptions import SearxSettingsException
 
-JSONType: t.TypeAlias = dict[str, "JSONType"] | list["JSONType"] | str | int | float | bool | None
+JSONType: t.TypeAlias = (
+    dict[str, "JSONType"] | list["JSONType"] | str | int | float | bool | None
+)
 SettingsType: t.TypeAlias = dict[str, JSONType]
 
 searx_dir = os.path.abspath(os.path.dirname(__file__))
@@ -40,7 +42,7 @@ DEFAULT_SETTINGS_FILE = Path(searx_dir) / SETTINGS_YAML
 def load_yaml(file_name: str | Path) -> SettingsType:
     """Load YAML config from a file."""
     try:
-        with open(file_name, 'r', encoding='utf-8') as settings_yaml:
+        with open(file_name, "r", encoding="utf-8") as settings_yaml:
             return yaml.safe_load(settings_yaml) or {}
     except IOError as e:
         raise SearxSettingsException(e, str(file_name)) from e
@@ -94,7 +96,10 @@ def get_user_cfg_folder() -> Path | None:
 
     # Disable default /etc/searxng is intended exclusively for internal testing purposes
     # and is therefore not documented!
-    disable_etc = os.environ.get('SEARXNG_DISABLE_ETC_SETTINGS', '').lower() in ('1', 'true')
+    disable_etc = os.environ.get("SEARXNG_DISABLE_ETC_SETTINGS", "").lower() in (
+        "1",
+        "true",
+    )
 
     if settings_path:
         # rule 1. and 2.
@@ -115,7 +120,9 @@ def get_user_cfg_folder() -> Path | None:
     return folder
 
 
-def update_dict(default_dict: MutableMapping[str, t.Any], user_dict: MutableMapping[str, t.Any]):
+def update_dict(
+    default_dict: MutableMapping[str, t.Any], user_dict: MutableMapping[str, t.Any]
+):
     for k, v in user_dict.items():
         if isinstance(v, MutableMapping):
             default_dict[k] = update_dict(default_dict.get(k, {}), v)  # type: ignore
@@ -124,71 +131,92 @@ def update_dict(default_dict: MutableMapping[str, t.Any], user_dict: MutableMapp
     return default_dict
 
 
-def update_settings(default_settings: MutableMapping[str, t.Any], user_settings: MutableMapping[str, t.Any]):
+def update_settings(
+    default_settings: MutableMapping[str, t.Any],
+    user_settings: MutableMapping[str, t.Any],
+):
     # pylint: disable=too-many-branches
 
     # merge everything except the engines
     for k, v in user_settings.items():
-        if k not in ('use_default_settings', 'engines'):
+        if k not in ("use_default_settings", "engines"):
             if k in default_settings and isinstance(v, MutableMapping):
                 update_dict(default_settings[k], v)  # type: ignore
             else:
                 default_settings[k] = v
 
-    categories_as_tabs = user_settings.get('categories_as_tabs')
+    categories_as_tabs = user_settings.get("categories_as_tabs")
     if categories_as_tabs:
-        default_settings['categories_as_tabs'] = categories_as_tabs
+        default_settings["categories_as_tabs"] = categories_as_tabs
 
-    plugins = user_settings.get('plugins')
+    plugins = user_settings.get("plugins")
     if plugins is not None:
-        default_settings['plugins'] = plugins
+        default_settings["plugins"] = plugins
 
     # parse the engines
     remove_engines: None | list[str] = None
     keep_only_engines: list[str] | None = None
-    use_default_settings: dict[str, t.Any] | None = user_settings.get('use_default_settings')
+    use_default_settings: dict[str, t.Any] | None = user_settings.get(
+        "use_default_settings"
+    )
     if isinstance(use_default_settings, dict):
-        remove_engines = use_default_settings.get('engines', {}).get('remove')
-        keep_only_engines = use_default_settings.get('engines', {}).get('keep_only')
+        remove_engines = use_default_settings.get("engines", {}).get("remove")
+        keep_only_engines = use_default_settings.get("engines", {}).get("keep_only")
 
-    if 'engines' in user_settings or remove_engines is not None or keep_only_engines is not None:
-        engines: list[dict[str, t.Any]] = default_settings['engines']
+    if (
+        "engines" in user_settings
+        or remove_engines is not None
+        or keep_only_engines is not None
+    ):
+        engines: list[dict[str, t.Any]] = default_settings["engines"]
 
         # parse "use_default_settings.engines.remove"
         if remove_engines is not None:
-            engines = list(filterfalse(lambda engine: (engine.get('name')) in remove_engines, engines))
+            engines = list(
+                filterfalse(
+                    lambda engine: (engine.get("name")) in remove_engines, engines
+                )
+            )
 
         # parse "use_default_settings.engines.keep_only"
         if keep_only_engines is not None:
-            engines = list(filter(lambda engine: (engine.get('name')) in keep_only_engines, engines))
+            engines = list(
+                filter(
+                    lambda engine: (engine.get("name")) in keep_only_engines, engines
+                )
+            )
 
         # parse "engines"
-        user_engines = user_settings.get('engines')
+        user_engines = user_settings.get("engines")
         if user_engines:
-            engines_dict = dict((definition['name'], definition) for definition in engines)
+            engines_dict = dict(
+                (definition["name"], definition) for definition in engines
+            )
             for user_engine in user_engines:
-                default_engine: dict[str, t.Any] | None = engines_dict.get(user_engine['name'])
+                default_engine: dict[str, t.Any] | None = engines_dict.get(
+                    user_engine["name"]
+                )
                 if default_engine:
                     update_dict(default_engine, user_engine)
                 else:
                     engines.append(user_engine)
 
         # store the result
-        default_settings['engines'] = engines
+        default_settings["engines"] = engines
 
     return default_settings
 
 
 def is_use_default_settings(user_settings: SettingsType) -> bool:
 
-    use_default_settings: bool | JSONType = user_settings.get('use_default_settings')
+    use_default_settings: bool | JSONType = user_settings.get("use_default_settings")
     if use_default_settings is True:
         return True
     if isinstance(use_default_settings, dict):
         return True
     if use_default_settings is False or use_default_settings is None:
         return False
-    raise ValueError('Invalid value for use_default_settings')
+    raise ValueError("Invalid value for use_default_settings")
 
 
 def load_settings(load_user_settings: bool = True) -> tuple[SettingsType, str]:

@@ -20,29 +20,29 @@ about = {
 
 play_categ = None  # apps|movies
 enable_http3 = True
-base_url = 'https://play.google.com'
+base_url = "https://play.google.com"
 search_url = base_url + "/store/search?{query}&c={play_categ}"
 
 
 def request(query, params):
 
-    if play_categ not in ('movies', 'apps'):
+    if play_categ not in ("movies", "apps"):
         raise ValueError(f"unknown google play category: {play_categ}")
 
     params["url"] = search_url.format(
         query=urlencode({"q": query}),
         play_categ=play_categ,
     )
-    params['cookies']['CONSENT'] = "YES+"
+    params["cookies"]["CONSENT"] = "YES+"
 
     return params
 
 
 def response(resp):
 
-    if play_categ == 'movies':
+    if play_categ == "movies":
         return response_movies(resp)
-    if play_categ == 'apps':
+    if play_categ == "apps":
         return response_apps(resp)
 
     raise ValueError(f"Unsupported play category: {play_categ}")
@@ -53,23 +53,23 @@ def response_movies(resp):
     results = []
     dom = resp.html()
 
-    for section in eval_xpath(dom, '//c-wiz/section/header/..'):
-        sec_name = extract_text(eval_xpath(section, './header'))
-        for item in eval_xpath(section, './/a'):
-            url = base_url + item.get('href')
-            div_1, div_2 = eval_xpath(item, './div')[:2]
-            title = extract_text(eval_xpath(div_2, './div[@title]'))
-            metadata = extract_text(eval_xpath(div_2, './div[@class]'))
-            img = eval_xpath(div_1, './/img')[0]
-            thumbnail = img.get('src')
+    for section in eval_xpath(dom, "//c-wiz/section/header/.."):
+        sec_name = extract_text(eval_xpath(section, "./header"))
+        for item in eval_xpath(section, ".//a"):
+            url = base_url + item.get("href")
+            div_1, div_2 = eval_xpath(item, "./div")[:2]
+            title = extract_text(eval_xpath(div_2, "./div[@title]"))
+            metadata = extract_text(eval_xpath(div_2, "./div[@class]"))
+            img = eval_xpath(div_1, ".//img")[0]
+            thumbnail = img.get("src")
             results.append(
                 {
                     "url": url,
                     "title": title,
                     "content": sec_name,
                     "thumbnail": thumbnail,
-                    'metadata': metadata,
-                    'template': 'videos.html',
+                    "metadata": metadata,
+                    "template": "videos.html",
                 }
             )
     return results
@@ -92,7 +92,9 @@ def response_apps(resp):
 
         results.append({"url": url, "title": title, "content": content, "img_src": img})
 
-    more = eval_xpath_list(dom, '//c-wiz[@jsrenderer="RBsfwb"]//div[@role="listitem"]', min_len=1)
+    more = eval_xpath_list(
+        dom, '//c-wiz[@jsrenderer="RBsfwb"]//div[@role="listitem"]', min_len=1
+    )
     for result in more:
         url = extract_url(eval_xpath(result, ".//a/@href"), search_url)
         title = extract_text(eval_xpath(result, './/span[@class="DdYX5"]'))
@@ -106,7 +108,15 @@ def response_apps(resp):
 
         results.append({"url": url, "title": title, "content": content, "img_src": img})
 
-    for suggestion in eval_xpath_list(dom, '//c-wiz[@jsrenderer="qyd4Kb"]//div[@class="ULeU3b neq64b"]'):
-        results.append({"suggestion": extract_text(eval_xpath(suggestion, './/div[@class="Epkrse "]'))})
+    for suggestion in eval_xpath_list(
+        dom, '//c-wiz[@jsrenderer="qyd4Kb"]//div[@class="ULeU3b neq64b"]'
+    ):
+        results.append(
+            {
+                "suggestion": extract_text(
+                    eval_xpath(suggestion, './/div[@class="Epkrse "]')
+                )
+            }
+        )
 
     return results

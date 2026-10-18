@@ -21,49 +21,55 @@ about = {
 }
 language = "cz"
 
-categories = ['general', 'web']
-base_url = 'https://search.seznam.cz/'
+categories = ["general", "web"]
+base_url = "https://search.seznam.cz/"
 
 
 def request(query, params):
-    response_index = get(base_url, headers=params['headers'], raise_for_httperror=True, timeout=3)
+    response_index = get(
+        base_url, headers=params["headers"], raise_for_httperror=True, timeout=3
+    )
     dom = response_index.html()
 
     url_params = {
-        'q': query,
-        'oq': query,
+        "q": query,
+        "oq": query,
     }
     for e in eval_xpath_list(dom, '//input[@type="hidden"]'):
-        name = e.get('name')
-        value = e.get('value')
+        name = e.get("name")
+        value = e.get("value")
         url_params[name] = value
 
-    params['url'] = base_url + '?' + urlencode(url_params)
-    params['cookies'] = response_index.cookies
+    params["url"] = base_url + "?" + urlencode(url_params)
+    params["cookies"] = response_index.cookies
     return params
 
 
 def response(resp):
-    if resp.url.path.startswith('/verify'):
+    if resp.url.path.startswith("/verify"):
         raise SearxEngineAccessDeniedException()
 
     results = []
 
     dom = resp.html()
     for result_element in eval_xpath_list(
-        dom, '//div[@id="searchpage-root"]//div[@class="Layout--left"]/div[@class="f2c528"]'
+        dom,
+        '//div[@id="searchpage-root"]//div[@class="Layout--left"]/div[@class="f2c528"]',
     ):
         result_data = eval_xpath_getindex(
-            result_element, './/div[@class="c8774a" or @class="e69e8d a11657"]', 0, default=None
+            result_element,
+            './/div[@class="c8774a" or @class="e69e8d a11657"]',
+            0,
+            default=None,
         )
         if result_data is None:
             continue
-        title_element = eval_xpath_getindex(result_element, './/h3/a', 0)
+        title_element = eval_xpath_getindex(result_element, ".//h3/a", 0)
         results.append(
             {
-                'url': title_element.get('href'),
-                'title': extract_text(title_element),
-                'content': extract_text(result_data),
+                "url": title_element.get("href"),
+                "title": extract_text(title_element),
+                "content": extract_text(result_data),
             }
         )
 

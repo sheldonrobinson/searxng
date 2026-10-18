@@ -38,12 +38,12 @@ import valkey  # pylint: disable=import-error
 
 from searx.result_types import EngineResults
 
-engine_type = 'offline'
+engine_type = "offline"
 
 # valkey connection variables
-host = '127.0.0.1'
+host = "127.0.0.1"
 port = 6379
-password = ''
+password = ""
 db = 0
 
 # engine specific variables
@@ -77,23 +77,23 @@ def search(query, _params) -> EngineResults:
         res.add(res.types.KeyValue(kvmap=kvmap))
     elif " " in query:
         qset, rest = query.split(" ", 1)
-        for row in _valkey_client.hscan_iter(qset, match='*{}*'.format(rest)):
+        for row in _valkey_client.hscan_iter(qset, match="*{}*".format(rest)):
             res.add(res.types.KeyValue(kvmap={row[0]: row[1]}))
     return res
 
 
 def search_keys(query) -> list[dict]:
     ret = []
-    for key in _valkey_client.scan_iter(match='*{}*'.format(query)):
+    for key in _valkey_client.scan_iter(match="*{}*".format(query)):
         key_type = _valkey_client.type(key)
         res = None
 
-        if key_type == 'hash':
+        if key_type == "hash":
             res = _valkey_client.hgetall(key)
-        elif key_type == 'list':
+        elif key_type == "list":
             res = dict(enumerate(_valkey_client.lrange(key, 0, -1)))
 
         if res:
-            res['valkey_key'] = key
+            res["valkey_key"] = key
             ret.append(res)
     return ret

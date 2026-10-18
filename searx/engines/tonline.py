@@ -65,13 +65,22 @@ def request(query: str, params: "OnlineParams") -> None:
 
 def _general_results(doc: ElementType, res: EngineResults):
     result: ElementType
-    for result in eval_xpath_list(doc, "//div[@id='google_re']/div[contains(@class, 'doc')]"):
+    for result in eval_xpath_list(
+        doc, "//div[@id='google_re']/div[contains(@class, 'doc')]"
+    ):
         (
             res.add(
                 res.types.MainResult(
                     url=extract_text(eval_xpath(result, "./a/@href") or ""),
-                    title=extract_text(eval_xpath(result, ".//span[contains(@class, 'tMMReshl')]") or "") or "",
-                    content=extract_text(eval_xpath(result, ".//div[contains(@class, 'tMMRest')]") or "") or "",
+                    title=extract_text(
+                        eval_xpath(result, ".//span[contains(@class, 'tMMReshl')]")
+                        or ""
+                    )
+                    or "",
+                    content=extract_text(
+                        eval_xpath(result, ".//div[contains(@class, 'tMMRest')]") or ""
+                    )
+                    or "",
                 ),
             )
         )
@@ -87,8 +96,12 @@ def _image_results(doc: ElementType, res: EngineResults):
             res.add(
                 res.types.Image(
                     url=extract_text(eval_xpath(result, "./a/@href") or ""),
-                    title=extract_text(eval_xpath(result, ".//div[contains(@class, 'doc_info')]") or "") or "",
-                    thumbnail_src=extract_text(eval_xpath(result, ".//img/@src") or "") or "",
+                    title=extract_text(
+                        eval_xpath(result, ".//div[contains(@class, 'doc_info')]") or ""
+                    )
+                    or "",
+                    thumbnail_src=extract_text(eval_xpath(result, ".//img/@src") or "")
+                    or "",
                 ),
             )
         )
@@ -97,15 +110,24 @@ def _image_results(doc: ElementType, res: EngineResults):
 def _news_results(doc: ElementType, res: EngineResults):
     result: ElementType
     title_parts: list[ElementType]
-    for result in eval_xpath_list(doc, "//div[@id='portal_re']/div[contains(@class, 'doc')]"):
+    for result in eval_xpath_list(
+        doc, "//div[@id='portal_re']/div[contains(@class, 'doc')]"
+    ):
         title_parts = eval_xpath(result, ".//a[starts-with(@class, 'tMMReshl')]")
         (
             res.add(
                 res.types.MainResult(
                     url=extract_text(eval_xpath(result, "(./a/@href)[1]") or ""),
                     title=" - ".join(extract_text(part) or "" for part in title_parts),
-                    content=extract_text(eval_xpath(result, ".//div[contains(@class, 'tMMRest')]") or "") or "",
-                    thumbnail=extract_text(eval_xpath(result, ".//img[contains(@class, 'desk')]/@src") or "") or "",
+                    content=extract_text(
+                        eval_xpath(result, ".//div[contains(@class, 'tMMRest')]") or ""
+                    )
+                    or "",
+                    thumbnail=extract_text(
+                        eval_xpath(result, ".//img[contains(@class, 'desk')]/@src")
+                        or ""
+                    )
+                    or "",
                 ),
             )
         )
@@ -117,7 +139,9 @@ def _video_results(doc: ElementType, res: EngineResults):
         url: str | None = extract_text(eval_xpath(result, "./a/@href") or "")
         if url is None:
             continue
-        title_parts: list[ElementType] = eval_xpath(result, ".//a[starts-with(@class, 'tMMReshl')]")
+        title_parts: list[ElementType] = eval_xpath(
+            result, ".//a[starts-with(@class, 'tMMReshl')]"
+        )
         res.add(
             res.types.Video(
                 url=url,

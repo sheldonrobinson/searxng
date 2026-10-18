@@ -82,11 +82,11 @@ from searx.result_types import EngineResults
 
 about = {
     # pylint: disable=line-too-long
-    "website": 'https://www.tubearchivist.com',
-    "official_api_documentation": 'https://docs.tubearchivist.com/api/introduction/',
+    "website": "https://www.tubearchivist.com",
+    "official_api_documentation": "https://docs.tubearchivist.com/api/introduction/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
@@ -117,18 +117,18 @@ def absolute_url(relative_url):
 
 def setup(_: dict[str, t.Any]) -> bool | None:
     if not base_url:
-        raise ValueError('tubearchivist engine: base_url is unset')
+        raise ValueError("tubearchivist engine: base_url is unset")
     if not ta_token:
-        raise ValueError('tubearchivist engine: ta_token is unset')
+        raise ValueError("tubearchivist engine: ta_token is unset")
 
 
 def request(query, params):
     if not query:
         return False
 
-    args = {'query': query}
-    params['url'] = f"{base_url.rstrip('/')}/api/search/?{urlencode(args)}"
-    params['headers']['Authorization'] = f'Token {ta_token}'
+    args = {"query": query}
+    params["url"] = f"{base_url.rstrip('/')}/api/search/?{urlencode(args)}"
+    params["headers"]["Authorization"] = f"Token {ta_token}"
 
     return params
 
@@ -144,25 +144,33 @@ def video_response(resp, results: EngineResults) -> None:
 
     json_data = resp.json()
 
-    if 'results' not in json_data:
+    if "results" not in json_data:
         return
 
-    for channel_result in json_data['results']['channel_results']:
+    for channel_result in json_data["results"]["channel_results"]:
         channel_url = absolute_url(f'/channel/{channel_result["channel_id"]}')
 
         res = results.types.MainResult(
             url=channel_url,
-            title=channel_result['channel_name'],
-            content=html_to_text(channel_result['channel_description']),
-            author=channel_result['channel_name'],
-            views=humanize_number(channel_result['channel_subs']),
+            title=channel_result["channel_name"],
+            content=html_to_text(channel_result["channel_description"]),
+            author=channel_result["channel_name"],
+            views=humanize_number(channel_result["channel_subs"]),
             thumbnail=f'{absolute_url(channel_result["channel_thumb_url"])}?auth={ta_token}',
         )
 
         results.add(result=res)
 
-    for video_result in json_data['results']['video_results']:
-        metadata = list(filter(None, [video_result['channel']['channel_name'], *video_result.get('tags', [])]))[:5]
+    for video_result in json_data["results"]["video_results"]:
+        metadata = list(
+            filter(
+                None,
+                [
+                    video_result["channel"]["channel_name"],
+                    *video_result.get("tags", []),
+                ],
+            )
+        )[:5]
         if ta_link_to_mp4:
             url = f'{base_url.rstrip("/")}{video_result["media_url"]}'
         else:
@@ -172,15 +180,15 @@ def video_response(resp, results: EngineResults) -> None:
         # --> using LegacyResult
 
         kwargs = {
-            'template': 'videos.html',
-            'url': url,
-            'title': video_result['title'],
-            'content': html_to_text(video_result['description']),
-            'author': video_result['channel']['channel_name'],
-            'length': video_result['player']['duration_str'],
-            'views': humanize_number(video_result['stats']['view_count']),
-            'publishedDate': parse(video_result['published']),
-            'thumbnail': f'{absolute_url(video_result["vid_thumb_url"])}?auth={ta_token}',
-            'metadata': ' | '.join(metadata),
+            "template": "videos.html",
+            "url": url,
+            "title": video_result["title"],
+            "content": html_to_text(video_result["description"]),
+            "author": video_result["channel"]["channel_name"],
+            "length": video_result["player"]["duration_str"],
+            "views": humanize_number(video_result["stats"]["view_count"]),
+            "publishedDate": parse(video_result["published"]),
+            "thumbnail": f'{absolute_url(video_result["vid_thumb_url"])}?auth={ta_token}',
+            "metadata": " | ".join(metadata),
         }
         results.add(results.types.LegacyResult(**kwargs))

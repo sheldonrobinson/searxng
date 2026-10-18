@@ -51,7 +51,7 @@ def _get_page_hash(query: str, page: int, headers: dict[str, str]) -> str:
     return extr(resp.text, "&h=", "&t=")
 
 
-def request(query: str, params: 'OnlineParams'):
+def request(query: str, params: "OnlineParams"):
     # the headers have to be as close to normal browsers as possible, otherwise you get rate-limited quickly
     # the user agent for loading the hash and requesting the results has to be the same
     headers = {
@@ -70,7 +70,13 @@ def request(query: str, params: 'OnlineParams'):
     page_hash = _get_page_hash(query, params["pageno"], headers)
     # the headers have to match the ones from the previous request
 
-    args = {"lang": "en", "q": query, "page": params["pageno"], "h": page_hash, "t": now}
+    args = {
+        "lang": "en",
+        "q": query,
+        "page": params["pageno"],
+        "h": page_hash,
+        "t": now,
+    }
     if params["safesearch"]:
         args["family"] = True
     if params.get("time_range"):
@@ -81,7 +87,7 @@ def request(query: str, params: 'OnlineParams'):
     params["headers"].update(headers)
 
 
-def response(resp: 'SXNG_Response') -> EngineResults:
+def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
 
     results = resp.json()["results"]

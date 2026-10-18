@@ -117,11 +117,15 @@ class SXNGPlugin(Plugin):
         self.info = PluginInfo(
             id=self.id,
             name=gettext("Hostnames plugin"),
-            description=gettext("Rewrite hostnames and remove or prioritize results based on the hostname"),
+            description=gettext(
+                "Rewrite hostnames and remove or prioritize results based on the hostname"
+            ),
             preference_section="general",
         )
 
-    def on_result(self, request: "SXNG_Request", search: "SearchWithPlugins", result: "Result") -> bool:
+    def on_result(
+        self, request: "SXNG_Request", search: "SearchWithPlugins", result: "Result"
+    ) -> bool:
 
         for pattern in REMOVE:
             if result.parsed_url and pattern.search(result.parsed_url.netloc):
@@ -158,7 +162,9 @@ class SXNGPlugin(Plugin):
 
         return True
 
-    def _load_regular_expressions(self, settings_key) -> dict[re.Pattern, str] | set | None:
+    def _load_regular_expressions(
+        self, settings_key
+    ) -> dict[re.Pattern, str] | set | None:
         setting_value = settings.get(self.id, {}).get(settings_key)
 
         if not setting_value:
@@ -177,7 +183,9 @@ class SXNGPlugin(Plugin):
         return None
 
 
-def filter_url_field(result: "Result|LegacyResult", field_name: str, url_src: str) -> bool | str:
+def filter_url_field(
+    result: "Result|LegacyResult", field_name: str, url_src: str
+) -> bool | str:
     """Returns bool ``True`` to use URL unchanged (``False`` to ignore URL).
     If URL should be modified, the returned string is the new URL to use."""
 
@@ -193,7 +201,9 @@ def filter_url_field(result: "Result|LegacyResult", field_name: str, url_src: st
 
     for pattern, replacement in REPLACE.items():
         if pattern.search(url_src_parsed.netloc):
-            new_url = url_src_parsed._replace(netloc=pattern.sub(replacement, url_src_parsed.netloc))
+            new_url = url_src_parsed._replace(
+                netloc=pattern.sub(replacement, url_src_parsed.netloc)
+            )
             new_url = urlunparse(new_url)
             return new_url
 

@@ -136,7 +136,11 @@ def response(resp: "SXNG_Response"):
 
     for edge in json_data["edges"]:
         node = edge["node"]  # pyright: ignore[reportAny]
-        image_urls = [url for (resolution, url) in node["urls"].items() if resolution.startswith("size_")]
+        image_urls = [
+            url
+            for (resolution, url) in node["urls"].items()
+            if resolution.startswith("size_")
+        ]
         res.add(
             res.types.Image(
                 url=f"{base_url}/photo/{node['id']}",

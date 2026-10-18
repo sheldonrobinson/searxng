@@ -10,21 +10,21 @@ from searx.utils import extract_text, eval_xpath
 
 # about
 about = {
-    "website": 'https://www.dokuwiki.org/',
-    "wikidata_id": 'Q851864',
-    "official_api_documentation": 'https://www.dokuwiki.org/devel:xmlrpc',
+    "website": "https://www.dokuwiki.org/",
+    "wikidata_id": "Q851864",
+    "official_api_documentation": "https://www.dokuwiki.org/devel:xmlrpc",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
 # engine dependent config
-categories = ['general']  # 'images', 'music', 'videos', 'files'
+categories = ["general"]  # 'images', 'music', 'videos', 'files'
 paging = False
 
 # search-url
 # Doku is OpenSearch compatible
-base_url = 'http://localhost:8090'
+base_url = "http://localhost:8090"
 search_url = (
     # fmt: off
     '/?do=search'
@@ -38,7 +38,7 @@ search_url = (
 # do search-request
 def request(query, params):
 
-    params['url'] = base_url + search_url.format(query=urlencode({'id': query}))
+    params["url"] = base_url + search_url.format(query=urlencode({"id": query}))
 
     return params
 
@@ -63,7 +63,9 @@ def response(resp):
         title = extract_text(eval_xpath(r, './/a[@class="wikilink1"]/@title'))
 
         # append result
-        results.append({'title': title, 'content': "", 'url': urljoin(base_url, res_url)})
+        results.append(
+            {"title": title, "content": "", "url": urljoin(base_url, res_url)}
+        )
 
     # Search results
     for r in eval_xpath(doc, '//dl[@class="search_results"]/*'):
@@ -72,10 +74,16 @@ def response(resp):
                 res_url = eval_xpath(r, './/a[@class="wikilink1"]/@href')[-1]
                 title = extract_text(eval_xpath(r, './/a[@class="wikilink1"]/@title'))
             elif r.tag == "dd":
-                content = extract_text(eval_xpath(r, '.'))
+                content = extract_text(eval_xpath(r, "."))
 
                 # append result
-                results.append({'title': title, 'content': content, 'url': urljoin(base_url, res_url)})
+                results.append(
+                    {
+                        "title": title,
+                        "content": content,
+                        "url": urljoin(base_url, res_url),
+                    }
+                )
         except:  # pylint: disable=bare-except
             continue
 

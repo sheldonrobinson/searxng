@@ -53,7 +53,8 @@ def get_WEATHER_DATA_CACHE():
         WEATHER_DATA_CACHE = ExpireCache.build_cache(
             ExpireCacheCfg(
                 name="WEATHER_DATA_CACHE",
-                MAX_VALUE_LEN=1024 * 200,  # max. 200kB per icon (icons have most often 10-20kB)
+                MAX_VALUE_LEN=1024
+                * 200,  # max. 200kB per icon (icons have most often 10-20kB)
                 MAXHOLD_TIME=60 * 60 * 24 * 7 * 4,  # 4 weeks
             )
         )
@@ -119,8 +120,10 @@ def symbol_url(condition: "WeatherConditionType") -> str | None:
 
     response = network.get(origin_url, timeout=3)
     if response.status_code == 200:
-        mimetype = response.headers['Content-Type']
-        data_url = f"data:{mimetype};base64,{str(base64.b64encode(response.content), 'utf-8')}"
+        mimetype = response.headers["Content-Type"]
+        data_url = (
+            f"data:{mimetype};base64,{str(base64.b64encode(response.content), 'utf-8')}"
+        )
         cache.set(key=origin_url, value=data_url, expire=None, ctx=ctx)
     return data_url
 
@@ -154,7 +157,7 @@ class GeoLocation(msgspec.Struct, kw_only=True):
         # by region of the search language
         sxng_tag = _get_sxng_locale_tag()
         if "-" in sxng_tag:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
             return locale
 
         # by most popular language in the region (country code)
@@ -200,7 +203,9 @@ class GeoLocation(msgspec.Struct, kw_only=True):
         if not results:
             raise ValueError(f"unknown geo location: '{search_term}'")
         location = results[0]
-        return {field_name: location[field_name] for field_name in cls.__struct_fields__}
+        return {
+            field_name: location[field_name] for field_name in cls.__struct_fields__
+        }
 
 
 DateTimeFormats = t.Literal["full", "long", "medium", "short"]
@@ -237,7 +242,7 @@ class DateTime(msgspec.Struct):
         elif isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
         return babel.dates.format_datetime(self.datetime, format=fmt, locale=locale)
 
     def l10n_date(
@@ -252,7 +257,7 @@ class DateTime(msgspec.Struct):
         elif isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
         return babel.dates.format_date(self.datetime, format=fmt, locale=locale)
 
 
@@ -314,13 +319,15 @@ class Temperature(msgspec.Struct, kw_only=True):
         if isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
 
         if unit is None:  # unit by territory
             unit = "°C"
             if locale.territory in ["US"]:
                 unit = "°F"
-        val_str = babel.numbers.format_decimal(self.value(unit), locale=locale, format=num_pattern)
+        val_str = babel.numbers.format_decimal(
+            self.value(unit), locale=locale, format=num_pattern
+        )
         return template.format(value=val_str, unit=unit)
 
 
@@ -361,12 +368,14 @@ class Pressure(msgspec.Struct, kw_only=True):
         if isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
 
         if unit is None:  # unit by territory?
             unit = "hPa"
 
-        val_str = babel.numbers.format_decimal(self.value(unit), locale=locale, format=num_pattern)
+        val_str = babel.numbers.format_decimal(
+            self.value(unit), locale=locale, format=num_pattern
+        )
         return template.format(value=val_str, unit=unit)
 
 
@@ -414,17 +423,21 @@ class WindSpeed(msgspec.Struct, kw_only=True):
         if isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
 
         if unit is None:  # unit by territory?
             unit = "m/s"
 
-        val_str = babel.numbers.format_decimal(self.value(unit), locale=locale, format=num_pattern)
+        val_str = babel.numbers.format_decimal(
+            self.value(unit), locale=locale, format=num_pattern
+        )
         return template.format(value=val_str, unit=unit)
 
 
 RelativeHumidityUnit: t.TypeAlias = t.Literal["%"]
-RELATIVE_HUMIDITY_UNITS: t.Final[tuple[RelativeHumidityUnit]] = t.get_args(RelativeHumidityUnit)
+RELATIVE_HUMIDITY_UNITS: t.Final[tuple[RelativeHumidityUnit]] = t.get_args(
+    RelativeHumidityUnit
+)
 
 
 class RelativeHumidity(msgspec.Struct):
@@ -455,15 +468,32 @@ class RelativeHumidity(msgspec.Struct):
         if isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
 
         unit = "%"
-        val_str = babel.numbers.format_decimal(self.value(), locale=locale, format=num_pattern)
+        val_str = babel.numbers.format_decimal(
+            self.value(), locale=locale, format=num_pattern
+        )
         return template.format(value=val_str, unit=unit)
 
 
 CompassPoint: t.TypeAlias = t.Literal[
-    "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
 ]
 """Compass point type definition"""
 COMPASS_POINTS: t.Final[tuple[CompassPoint]] = t.get_args(CompassPoint)
@@ -527,13 +557,15 @@ class Compass(msgspec.Struct):
         if isinstance(locale, GeoLocation):
             locale = locale.locale()
         elif locale is None:
-            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep='-')
+            locale = babel.Locale.parse(_get_sxng_locale_tag(), sep="-")
 
         if unit == "Point":
             val_str = self.value(unit)
             return template.format(value=val_str, unit="")
 
-        val_str = babel.numbers.format_decimal(self.value(unit), locale=locale, format=num_pattern)
+        val_str = babel.numbers.format_decimal(
+            self.value(unit), locale=locale, format=num_pattern
+        )
         return template.format(value=val_str, unit=unit)
 
 

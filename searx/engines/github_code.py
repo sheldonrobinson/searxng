@@ -74,21 +74,21 @@ from searx.network import raise_for_httperror
 
 # about
 about = {
-    "website": 'https://github.com/',
-    "wikidata_id": 'Q364',
-    "official_api_documentation": 'https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code',
+    "website": "https://github.com/",
+    "wikidata_id": "Q364",
+    "official_api_documentation": "https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
-categories = ['code']
+categories = ["code"]
 
 
-search_url = 'https://api.github.com/search/code?sort=indexed&{query}&{page}'
+search_url = "https://api.github.com/search/code?sort=indexed&{query}&{page}"
 # https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#text-match-metadata
-accept_header = 'application/vnd.github.text-match+json'
+accept_header = "application/vnd.github.text-match+json"
 paging = True
 
 ghc_auth = {
@@ -142,20 +142,22 @@ This might break the lexer and thus result in the lack of code highlighting.
 
 def request(query: str, params: dict[str, t.Any]) -> None:
 
-    params['url'] = search_url.format(query=urlencode({'q': query}), page=urlencode({'page': params['pageno']}))
-    params['headers']['Accept'] = accept_header
-    params['headers']['X-GitHub-Api-Version'] = ghc_api_version
+    params["url"] = search_url.format(
+        query=urlencode({"q": query}), page=urlencode({"page": params["pageno"]})
+    )
+    params["headers"]["Accept"] = accept_header
+    params["headers"]["X-GitHub-Api-Version"] = ghc_api_version
 
-    if ghc_auth['type'] == "none":
+    if ghc_auth["type"] == "none":
         # Without the auth header the query fails, so add a dummy instead.
         # Queries without auth are heavily rate limited.
-        params['headers']['Authorization'] = "placeholder"
-    if ghc_auth['type'] == "personal_access_token":
-        params['headers']['Authorization'] = f"token {ghc_auth['token']}"
-    if ghc_auth['type'] == "bearer":
-        params['headers']['Authorization'] = f"Bearer {ghc_auth['token']}"
+        params["headers"]["Authorization"] = "placeholder"
+    if ghc_auth["type"] == "personal_access_token":
+        params["headers"]["Authorization"] = f"token {ghc_auth['token']}"
+    if ghc_auth["type"] == "bearer":
+        params["headers"]["Authorization"] = f"Bearer {ghc_auth['token']}"
 
-    params['raise_for_httperror'] = False
+    params["raise_for_httperror"] = False
 
 
 def extract_code(code_matches: list[dict[str, t.Any]]) -> tuple[list[str], set[int]]:
@@ -172,9 +174,11 @@ def extract_code(code_matches: list[dict[str, t.Any]]) -> tuple[list[str], set[i
         if i > 0 and ghc_insert_block_separator:
             lines.append("...")
         buffer: list[str] = []
-        highlight_groups = [highlight_group['indices'] for highlight_group in match['matches']]
+        highlight_groups = [
+            highlight_group["indices"] for highlight_group in match["matches"]
+        ]
 
-        code: str = match['fragment']
+        code: str = match["fragment"]
         original_code_lenght = len(code)
 
         if ghc_strip_whitespace:
@@ -220,12 +224,16 @@ def response(resp: SXNG_Response) -> EngineResults:
     # raise for other errors
     raise_for_httperror(resp)
 
-    for item in resp.json().get('items', []):
-        repo: dict[str, str] = item['repository']  # pyright: ignore[reportAny]
-        text_matches: list[dict[str, str]] = item['text_matches']  # pyright: ignore[reportAny]
+    for item in resp.json().get("items", []):
+        repo: dict[str, str] = item["repository"]  # pyright: ignore[reportAny]
+        text_matches: list[dict[str, str]] = item[
+            "text_matches"
+        ]  # pyright: ignore[reportAny]
         # ensure picking only the code contents in the blob
         code_matches = [
-            match for match in text_matches if match["object_type"] == "FileContent" and match["property"] == "content"
+            match
+            for match in text_matches
+            if match["object_type"] == "FileContent" and match["property"] == "content"
         ]
         lines, highlighted_lines_index = extract_code(code_matches)
         if not ghc_highlight_matching_lines:
@@ -236,8 +244,8 @@ def response(resp: SXNG_Response) -> EngineResults:
                 url=item["html_url"],  # pyright: ignore[reportAny]
                 title=f"{repo['full_name']} · {item['name']}",
                 filename=f"{item['path']}",
-                content=repo['description'],
-                repository=repo['html_url'],
+                content=repo["description"],
+                repository=repo["html_url"],
                 codelines=[(i + 1, line) for (i, line) in enumerate(lines)],
                 hl_lines=highlighted_lines_index,
                 strip_whitespace=ghc_strip_whitespace,

@@ -39,7 +39,9 @@ class Beaufort:
     @classmethod
     def from_si(cls, value) -> float:
         if value < 0 or value > 55.6:
-            raise ValueError(f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)")
+            raise ValueError(
+                f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)"
+            )
         bft = 0
         for bft, mps in enumerate(cls.scale):
             if mps >= value:
@@ -50,7 +52,9 @@ class Beaufort:
     def to_si(cls, value) -> float:
         idx = round(value)
         if idx < 0 or idx > 16:
-            raise ValueError(f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)")
+            raise ValueError(
+                f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)"
+            )
         return cls.scale[idx]
 
 
@@ -99,10 +103,10 @@ or a callable_ (val in / converted value returned).
 
 
 ALIAS_SYMBOLS = {
-    '°C': ('C',),
-    '°F': ('F',),
-    'mi': ('L',),
-    'Bft': ('bft',),
+    "°C": ("C",),
+    "°F": ("F",),
+    "mi": ("L",),
+    "Bft": ("bft",),
 }
 """Alias symbols for known unit of measure symbols / by example::
 
@@ -195,25 +199,25 @@ def symbol_to_si():
     # https://www.wikidata.org/wiki/Q829073
 
     for item in data.WIKIDATA_UNITS.values():
-        if item['to_si_factor'] and item['symbol']:
+        if item["to_si_factor"] and item["symbol"]:
             SYMBOL_TO_SI.append(
                 (
-                    item['symbol'],
-                    item['si_name'],
-                    1 / item['to_si_factor'],  # from_si
-                    item['to_si_factor'],  # to_si
-                    item['symbol'],
+                    item["symbol"],
+                    item["si_name"],
+                    1 / item["to_si_factor"],  # from_si
+                    item["to_si_factor"],  # to_si
+                    item["symbol"],
                 )
             )
 
     for item in ADDITIONAL_UNITS:
         SYMBOL_TO_SI.append(
             (
-                item['symbol'],
-                item['si_name'],
-                item['from_si'],
-                item['to_si'],
-                item['symbol'],
+                item["symbol"],
+                item["si_name"],
+                item["from_si"],
+                item["to_si"],
+                item["symbol"],
             )
         )
 
@@ -271,19 +275,19 @@ def fetch_units() -> dict[str, data.WikiDataUnitType]:
 
     results = collections.OrderedDict()
     response = send_wikidata_query(SARQL_REQUEST)
-    for unit in response['results']['bindings']:
-        symbol = unit['symbol']['value']
-        name = unit['item']['value'].rsplit('/', 1)[1]
-        si_name = unit.get('tosiUnit', {}).get('value', '')
+    for unit in response["results"]["bindings"]:
+        symbol = unit["symbol"]["value"]
+        name = unit["item"]["value"].rsplit("/", 1)[1]
+        si_name = unit.get("tosiUnit", {}).get("value", "")
         if si_name:
-            si_name = si_name.rsplit('/', 1)[1]
+            si_name = si_name.rsplit("/", 1)[1]
 
-        to_si_factor = unit.get('tosi', {}).get('value', '')
+        to_si_factor = unit.get("tosi", {}).get("value", "")
         if name not in results:
             # ignore duplicate: always use the first one
             results[name] = {
-                'symbol': symbol,
-                'si_name': si_name if si_name else None,
-                'to_si_factor': float(to_si_factor) if to_si_factor else None,
+                "symbol": symbol,
+                "si_name": si_name if si_name else None,
+                "to_si_factor": float(to_si_factor) if to_si_factor else None,
             }
     return results

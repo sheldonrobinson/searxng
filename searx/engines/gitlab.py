@@ -51,13 +51,13 @@ about = {
     "results": "JSON",
 }
 
-categories = ['it', 'repos']
+categories = ["it", "repos"]
 paging = True
 
 base_url: str = ""
 """Base URL of the GitLab host."""
 
-api_path: str = 'api/v4/projects'
+api_path: str = "api/v4/projects"
 """The path the `project API <https://docs.gitlab.com/ee/api/projects.html>`_.
 
 The default path should work fine usually.
@@ -65,8 +65,8 @@ The default path should work fine usually.
 
 
 def request(query, params):
-    args = {'search': query, 'page': params['pageno']}
-    params['url'] = f"{base_url}/{api_path}?{urlencode(args)}"
+    args = {"search": query, "page": params["pageno"]}
+    params["url"] = f"{base_url}/{api_path}?{urlencode(args)}"
 
     return params
 
@@ -77,18 +77,20 @@ def response(resp):
     for item in resp.json():
         results.append(
             {
-                'template': 'packages.html',
-                'url': item.get('web_url'),
-                'title': item.get('name'),
-                'content': item.get('description'),
-                'thumbnail': item.get('avatar_url'),
-                'package_name': item.get('name'),
-                'maintainer': item.get('namespace', {}).get('name'),
-                'publishedDate': parser.parse(item.get('last_activity_at') or item.get("created_at")),
-                'tags': item.get('tag_list', []),
-                'popularity': item.get('star_count'),
-                'homepage': item.get('readme_url'),
-                'source_code_url': item.get('http_url_to_repo'),
+                "template": "packages.html",
+                "url": item.get("web_url"),
+                "title": item.get("name"),
+                "content": item.get("description"),
+                "thumbnail": item.get("avatar_url"),
+                "package_name": item.get("name"),
+                "maintainer": item.get("namespace", {}).get("name"),
+                "publishedDate": parser.parse(
+                    item.get("last_activity_at") or item.get("created_at")
+                ),
+                "tags": item.get("tag_list", []),
+                "popularity": item.get("star_count"),
+                "homepage": item.get("readme_url"),
+                "source_code_url": item.get("http_url_to_repo"),
             }
         )
 

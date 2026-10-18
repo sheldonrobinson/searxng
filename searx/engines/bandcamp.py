@@ -19,26 +19,28 @@ from searx.utils import (
 
 # about
 about = {
-    "website": 'https://bandcamp.com/',
-    "wikidata_id": 'Q545966',
-    "official_api_documentation": 'https://bandcamp.com/developer',
+    "website": "https://bandcamp.com/",
+    "wikidata_id": "Q545966",
+    "official_api_documentation": "https://bandcamp.com/developer",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
-categories = ['music']
+categories = ["music"]
 paging = True
 
 base_url = "https://bandcamp.com/"
-search_string = 'search?{query}&page={page}'
+search_string = "search?{query}&page={page}"
 iframe_src = "https://bandcamp.com/EmbeddedPlayer/{type}={result_id}/size=large/bgcol=000/linkcol=fff/artwork=small"
 
 
 def request(query, params):
 
-    search_path = search_string.format(query=urlencode({'q': query}), page=params['pageno'])
-    params['url'] = base_url + search_path
+    search_path = search_string.format(
+        query=urlencode({"q": query}), page=params["pageno"]
+    )
+    params["url"] = base_url + search_path
     return params
 
 
@@ -49,7 +51,9 @@ def response(resp):
 
     for result in eval_xpath_list(dom, '//li[contains(@class, "searchresult")]'):
 
-        link = eval_xpath_getindex(result, './/div[@class="itemurl"]/a', 0, default=None)
+        link = eval_xpath_getindex(
+            result, './/div[@class="itemurl"]/a', 0, default=None
+        )
         if link is None:
             continue
 
@@ -61,20 +65,26 @@ def response(resp):
             "content": extract_text(content),
         }
 
-        date = eval_xpath_getindex(result, '//div[@class="released"]/text()', 0, default=None)
+        date = eval_xpath_getindex(
+            result, '//div[@class="released"]/text()', 0, default=None
+        )
         if date:
             new_result["publishedDate"] = dateparse(date.replace("released ", ""))
 
         thumbnail = result.xpath('.//div[@class="art"]/img/@src')
         if thumbnail:
-            new_result['thumbnail'] = thumbnail[0]
+            new_result["thumbnail"] = thumbnail[0]
 
-        result_id = parse_qs(urlparse(link.get('href')).query)["search_item_id"][0]
+        result_id = parse_qs(urlparse(link.get("href")).query)["search_item_id"][0]
         itemtype = extract_text(result.xpath('.//div[@class="itemtype"]')).lower()
         if "album" == itemtype:
-            new_result["iframe_src"] = iframe_src.format(type='album', result_id=result_id)
+            new_result["iframe_src"] = iframe_src.format(
+                type="album", result_id=result_id
+            )
         elif "track" == itemtype:
-            new_result["iframe_src"] = iframe_src.format(type='track', result_id=result_id)
+            new_result["iframe_src"] = iframe_src.format(
+                type="track", result_id=result_id
+            )
 
         results.append(new_result)
     return results

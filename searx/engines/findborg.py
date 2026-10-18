@@ -7,7 +7,12 @@
 import typing as t
 from urllib.parse import urlencode
 
-from searx.engines.brave import parse_image_result, parse_news_result, parse_search_result, parse_video_result
+from searx.engines.brave import (
+    parse_image_result,
+    parse_news_result,
+    parse_search_result,
+    parse_video_result,
+)
 from searx.extended_types import SXNG_Response
 from searx.result_types import EngineResults
 

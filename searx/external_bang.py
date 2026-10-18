@@ -15,15 +15,15 @@ if t.TYPE_CHECKING:
 
 
 def get_node(external_bangs_db: dict[str, t.Any], bang: str):
-    node = external_bangs_db['trie']
-    after = ''
-    before = ''
+    node = external_bangs_db["trie"]
+    after = ""
+    before = ""
     for bang_letter in bang:
         after += bang_letter
         if after in node and isinstance(node, dict):
             node = node[after]
             before += after
-            after = ''
+            after = ""
     return node, before, after
 
 
@@ -32,7 +32,7 @@ def get_bang_definition_and_ac(external_bangs_db: dict[str, t.Any], bang: str):
 
     bang_definition = None
     bang_ac_list = []
-    if after != '':
+    if after != "":
         for k in node:
             if k.startswith(after):
                 bang_ac_list.append(before + k)
@@ -48,14 +48,14 @@ def get_bang_definition_and_ac(external_bangs_db: dict[str, t.Any], bang: str):
 
 def resolve_bang_definition(bang_definition: str, query: str) -> tuple[str, int]:
     url, rank = bang_definition.split(chr(1))
-    if url.startswith('//'):
-        url = 'https:' + url
+    if url.startswith("//"):
+        url = "https:" + url
     if query:
         url = url.replace(chr(2), quote_plus(query))
     else:
         # go to main instead of search page
         o = urlparse(url)
-        url = o.scheme + '://' + o.netloc
+        url = o.scheme + "://" + o.netloc
 
     rank = int(rank) if len(rank) > 0 else 0
     return (url, rank)
@@ -76,9 +76,11 @@ def get_bang_definition_and_autocomplete(
         bang_ac = current.pop(0)
         done.add(bang_ac)
 
-        current_bang_definition, current_bang_ac_list = get_bang_definition_and_ac(external_bangs_db, bang_ac)
+        current_bang_definition, current_bang_ac_list = get_bang_definition_and_ac(
+            external_bangs_db, bang_ac
+        )
         if current_bang_definition:
-            _, order = resolve_bang_definition(current_bang_definition, '')
+            _, order = resolve_bang_definition(current_bang_definition, "")
             new_autocomplete.append((bang_ac, order))
         for new_bang in current_bang_ac_list:
             if new_bang not in done and new_bang not in current:
@@ -90,7 +92,9 @@ def get_bang_definition_and_autocomplete(
     return bang_definition, new_autocomplete
 
 
-def get_bang_url(search_query: "SearchQuery", external_bangs_db: dict[str, t.Any] | None = None) -> str | None:
+def get_bang_url(
+    search_query: "SearchQuery", external_bangs_db: dict[str, t.Any] | None = None
+) -> str | None:
     """
     Redirects if the user supplied a correct bang search.
     :param search_query: This is a search_query object which contains preferences and the submitted queries.
@@ -102,7 +106,9 @@ def get_bang_url(search_query: "SearchQuery", external_bangs_db: dict[str, t.Any
         external_bangs_db = EXTERNAL_BANGS
 
     if search_query.external_bang:
-        bang_definition, _ = get_bang_definition_and_ac(external_bangs_db, search_query.external_bang)
+        bang_definition, _ = get_bang_definition_and_ac(
+            external_bangs_db, search_query.external_bang
+        )
         if bang_definition and isinstance(bang_definition, str):
             ret_val = resolve_bang_definition(bang_definition, search_query.query)[0]
 

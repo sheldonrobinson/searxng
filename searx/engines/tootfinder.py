@@ -6,19 +6,19 @@ from json import loads
 from searx.utils import html_to_text
 
 about = {
-    'website': "https://www.tootfinder.ch",
-    'official_api_documentation': "https://wiki.tootfinder.ch/index.php?name=the-tootfinder-rest-api",
-    'use_official_api': True,
-    'require_api_key': False,
-    'results': "JSON",
+    "website": "https://www.tootfinder.ch",
+    "official_api_documentation": "https://wiki.tootfinder.ch/index.php?name=the-tootfinder-rest-api",
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": "JSON",
 }
-categories = ['social media']
+categories = ["social media"]
 
 base_url = "https://www.tootfinder.ch"
 
 
 def request(query, params):
-    params['url'] = f"{base_url}/rest/api/search/{query}"
+    params["url"] = f"{base_url}/rest/api/search/{query}"
     return params
 
 
@@ -36,22 +36,26 @@ def response(resp):
     for result in loads(json_str):
         thumbnail = None
 
-        attachments = result.get('media_attachments', [])
-        images = [attachment['preview_url'] for attachment in attachments if attachment['type'] == 'image']
+        attachments = result.get("media_attachments", [])
+        images = [
+            attachment["preview_url"]
+            for attachment in attachments
+            if attachment["type"] == "image"
+        ]
         if len(images) > 0:
             thumbnail = images[0]
 
-        title = result.get('card', {}).get('title')
+        title = result.get("card", {}).get("title")
         if not title:
-            title = html_to_text(result['content'])[:75]
+            title = html_to_text(result["content"])[:75]
 
         results.append(
             {
-                'url': result['url'],
-                'title': title,
-                'content': html_to_text(result['content']),
-                'thumbnail': thumbnail,
-                'publishedDate': datetime.fromisoformat(result['created_at']),
+                "url": result["url"],
+                "title": title,
+                "content": html_to_text(result["content"]),
+                "thumbnail": thumbnail,
+                "publishedDate": datetime.fromisoformat(result["created_at"]),
             }
         )
 

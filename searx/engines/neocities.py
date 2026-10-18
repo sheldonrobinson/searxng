@@ -41,7 +41,7 @@ screenshot_xpath = './/a[@class="result-screenshot"]/img/@src'
 
 def request(query: str, params: "OnlineParams") -> None:
     query_params: dict[str, t.Any] = {"q": query}
-    if params['pageno'] > 1:
+    if params["pageno"] > 1:
         offset = (params["pageno"] - 1) * 100
         query_params["start"] = offset
     params["url"] = f"{base_url}/search?{urlencode(query_params)}"
@@ -57,7 +57,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 url=extract_text(eval_xpath(result, url_xpath)),
                 title=extract_text(eval_xpath(result, title_xpath)) or "",
                 content=extract_text(eval_xpath(result, content_xpath)) or "",
-                thumbnail=base_url + (extract_text(eval_xpath(result, screenshot_xpath)) or ""),
+                thumbnail=base_url
+                + (extract_text(eval_xpath(result, screenshot_xpath)) or ""),
             )
         )
 

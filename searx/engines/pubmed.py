@@ -75,7 +75,9 @@ def request(query: str, params: "OnlineParams") -> None:
     # DTD: https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd
     esearch_resp: "SXNG_Response" = get(esearch_url, timeout=3)
     pmids_results = etree.XML(esearch_resp.content)
-    pmids: list[str] = [i.text for i in pmids_results.xpath("//eSearchResult/IdList/Id")]
+    pmids: list[str] = [
+        i.text for i in pmids_results.xpath("//eSearchResult/IdList/Id")
+    ]
 
     # send efetch request with the IDs from esearch response
     args = urlencode(
@@ -103,10 +105,16 @@ def response(resp: "SXNG_Response") -> EngineResults:  # pylint: disable=too-man
 
     for pubmed_article in eval_xpath_list(efetch_xml, "//PubmedArticle"):
 
-        medline_citation: ElementType = eval_xpath_getindex(pubmed_article, "./MedlineCitation", 0)
-        pubmed_data: ElementType = eval_xpath_getindex(pubmed_article, "./PubmedData", 0)
+        medline_citation: ElementType = eval_xpath_getindex(
+            pubmed_article, "./MedlineCitation", 0
+        )
+        pubmed_data: ElementType = eval_xpath_getindex(
+            pubmed_article, "./PubmedData", 0
+        )
 
-        title: str = eval_xpath_getindex(medline_citation, ".//Article/ArticleTitle", 0).text
+        title: str = eval_xpath_getindex(
+            medline_citation, ".//Article/ArticleTitle", 0
+        ).text
         pmid: str = eval_xpath_getindex(medline_citation, ".//PMID", 0).text
         url: str = pubmed_url + pmid
         content = _field_txt(medline_citation, ".//Abstract/AbstractText//text()")
@@ -124,7 +132,10 @@ def response(resp: "SXNG_Response") -> EngineResults:  # pylint: disable=too-man
                 authors.append(author_name)
 
         accepted_date = eval_xpath_getindex(
-            pubmed_data, "./History//PubMedPubDate[@PubStatus='accepted']", 0, default=None
+            pubmed_data,
+            "./History//PubMedPubDate[@PubStatus='accepted']",
+            0,
+            default=None,
         )
         pub_date = None
         if accepted_date is not None:
@@ -132,7 +143,9 @@ def response(resp: "SXNG_Response") -> EngineResults:  # pylint: disable=too-man
             month = eval_xpath_getindex(accepted_date, "./Month", 0)
             day = eval_xpath_getindex(accepted_date, "./Day", 0)
             try:
-                pub_date = datetime(year=int(year.text), month=int(month.text), day=int(day.text))
+                pub_date = datetime(
+                    year=int(year.text), month=int(month.text), day=int(day.text)
+                )
             except ValueError:
                 pass
 

@@ -23,15 +23,15 @@ import typing as t
 from urllib.parse import quote_plus
 
 about = {
-    "website": 'https://matrixrooms.info',
+    "website": "https://matrixrooms.info",
     "wikidata_id": None,
-    "official_api_documentation": 'https://gitlab.com/etke.cc/mrs/api/-/blob/main/openapi.yml?ref_type=heads',
+    "official_api_documentation": "https://gitlab.com/etke.cc/mrs/api/-/blob/main/openapi.yml?ref_type=heads",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 paging = True
-categories = ['social media']
+categories = ["social media"]
 
 base_url = ""
 matrix_url = "https://matrix.to"
@@ -44,11 +44,13 @@ def setup(_: dict[str, t.Any]) -> bool | None:
 
     """
     if not base_url:
-        raise ValueError('engine MRS, base_url is unset')
+        raise ValueError("engine MRS, base_url is unset")
 
 
 def request(query, params):
-    params['url'] = f"{base_url}/search/{quote_plus(query)}/{page_size}/{(params['pageno']-1)*page_size}"
+    params["url"] = (
+        f"{base_url}/search/{quote_plus(query)}/{page_size}/{(params['pageno']-1)*page_size}"
+    )
     return params
 
 
@@ -58,13 +60,13 @@ def response(resp):
     for result in resp.json():
         results.append(
             {
-                'url': matrix_url + '/#/' + result['alias'],
-                'title': result['name'],
-                'content': result['topic']
+                "url": matrix_url + "/#/" + result["alias"],
+                "title": result["name"],
+                "content": result["topic"]
                 + f" // {result['members']} members"
                 + f" // {result['alias']}"
                 + f" // {result['server']}",
-                'thumbnail': result['avatar_url'],
+                "thumbnail": result["avatar_url"],
             }
         )
 

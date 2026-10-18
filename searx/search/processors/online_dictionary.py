@@ -39,12 +39,16 @@ class OnlineDictionaryProcessor(OnlineProcessor):
 
     engine_type: str = "online_dictionary"
 
-    def get_params(self, search_query: "SearchQuery", engine_category: str) -> OnlineDictParams | None:
+    def get_params(
+        self, search_query: "SearchQuery", engine_category: str
+    ) -> OnlineDictParams | None:
         """Returns a dictionary with the :ref:`request params <engine request
         online_dictionary>` (:py:obj:`OnlineDictParams`).  ``None`` is returned
         if the search query does not match :py:obj:`search_syntax`."""
 
-        online_params: OnlineParams | None = super().get_params(search_query, engine_category)
+        online_params: OnlineParams | None = super().get_params(
+            search_query, engine_category
+        )
         if online_params is None:
             return None
         m = search_syntax.match(search_query.query)

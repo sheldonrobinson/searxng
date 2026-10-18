@@ -22,7 +22,10 @@ if t.TYPE_CHECKING:
     from searx.enginelib import Engine
     from searx.search.models import SearchQuery
     from searx.results import ResultContainer
-    from searx.result_types import Result, LegacyResult  # pyright: ignore[reportPrivateLocalImportUsage]
+    from searx.result_types import (
+        Result,
+        LegacyResult,
+    )  # pyright: ignore[reportPrivateLocalImportUsage]
 
 
 logger = logger.getChild("searx.search.processor")
@@ -123,7 +126,9 @@ class EngineProcessor(ABC):
         self.logger: logging.Logger = engines[engine.name].logger
         key = get_network(self.engine.name)
         key = id(key) if key else self.engine.name
-        self.suspended_status: SuspendedStatus = SUSPENDED_STATUS.setdefault(key, SuspendedStatus())
+        self.suspended_status: SuspendedStatus = SUSPENDED_STATUS.setdefault(
+            key, SuspendedStatus()
+        )
 
     def initialize(self, callback: t.Callable[["EngineProcessor", bool], bool]):
         """Initialization of *this* :py:obj:`EngineProcessor`.
@@ -142,7 +147,10 @@ class EngineProcessor(ABC):
             return
 
         if not callable(self.engine.init):
-            logger.error("Engine's init method isn't a callable (is of type: %s).", type(self.engine.init))
+            logger.error(
+                "Engine's init method isn't a callable (is of type: %s).",
+                type(self.engine.init),
+            )
             callback(self, False)
             return
 
@@ -161,7 +169,12 @@ class EngineProcessor(ABC):
         try:
             init_ok = self.engine.init(eng_setting)
         except Exception as e:  # pylint: disable=broad-except
-            logger.exception("(PID %s) %s: engine INIT failed, exception: %s", os.getpid(), self.engine.name, e)
+            logger.exception(
+                "(PID %s) %s: engine INIT failed, exception: %s",
+                os.getpid(),
+                self.engine.name,
+                e,
+            )
             init_ok = False
 
         # In older engines, None is returned from the init method, which is
@@ -172,7 +185,11 @@ class EngineProcessor(ABC):
             init_ok = True
 
         if not init_ok:
-            logger.error("(PID %s) %s: engine init was not successful", os.getpid(), self.engine.name)
+            logger.error(
+                "(PID %s) %s: engine init was not successful",
+                os.getpid(),
+                self.engine.name,
+            )
 
         return init_ok
 
@@ -185,14 +202,14 @@ class EngineProcessor(ABC):
         # update result_container
         if isinstance(exception_or_message, BaseException):
             exception_class = exception_or_message.__class__
-            module_name = getattr(exception_class, '__module__', 'builtins')
-            module_name = '' if module_name == 'builtins' else module_name + '.'
+            module_name = getattr(exception_class, "__module__", "builtins")
+            module_name = "" if module_name == "builtins" else module_name + "."
             error_message = module_name + exception_class.__qualname__
         else:
             error_message = exception_or_message
         result_container.add_unresponsive_engine(self.engine.name, error_message)
         # metrics
-        counter_inc('engine', self.engine.name, 'search', 'count', 'error')
+        counter_inc("engine", self.engine.name, "search", "count", "error")
         if isinstance(exception_or_message, BaseException):
             count_exception(self.engine.name, exception_or_message)
         else:
@@ -202,7 +219,9 @@ class EngineProcessor(ABC):
             suspended_time = None
             if isinstance(exception_or_message, SearxEngineAccessDeniedException):
                 suspended_time = exception_or_message.suspended_time
-            self.suspended_status.suspend(suspended_time, error_message)  # pylint: disable=no-member
+            self.suspended_status.suspend(
+                suspended_time, error_message
+            )  # pylint: disable=no-member
 
     def _extend_container_basic(
         self,
@@ -216,10 +235,12 @@ class EngineProcessor(ABC):
         page_load_time = get_time_for_thread()
         result_container.add_timing(self.engine.name, engine_time, page_load_time)
         # metrics
-        counter_inc('engine', self.engine.name, 'search', 'count', 'successful')
-        histogram_observe(engine_time, 'engine', self.engine.name, 'time', 'total')
+        counter_inc("engine", self.engine.name, "search", "count", "successful")
+        histogram_observe(engine_time, "engine", self.engine.name, "time", "total")
         if page_load_time is not None:
-            histogram_observe(page_load_time, 'engine', self.engine.name, 'time', 'http')
+            histogram_observe(
+                page_load_time, "engine", self.engine.name, "time", "http"
+            )
 
     def extend_container(
         self,
@@ -227,16 +248,20 @@ class EngineProcessor(ABC):
         start_time: float,
         search_results: "list[Result | LegacyResult]|None",
     ):
-        if getattr(threading.current_thread(), '_timeout', False):
+        if getattr(threading.current_thread(), "_timeout", False):
             # the main thread is not waiting anymore
-            self.handle_exception(result_container, 'timeout', False)
+            self.handle_exception(result_container, "timeout", False)
         else:
             # check if the engine accepted the request
             if search_results is not None:
-                self._extend_container_basic(result_container, start_time, search_results)
+                self._extend_container_basic(
+                    result_container, start_time, search_results
+                )
             self.suspended_status.resume()
 
-    def extend_container_if_suspended(self, result_container: "ResultContainer") -> bool:
+    def extend_container_if_suspended(
+        self, result_container: "ResultContainer"
+    ) -> bool:
         if self.suspended_status.is_suspended:
             result_container.add_unresponsive_engine(
                 self.engine.name, self.suspended_status.suspend_reason, suspended=True
@@ -244,7 +269,9 @@ class EngineProcessor(ABC):
             return True
         return False
 
-    def get_params(self, search_query: "SearchQuery", engine_category: str) -> RequestParams | None:
+    def get_params(
+        self, search_query: "SearchQuery", engine_category: str
+    ) -> RequestParams | None:
         """Returns a dictionary with the :ref:`request parameters <engine
         request arguments>` (:py:obj:`RequestParams`), if the search condition
         is not supported by the engine, ``None`` is returned:
@@ -286,9 +313,13 @@ class EngineProcessor(ABC):
         # the engine request.
 
         if hasattr(self.engine, "language") and self.engine.language:
-            params["language"] = self.engine.language  # pyright: ignore[reportGeneralTypeIssues]
+            params["language"] = (
+                self.engine.language
+            )  # pyright: ignore[reportGeneralTypeIssues]
         else:
-            params["language"] = search_query.lang  # pyright: ignore[reportGeneralTypeIssues]
+            params["language"] = (
+                search_query.lang
+            )  # pyright: ignore[reportGeneralTypeIssues]
 
         return params
 

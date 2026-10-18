@@ -24,32 +24,38 @@ class SearxRobotLayer:
         tests_path = pathlib.Path(searx_tests.__file__).resolve().parent
 
         # get program paths
-        webapp = str(tests_path.parent / 'searx' / 'webapp.py')
-        exe = 'python'
+        webapp = str(tests_path.parent / "searx" / "webapp.py")
+        exe = "python"
 
         # set robot settings path
-        os.environ['SEARXNG_SETTINGS_PATH'] = str(tests_path / 'robot' / 'settings_robot.yml')
+        os.environ["SEARXNG_SETTINGS_PATH"] = str(
+            tests_path / "robot" / "settings_robot.yml"
+        )
 
         # run the server
         self.server = subprocess.Popen(  # pylint: disable=consider-using-with
             [exe, webapp], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
-        if hasattr(self.server.stdout, 'read1'):
+        if hasattr(self.server.stdout, "read1"):
             print(self.server.stdout.read1(1024).decode())
 
     def tearDown(self):
         os.kill(self.server.pid, 9)
         # remove previously set environment variable
-        del os.environ['SEARXNG_SETTINGS_PATH']
+        del os.environ["SEARXNG_SETTINGS_PATH"]
 
 
 def run_robot_tests(tests):
-    print('Running {0} tests'.format(len(tests)))
+    print("Running {0} tests".format(len(tests)))
     print(f'{shutil.which("geckodriver")}')
     print(f'{shutil.which("firefox")}')
 
     for test in tests:
-        with Browser('firefox', headless=True, profile_preferences={'intl.accept_languages': 'en'}) as browser:
+        with Browser(
+            "firefox",
+            headless=True,
+            profile_preferences={"intl.accept_languages": "en"},
+        ) as browser:
             test(browser)
 
 
@@ -57,13 +63,15 @@ def main():
     test_layer = SearxRobotLayer()
     try:
         test_layer.setUp()
-        run_robot_tests([getattr(test_webapp, x) for x in dir(test_webapp) if x.startswith('test_')])
+        run_robot_tests(
+            [getattr(test_webapp, x) for x in dir(test_webapp) if x.startswith("test_")]
+        )
     except Exception:  # pylint: disable=broad-except
-        print('Error occurred: {0}'.format(traceback.format_exc()))
+        print("Error occurred: {0}".format(traceback.format_exc()))
         sys.exit(1)
     finally:
         test_layer.tearDown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

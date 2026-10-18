@@ -21,18 +21,36 @@ class TestOnlineProcessor(SearxTestCase):
     def test_get_params_default_params(self):
         engine = engines.engines[TEST_ENGINE_NAME]
         online_processor = online.OnlineProcessor(engine)
-        search_query = SearchQuery('test', [EngineRef(TEST_ENGINE_NAME, 'general')], 'all', 0, 1, None, None, None)
-        params = self._get_params(online_processor, search_query, 'general')
-        self.assertIn('method', params)
-        self.assertIn('headers', params)
-        self.assertIn('data', params)
-        self.assertIn('url', params)
-        self.assertIn('cookies', params)
-        self.assertIn('auth', params)
+        search_query = SearchQuery(
+            "test",
+            [EngineRef(TEST_ENGINE_NAME, "general")],
+            "all",
+            0,
+            1,
+            None,
+            None,
+            None,
+        )
+        params = self._get_params(online_processor, search_query, "general")
+        self.assertIn("method", params)
+        self.assertIn("headers", params)
+        self.assertIn("data", params)
+        self.assertIn("url", params)
+        self.assertIn("cookies", params)
+        self.assertIn("auth", params)
 
     def test_get_params_useragent(self):
         engine = engines.engines[TEST_ENGINE_NAME]
         online_processor = online.OnlineProcessor(engine)
-        search_query = SearchQuery('test', [EngineRef(TEST_ENGINE_NAME, 'general')], 'all', 0, 1, None, None, None)
-        params = self._get_params(online_processor, search_query, 'general')
-        self.assertNotIn('User-Agent', params['headers'])
+        search_query = SearchQuery(
+            "test",
+            [EngineRef(TEST_ENGINE_NAME, "general")],
+            "all",
+            0,
+            1,
+            None,
+            None,
+            None,
+        )
+        params = self._get_params(online_processor, search_query, "general")
+        self.assertNotIn("User-Agent", params["headers"])

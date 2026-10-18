@@ -86,7 +86,9 @@ nokia_useragents = (
 suggestion_xpath = '//table[contains(@class, "HExoMb")]//a[contains(@class, "ZWRArf")]'
 
 
-def get_google_info(params: "OnlineParams", eng_traits: EngineTraits) -> dict[str, t.Any]:
+def get_google_info(
+    params: "OnlineParams", eng_traits: EngineTraits
+) -> dict[str, t.Any]:
     """Composing various (language) properties for the google engines (:ref:`google
     API`).
 
@@ -343,7 +345,10 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
         try:
             title_tag = eval_xpath_getindex(
-                result, './/a[contains(@class, "fuLhoc")]//span[contains(@class, "CVA68e")]', 0, default=None
+                result,
+                './/a[contains(@class, "fuLhoc")]//span[contains(@class, "CVA68e")]',
+                0,
+                default=None,
             )
             if title_tag is None:
                 # this not one of the common google results *section*
@@ -351,7 +356,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 continue
             title = extract_text(title_tag)
 
-            raw_url = eval_xpath_getindex(result, './/a[contains(@class, "fuLhoc")]/@href', 0, default=None)
+            raw_url = eval_xpath_getindex(
+                result, './/a[contains(@class, "fuLhoc")]/@href', 0, default=None
+            )
             if raw_url is None:
                 logger.debug(
                     'ignoring item from the result_xpath list: missing url of title "%s"',
@@ -361,9 +368,14 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
             url = unwrap_google_url(raw_url)
             content = extract_text(
-                eval_xpath(result, './/div[contains(@class, "taTFJ")]//span[contains(@class, "FrIlee")]')
+                eval_xpath(
+                    result,
+                    './/div[contains(@class, "taTFJ")]//span[contains(@class, "FrIlee")]',
+                )
             )
-            thumbnail = eval_xpath_getindex(result, './/img[contains(@src, "encrypted-tbn")]/@src', 0, default=None)
+            thumbnail = eval_xpath_getindex(
+                result, './/img[contains(@src, "encrypted-tbn")]/@src', 0, default=None
+            )
             results.add(
                 results.types.MainResult(
                     url=url,
@@ -423,7 +435,9 @@ def fetch_traits(engine_traits: EngineTraits):
     if not resp.ok:
         raise RuntimeError("Response from Google preferences is not OK.")
 
-    dom = html.fromstring(resp.text.replace('<?xml version="1.0" encoding="UTF-8"?>', ""))
+    dom = html.fromstring(
+        resp.text.replace('<?xml version="1.0" encoding="UTF-8"?>', "")
+    )
 
     # supported language codes
 
@@ -433,7 +447,10 @@ def fetch_traits(engine_traits: EngineTraits):
         try:
             locale = babel.Locale.parse(lang_map.get(eng_lang, eng_lang), sep="-")
         except babel.UnknownLocaleError:
-            print("INFO:  google UI language %s (%s) is unknown by babel" % (eng_lang, x.text.split("(")[0].strip()))
+            print(
+                "INFO:  google UI language %s (%s) is unknown by babel"
+                % (eng_lang, x.text.split("(")[0].strip())
+            )
             continue
         sxng_lang = language_tag(locale)
 
@@ -458,10 +475,15 @@ def fetch_traits(engine_traits: EngineTraits):
             engine_traits.all_locale = "ZZ"
             continue
 
-        sxng_locales = get_official_locales(eng_country, engine_traits.languages.keys(), regional=True)
+        sxng_locales = get_official_locales(
+            eng_country, engine_traits.languages.keys(), regional=True
+        )
 
         if not sxng_locales:
-            print("ERROR: can't map from google country %s (%s) to a babel region." % (x.get("data-name"), eng_country))
+            print(
+                "ERROR: can't map from google country %s (%s) to a babel region."
+                % (x.get("data-name"), eng_country)
+            )
             continue
 
         for sxng_locale in sxng_locales:

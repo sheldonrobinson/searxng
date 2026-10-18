@@ -167,11 +167,16 @@ def response(resp: SXNG_Response):
 def setup(_: dict[str, t.Any]) -> bool:
 
     if not api_key:
-        logger.error("missing api_key: see https://about.marginalia-search.com/article/api")
+        logger.error(
+            "missing api_key: see https://about.marginalia-search.com/article/api"
+        )
         return False
 
     if api_key == "public":
-        logger.error("invalid api_key (%s): see https://about.marginalia-search.com/article/api", api_key)
+        logger.error(
+            "invalid api_key (%s): see https://about.marginalia-search.com/article/api",
+            api_key,
+        )
     elif filter_name:
         filter_names: list[str] = _get_filter_names()
         if filter_name not in filter_names:

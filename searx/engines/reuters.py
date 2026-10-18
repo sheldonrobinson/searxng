@@ -69,7 +69,9 @@ def request(query, params):
         start_date = datetime.now() - timedelta(days=time_diff_days)
         args["start_date"] = start_date.isoformat()
 
-    params["url"] = f"{base_url}/pf/api/v3/content/fetch/articles-by-search-v2?query={quote_plus(dumps(args))}"
+    params["url"] = (
+        f"{base_url}/pf/api/v3/content/fetch/articles-by-search-v2?query={quote_plus(dumps(args))}"
+    )
     return params
 
 

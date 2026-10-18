@@ -36,7 +36,12 @@ results_per_page = 20
 
 paging = True
 time_range_support = True
-time_range_map = {"day": "last_24_hours", "week": "last_week", "month": "last_month", "year": "last_year"}
+time_range_map = {
+    "day": "last_24_hours",
+    "week": "last_week",
+    "month": "last_month",
+    "year": "last_year",
+}
 
 SECRET_KEY_RE = re.compile('"secret-key":\b*"(.*?)"')
 SECRET_KEY_DB_KEY = "secret-key"

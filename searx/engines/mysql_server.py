@@ -36,8 +36,8 @@ except ImportError:
     # the engine
     pass
 
-engine_type = 'offline'
-auth_plugin = 'caching_sha2_password'
+engine_type = "offline"
+auth_plugin = "caching_sha2_password"
 
 host = "127.0.0.1"
 """Hostname of the DB connector"""
@@ -63,11 +63,11 @@ _connection = None
 
 
 def setup(engine_settings: dict[str, t.Any]) -> bool | None:
-    if 'query_str' not in engine_settings:
-        raise ValueError('query_str cannot be empty')
+    if "query_str" not in engine_settings:
+        raise ValueError("query_str cannot be empty")
 
-    if not engine_settings['query_str'].lower().startswith('select '):
-        raise ValueError('only SELECT query is supported')
+    if not engine_settings["query_str"].lower().startswith("select "):
+        raise ValueError("only SELECT query is supported")
 
 
 def init(_):
@@ -85,8 +85,10 @@ def init(_):
 
 def search(query, params) -> EngineResults:
     res = EngineResults()
-    query_params = {'query': query}
-    query_to_run = query_str + ' LIMIT {0} OFFSET {1}'.format(limit, (params['pageno'] - 1) * limit)
+    query_params = {"query": query}
+    query_to_run = query_str + " LIMIT {0} OFFSET {1}".format(
+        limit, (params["pageno"] - 1) * limit
+    )
 
     with _connection.cursor() as cur:
         cur.execute(query_to_run, query_params)

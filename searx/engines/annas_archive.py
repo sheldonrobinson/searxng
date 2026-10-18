@@ -231,7 +231,9 @@ def _get_result(item: ElementBase, base_url_choice: str) -> dict[str, t.Any] | N
         allow_none=True,
     )
     if tags_text:
-        result["tags"] = [tag.strip() for tag in tags_text.split("Save")[0].split("·") if tag.strip()]
+        result["tags"] = [
+            tag.strip() for tag in tags_text.split("Save")[0].split("·") if tag.strip()
+        ]
 
     return result
 

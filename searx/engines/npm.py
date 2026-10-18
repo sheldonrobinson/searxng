@@ -13,7 +13,7 @@ about = {
     "results": "JSON",
 }
 
-categories = ['it', 'packages']
+categories = ["it", "packages"]
 
 
 # engine dependent config
@@ -26,12 +26,12 @@ def request(query: str, params):
 
     args = urlencode(
         {
-            'from': (params["pageno"] - 1) * page_size,
-            'q': query,
-            'size': page_size,
+            "from": (params["pageno"] - 1) * page_size,
+            "q": query,
+            "size": page_size,
         }
     )
-    params['url'] = search_api + args
+    params["url"] = search_api + args
     return params
 
 
@@ -49,11 +49,11 @@ def response(resp):
                 "template": "packages.html",
                 "url": package["links"]["npm"],
                 "title": package["name"],
-                'package_name': package["name"],
+                "package_name": package["name"],
                 "content": package.get("description", ""),
                 "version": package.get("version"),
                 "maintainer": package.get("author", {}).get("name"),
-                'publishedDate': publishedDate,
+                "publishedDate": publishedDate,
                 "tags": tags,
                 "homepage": package["links"].get("homepage"),
                 "source_code_url": package["links"].get("repository"),

@@ -45,7 +45,9 @@ class SXNGPlugin(Plugin):
             preference_section="general",
         )
 
-    def post_search(self, request: "SXNG_Request", search: "SearchWithPlugins") -> EngineResults:
+    def post_search(
+        self, request: "SXNG_Request", search: "SearchWithPlugins"
+    ) -> EngineResults:
         results = EngineResults()
 
         # only convert between units on the first page
@@ -62,7 +64,9 @@ class SXNGPlugin(Plugin):
             for keyword in CONVERT_KEYWORDS:
                 if query_part == keyword:
                     from_query, to_query = query.split(keyword, 1)
-                    target_val = _parse_text_and_convert(from_query.strip(), to_query.strip())
+                    target_val = _parse_text_and_convert(
+                        from_query.strip(), to_query.strip()
+                    )
                     if target_val:
                         results.add(results.types.Answer(answer=target_val))
 
@@ -70,14 +74,14 @@ class SXNGPlugin(Plugin):
 
 
 # inspired from https://stackoverflow.com/a/42475086
-RE_MEASURE = r'''
+RE_MEASURE = r"""
 (?P<sign>[-+]?)         # +/- or nothing for positive
 (\s*)                   # separator: white space or nothing
 (?P<number>[\d\.,]*)    # number: 1,000.00 (en) or 1.000,00 (de)
 (?P<E>[eE][-+]?\d+)?    # scientific notation: e(+/-)2 (*10^2)
 (\s*)                   # separator: white space or nothing
 (?P<unit>\S+)           # unit of measure
-'''
+"""
 
 
 def _parse_text_and_convert(from_query, to_query) -> str | None:
@@ -88,7 +92,7 @@ def _parse_text_and_convert(from_query, to_query) -> str | None:
         return None
 
     measured = re.match(RE_MEASURE, from_query, re.VERBOSE)
-    if not (measured and measured.group('number'), measured.group('unit')):
+    if not (measured and measured.group("number"), measured.group("unit")):
         return None
 
     # Symbols are not unique, if there are several hits for the from-unit, then
@@ -101,7 +105,7 @@ def _parse_text_and_convert(from_query, to_query) -> str | None:
 
     for symbol, si_name, from_si, to_si, orig_symbol in symbol_to_si():
 
-        if symbol == measured.group('unit'):
+        if symbol == measured.group("unit"):
             source_list.append((si_name, to_si))
         if symbol == to_query:
             target_list.append((si_name, from_si, orig_symbol))
@@ -123,9 +127,11 @@ def _parse_text_and_convert(from_query, to_query) -> str | None:
     if not (source_to_si and target_from_si):
         return None
 
-    _locale = get_locale() or 'en_US'
+    _locale = get_locale() or "en_US"
 
-    value = measured.group('sign') + measured.group('number') + (measured.group('E') or '')
+    value = (
+        measured.group("sign") + measured.group("number") + (measured.group("E") or "")
+    )
     value = babel.numbers.parse_decimal(value, locale=_locale)
 
     # convert value to SI unit
@@ -142,10 +148,12 @@ def _parse_text_and_convert(from_query, to_query) -> str | None:
     else:
         value = target_from_si(float(value))
 
-    if measured.group('E'):
+    if measured.group("E"):
         # when incoming notation is scientific, outgoing notation is scientific
         result = babel.numbers.format_scientific(value, locale=_locale)
     else:
-        result = babel.numbers.format_decimal(value, locale=_locale, format='#,##0.##########;-#')
+        result = babel.numbers.format_decimal(
+            value, locale=_locale, format="#,##0.##########;-#"
+        )
 
-    return f'{result} {target_symbol}'
+    return f"{result} {target_symbol}"

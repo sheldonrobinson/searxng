@@ -18,7 +18,7 @@ from searx.engines import wikidata, set_loggers
 from searx.data.currencies import CurrenciesDB
 from searx.wikidata import send_wikidata_query
 
-set_loggers(wikidata, 'wikidata')
+set_loggers(wikidata, "wikidata")
 locales_initialize()
 
 # ORDER BY (with all the query fields) is important to keep a deterministic result order
@@ -54,28 +54,28 @@ ORDER BY ?iso4217 ?article_name
 
 
 LANGUAGES = LOCALE_NAMES.keys()
-LANGUAGES_SPARQL = ', '.join(set(map(lambda l: repr(l.split('_')[0]), LANGUAGES)))
+LANGUAGES_SPARQL = ", ".join(set(map(lambda l: repr(l.split("_")[0]), LANGUAGES)))
 
 
 def remove_accents(name):
-    return unicodedata.normalize('NFKD', name).lower()
+    return unicodedata.normalize("NFKD", name).lower()
 
 
 def remove_extra(name):
-    for c in ('(', ':'):
+    for c in ("(", ":"):
         if c in name:
             name = name.split(c)[0].strip()
     return name
 
 
 def _normalize_name(name):
-    name = re.sub(' +', ' ', remove_accents(name.lower()).replace('-', ' '))
+    name = re.sub(" +", " ", remove_accents(name.lower()).replace("-", " "))
     name = remove_extra(name)
     return name
 
 
 def add_currency_name(db, name, iso4217, normalize_name=True):
-    db_names = db['names']
+    db_names = db["names"]
 
     if normalize_name:
         name = _normalize_name(name)
@@ -86,45 +86,47 @@ def add_currency_name(db, name, iso4217, normalize_name=True):
 
 
 def add_currency_label(db, label, iso4217, language):
-    labels = db['iso4217'].setdefault(iso4217, {})
+    labels = db["iso4217"].setdefault(iso4217, {})
     labels[language] = label
 
 
 def wikidata_request_result_iterator(request):
-    result = send_wikidata_query(request.replace('%LANGUAGES_SPARQL%', LANGUAGES_SPARQL), timeout=20)
+    result = send_wikidata_query(
+        request.replace("%LANGUAGES_SPARQL%", LANGUAGES_SPARQL), timeout=20
+    )
     if result is not None:
-        yield from result['results']['bindings']
+        yield from result["results"]["bindings"]
 
 
 def fetch_db():
     db = {
-        'names': {},
-        'iso4217': {},
+        "names": {},
+        "iso4217": {},
     }
 
     for r in wikidata_request_result_iterator(SPARQL_WIKIPEDIA_NAMES_REQUEST):
-        iso4217 = r['iso4217']['value']
-        article_name = r['article_name']['value']
-        article_lang = r['article_name']['xml:lang']
+        iso4217 = r["iso4217"]["value"]
+        article_name = r["article_name"]["value"]
+        article_lang = r["article_name"]["xml:lang"]
         add_currency_name(db, article_name, iso4217)
         add_currency_label(db, article_name, iso4217, article_lang)
 
     for r in wikidata_request_result_iterator(SARQL_REQUEST):
-        iso4217 = r['iso4217']['value']
-        if 'label' in r:
-            label = r['label']['value']
-            label_lang = r['label']['xml:lang']
+        iso4217 = r["iso4217"]["value"]
+        if "label" in r:
+            label = r["label"]["value"]
+            label_lang = r["label"]["xml:lang"]
             add_currency_name(db, label, iso4217)
             add_currency_label(db, label, iso4217, label_lang)
 
-        if 'alias' in r:
-            add_currency_name(db, r['alias']['value'], iso4217)
+        if "alias" in r:
+            add_currency_name(db, r["alias"]["value"], iso4217)
 
-        if 'unicode' in r:
-            add_currency_name(db, r['unicode']['value'], iso4217, normalize_name=False)
+        if "unicode" in r:
+            add_currency_name(db, r["unicode"]["value"], iso4217, normalize_name=False)
 
-        if 'unit' in r:
-            add_currency_name(db, r['unit']['value'], iso4217, normalize_name=False)
+        if "unit" in r:
+            add_currency_name(db, r["unit"]["value"], iso4217, normalize_name=False)
 
     return db
 
@@ -134,23 +136,23 @@ def main():
     db = fetch_db()
 
     # static
-    add_currency_name(db, "euro", 'EUR')
-    add_currency_name(db, "euros", 'EUR')
-    add_currency_name(db, "dollar", 'USD')
-    add_currency_name(db, "dollars", 'USD')
-    add_currency_name(db, "peso", 'MXN')
-    add_currency_name(db, "pesos", 'MXN')
+    add_currency_name(db, "euro", "EUR")
+    add_currency_name(db, "euros", "EUR")
+    add_currency_name(db, "dollar", "USD")
+    add_currency_name(db, "dollars", "USD")
+    add_currency_name(db, "peso", "MXN")
+    add_currency_name(db, "pesos", "MXN")
 
     # reduce memory usage:
     # replace lists with one item by the item.  see
     # searx.search.processors.online_currency.name_to_iso4217
-    for name in db['names']:
-        if len(db['names'][name]) == 1:
-            db['names'][name] = db['names'][name][0]
+    for name in db["names"]:
+        if len(db["names"][name]) == 1:
+            db["names"][name] = db["names"][name][0]
 
-    with CurrenciesDB.json_file.open('w', encoding='utf8') as f:
+    with CurrenciesDB.json_file.open("w", encoding="utf8") as f:
         json.dump(db, f, indent=4, sort_keys=True, ensure_ascii=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

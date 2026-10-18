@@ -122,7 +122,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
         raw_date = result.get("publishedDate") or result.get("depositedDate")
         if raw_date:
             try:
-                published_date = datetime.fromisoformat(result["publishedDate"].replace("Z", "+00:00"))
+                published_date = datetime.fromisoformat(
+                    result["publishedDate"].replace("Z", "+00:00")
+                )
             except (ValueError, AttributeError):
                 pass
 
@@ -155,7 +157,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 publisher=publisher,
                 journal=", ".join(journals),
                 doi=result.get("doi"),
-                pdf_url=result.get("downloadUrl", {}) or result.get("sourceFulltextUrls", {}),
+                pdf_url=result.get("downloadUrl", {})
+                or result.get("sourceFulltextUrls", {}),
             )
         )
 

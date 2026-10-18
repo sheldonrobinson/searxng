@@ -37,12 +37,12 @@ from ipaddress import (
 from . import config
 from ._helpers import logger
 
-logger = logger.getChild('ip_limit')
+logger = logger.getChild("ip_limit")
 
 SEARXNG_ORG = [
     # https://github.com/searxng/searxng/pull/2484#issuecomment-1576639195
-    '167.235.158.251',  # IPv4 check.searx.space
-    '2a01:04f8:1c1c:8fc2::/64',  # IPv6 check.searx.space
+    "167.235.158.251",  # IPv4 check.searx.space
+    "2a01:04f8:1c1c:8fc2::/64",  # IPv6 check.searx.space
 ]
 """Passlist of IPs from the SearXNG organization, e.g. `check.searx.space`."""
 
@@ -52,20 +52,24 @@ def pass_ip(real_ip: IPv4Address | IPv6Address, cfg: config.Config) -> Tuple[boo
     ``botdetection.ip_lists.pass_ip`` list.
     """
 
-    if cfg.get('botdetection.ip_lists.pass_searxng_org', default=True):
+    if cfg.get("botdetection.ip_lists.pass_searxng_org", default=True):
         for net in SEARXNG_ORG:
             net = ip_network(net, strict=False)
             if real_ip.version == net.version and real_ip in net:
                 return True, f"IP matches {net.compressed} in SEARXNG_ORG list."
-    return ip_is_subnet_of_member_in_list(real_ip, 'botdetection.ip_lists.pass_ip', cfg)
+    return ip_is_subnet_of_member_in_list(real_ip, "botdetection.ip_lists.pass_ip", cfg)
 
 
-def block_ip(real_ip: IPv4Address | IPv6Address, cfg: config.Config) -> Tuple[bool, str]:
+def block_ip(
+    real_ip: IPv4Address | IPv6Address, cfg: config.Config
+) -> Tuple[bool, str]:
     """Checks if the IP on the subnet is in one of the members of the
     ``botdetection.ip_lists.block_ip`` list.
     """
 
-    block, msg = ip_is_subnet_of_member_in_list(real_ip, 'botdetection.ip_lists.block_ip', cfg)
+    block, msg = ip_is_subnet_of_member_in_list(
+        real_ip, "botdetection.ip_lists.block_ip", cfg
+    )
     if block:
         msg += " To remove IP from list, please contact the maintainer of the service."
     return block, msg

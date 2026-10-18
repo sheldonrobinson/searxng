@@ -43,21 +43,24 @@ from lxml import etree
 
 # about
 about = {
-    "website": 'https://bt4gprx.com',
+    "website": "https://bt4gprx.com",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'XML',
+    "results": "XML",
 }
 
 # engine dependent config
-categories = ['files']
+categories = ["files"]
 paging = True
 time_range_support = True
 
 # search-url
-url = 'https://bt4gprx.com'
-search_url = url + '/search?q={search_term}&orderby={order_by}&category={category}&p={pageno}&page=rss'
-bt4g_order_by = 'relevance'
+url = "https://bt4gprx.com"
+search_url = (
+    url
+    + "/search?q={search_term}&orderby={order_by}&category={category}&p={pageno}&page=rss"
+)
+bt4g_order_by = "relevance"
 """Result list can be ordered by ``relevance`` (default), ``size``, ``seeders``
 or ``time``.
 
@@ -66,7 +69,7 @@ or ``time``.
   When *time_range* is activate, the results always ordered by ``time``.
 """
 
-bt4g_category = 'all'
+bt4g_category = "all"
 """BT$G offers categories: ``all`` (default), ``audio``, ``movie``, ``doc``,
 ``app`` and `` other``.
 """
@@ -75,14 +78,14 @@ bt4g_category = 'all'
 def request(query, params):
 
     order_by = bt4g_order_by
-    if params['time_range']:
-        order_by = 'time'
+    if params["time_range"]:
+        order_by = "time"
 
-    params['url'] = search_url.format(
+    params["url"] = search_url.format(
         search_term=quote(query),
         order_by=order_by,
         category=bt4g_category,
-        pageno=params['pageno'],
+        pageno=params["pageno"],
     )
     return params
 
@@ -96,22 +99,22 @@ def response(resp):
     if len(search_results) == 0:
         return []
 
-    for entry in search_results.xpath('./channel/item'):
+    for entry in search_results.xpath("./channel/item"):
         title = entry.find("title").text
         link = entry.find("guid").text
-        fullDescription = entry.find("description").text.split('<br>')
+        fullDescription = entry.find("description").text.split("<br>")
         magnetlink = entry.find("link").text
         pubDate = entry.find("pubDate").text
         results.append(
             {
-                'url': link,
-                'title': title,
-                'magnetlink': magnetlink,
-                'seed': 'N/A',
-                'leech': 'N/A',
-                'filesize': fullDescription[1],
-                'publishedDate': datetime.strptime(pubDate, '%a,%d %b %Y %H:%M:%S %z'),
-                'template': 'torrent.html',
+                "url": link,
+                "title": title,
+                "magnetlink": magnetlink,
+                "seed": "N/A",
+                "leech": "N/A",
+                "filesize": fullDescription[1],
+                "publishedDate": datetime.strptime(pubDate, "%a,%d %b %Y %H:%M:%S %z"),
+                "template": "torrent.html",
             }
         )
 

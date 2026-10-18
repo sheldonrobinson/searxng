@@ -65,8 +65,14 @@ def response(resp: "SXNG_Response") -> EngineResults:
             if record["title"][0].lower().strip() != title.lower().strip():
                 title += f" ({record['title'][0]})"
         else:
-            title = record["title"][0] if "title" in record else record.get("container-title", [None])[0]
-            journal = record.get("container-title", [None])[0] if "title" in record else ""
+            title = (
+                record["title"][0]
+                if "title" in record
+                else record.get("container-title", [None])[0]
+            )
+            journal = (
+                record.get("container-title", [None])[0] if "title" in record else ""
+            )
 
         item = res.types.Paper(
             title=title,
@@ -82,14 +88,25 @@ def response(resp: "SXNG_Response") -> EngineResults:
         )
         res.add(item)
 
-        if "resource" in record and "primary" in record["resource"] and "URL" in record["resource"]["primary"]:
+        if (
+            "resource" in record
+            and "primary" in record["resource"]
+            and "URL" in record["resource"]["primary"]
+        ):
             item.url = record["resource"]["primary"]["URL"]
 
         if "published" in record and "date-parts" in record["published"]:
-            item.publishedDate = datetime(*(record["published"]["date-parts"][0] + [1, 1][:3]))
+            item.publishedDate = datetime(
+                *(record["published"]["date-parts"][0] + [1, 1][:3])
+            )
 
-        item.authors = [a.get("given", "") + " " + a.get("family", "") for a in record.get("author", [])]
-        item.isbn = record.get("isbn") or [i["value"] for i in record.get("isbn-type", [])]
+        item.authors = [
+            a.get("given", "") + " " + a.get("family", "")
+            for a in record.get("author", [])
+        ]
+        item.isbn = record.get("isbn") or [
+            i["value"] for i in record.get("isbn-type", [])
+        ]
 
         # All the links are not PDFs, even if the URL ends with ".pdf"
         # item.pdf_url = record.get("link", [{"URL": None}])[0]["URL"]

@@ -14,16 +14,16 @@ from searx.data import data_dir
 from searx.wikidata_properties import fetch_properties
 from searx.wikidata_units import fetch_units
 
-UNITS_DATA_FILE = data_dir / 'wikidata_units.json'
-PROPERTIES_DATA_FILE = data_dir / 'wikidata_properties.json'
-set_loggers(wikidata, 'wikidata')
+UNITS_DATA_FILE = data_dir / "wikidata_units.json"
+PROPERTIES_DATA_FILE = data_dir / "wikidata_properties.json"
+set_loggers(wikidata, "wikidata")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     units = fetch_units()
-    with UNITS_DATA_FILE.open('w', encoding="utf8") as f:
+    with UNITS_DATA_FILE.open("w", encoding="utf8") as f:
         json.dump(units, f, indent=4, sort_keys=True, ensure_ascii=False)
 
     properties = fetch_properties(units)
-    with PROPERTIES_DATA_FILE.open('w', encoding="utf8") as f:
+    with PROPERTIES_DATA_FILE.open("w", encoding="utf8") as f:
         json.dump(properties, f, indent=4, sort_keys=True, ensure_ascii=False)

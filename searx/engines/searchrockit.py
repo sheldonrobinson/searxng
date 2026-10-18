@@ -51,21 +51,48 @@ def response(resp: "SXNG_Response") -> EngineResults:
     match searchrockit_categ:
         case "web" | "news":
             for result in eval_xpath_list(
-                doc, "//div[contains(@class, 'results-list')]/div[contains(@class, 'result-item')]"
+                doc,
+                "//div[contains(@class, 'results-list')]/div[contains(@class, 'result-item')]",
             ):
                 publishedDate = None
                 try:
-                    d = extract_text(eval_xpath(result, ".//span[contains(@class, 'result-item--publishedAt')]")) or ""
+                    d = (
+                        extract_text(
+                            eval_xpath(
+                                result,
+                                ".//span[contains(@class, 'result-item--publishedAt')]",
+                            )
+                        )
+                        or ""
+                    )
                     publishedDate = parser.parse(d)
                 except parser.ParserError:
                     pass
                 res.add(
                     res.types.MainResult(
-                        url=extract_text(eval_xpath(result, ".//a[contains(@class, 'result-item--title')]/@href")),
-                        title=extract_text(eval_xpath(result, ".//a[contains(@class, 'result-item--title')]")) or "",
-                        content=extract_text(eval_xpath(result, ".//a[contains(@class, 'result-item--desc')]")) or "",
+                        url=extract_text(
+                            eval_xpath(
+                                result,
+                                ".//a[contains(@class, 'result-item--title')]/@href",
+                            )
+                        ),
+                        title=extract_text(
+                            eval_xpath(
+                                result, ".//a[contains(@class, 'result-item--title')]"
+                            )
+                        )
+                        or "",
+                        content=extract_text(
+                            eval_xpath(
+                                result, ".//a[contains(@class, 'result-item--desc')]"
+                            )
+                        )
+                        or "",
                         thumbnail=extract_text(
-                            eval_xpath(result, ".//a[contains(@class, 'result-item--thumb')]/img/@src")
+                            eval_xpath(
+                                result,
+                                ".//a[contains(@class, 'result-item--thumb')]/img/@src",
+                            )
                         )
                         or "",
                         publishedDate=publishedDate,
@@ -73,14 +100,20 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 )
         case "images":
             for result in eval_xpath_list(
-                doc, "//div[contains(@class, 'image-grid')]/a[contains(@class, 'image-card')]"
+                doc,
+                "//div[contains(@class, 'image-grid')]/a[contains(@class, 'image-card')]",
             ):
                 res.add(
                     res.types.Image(
                         url=extract_text(eval_xpath(result, "./@href")),
-                        title=extract_text(eval_xpath(result, "./div[contains(@class, 'image-title')]")) or "",
-                        thumbnail_src=extract_text(eval_xpath(result, "./img/@src")) or "",
-                        img_src=extract_text(eval_xpath(result, "./@data-full-url")) or "",
+                        title=extract_text(
+                            eval_xpath(result, "./div[contains(@class, 'image-title')]")
+                        )
+                        or "",
+                        thumbnail_src=extract_text(eval_xpath(result, "./img/@src"))
+                        or "",
+                        img_src=extract_text(eval_xpath(result, "./@data-full-url"))
+                        or "",
                     )
                 )
 

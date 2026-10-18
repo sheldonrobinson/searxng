@@ -54,27 +54,27 @@ def response(resp):
         published_date = None
         if entry.get("date") and entry.get("duration"):
             try:
-                published_date = datetime.fromisoformat(entry['date'])
+                published_date = datetime.fromisoformat(entry["date"])
             except (ValueError, TypeError):
                 published_date = None
 
         length = None
         if entry.get("date") and entry.get("duration"):
             try:
-                timediff = datetime.strptime(entry['duration'], "%M:%S")
+                timediff = datetime.strptime(entry["duration"], "%M:%S")
                 length = timedelta(minutes=timediff.minute, seconds=timediff.second)
             except (ValueError, TypeError):
                 length = None
 
         results.append(
             {
-                'url': video_url,
-                'title': entry["titleEsc"],
-                'content': entry['site'],
-                'length': length,
-                'template': 'videos.html',
-                'publishedDate': published_date,
-                'thumbnail': entry["picurl"],
+                "url": video_url,
+                "title": entry["titleEsc"],
+                "content": entry["site"],
+                "length": length,
+                "template": "videos.html",
+                "publishedDate": published_date,
+                "thumbnail": entry["picurl"],
             }
         )
 

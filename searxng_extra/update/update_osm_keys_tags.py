@@ -52,9 +52,9 @@ from searx.engines.openstreetmap import get_key_rank, VALUE_TO_LINK
 from searx.data import data_dir
 from searx.wikidata import send_wikidata_query
 
-DATA_FILE = data_dir / 'osm_keys_tags.json'
+DATA_FILE = data_dir / "osm_keys_tags.json"
 
-set_loggers(wikidata, 'wikidata')
+set_loggers(wikidata, "wikidata")
 
 
 SPARQL_TAGS_REQUEST = """
@@ -80,15 +80,15 @@ ORDER BY ?key ?item ?itemLabel
 LANGUAGES = [l[0].lower() for l in sxng_locales]
 
 PRESET_KEYS = {
-    ('wikidata',): {'en': 'Wikidata'},
-    ('wikipedia',): {'en': 'Wikipedia'},
-    ('email',): {'en': 'Email'},
-    ('facebook',): {'en': 'Facebook'},
-    ('fax',): {'en': 'Fax'},
-    ('internet_access', 'ssid'): {'en': 'Wi-Fi'},
+    ("wikidata",): {"en": "Wikidata"},
+    ("wikipedia",): {"en": "Wikipedia"},
+    ("email",): {"en": "Email"},
+    ("facebook",): {"en": "Facebook"},
+    ("fax",): {"en": "Fax"},
+    ("internet_access", "ssid"): {"en": "Wi-Fi"},
 }
 
-INCLUDED_KEYS = {('addr',)}
+INCLUDED_KEYS = {("addr",)}
 
 
 def get_preset_keys():
@@ -97,7 +97,7 @@ def get_preset_keys():
         r = results
         for k in keys:
             r = r.setdefault(k, {})
-        r.setdefault('*', value)
+        r.setdefault("*", value)
     return results
 
 
@@ -105,44 +105,44 @@ def get_keys():
     results = get_preset_keys()
     response = send_wikidata_query(SPARQL_KEYS_REQUEST)
 
-    for key in response['results']['bindings']:
-        keys = key['key']['value'].split(':')[1:]
-        if keys[0] == 'currency' and len(keys) > 1:
+    for key in response["results"]["bindings"]:
+        keys = key["key"]["value"].split(":")[1:]
+        if keys[0] == "currency" and len(keys) > 1:
             # special case in openstreetmap.py
             continue
-        if keys[0] == 'contact' and len(keys) > 1:
+        if keys[0] == "contact" and len(keys) > 1:
             # label for the key "contact.email" is "Email"
             # whatever the language
-            r = results.setdefault('contact', {})
-            r[keys[1]] = {'*': {'en': keys[1]}}
+            r = results.setdefault("contact", {})
+            r[keys[1]] = {"*": {"en": keys[1]}}
             continue
         if tuple(keys) in PRESET_KEYS:
             # skip presets (already set above)
             continue
         if (
-            get_key_rank(':'.join(keys)) is None
-            and ':'.join(keys) not in VALUE_TO_LINK
+            get_key_rank(":".join(keys)) is None
+            and ":".join(keys) not in VALUE_TO_LINK
             and tuple(keys) not in INCLUDED_KEYS
         ):
             # keep only keys that will be displayed by openstreetmap.py
             continue
-        label = key['itemLabel']['value'].lower()
-        lang = key['itemLabel']['xml:lang']
+        label = key["itemLabel"]["value"].lower()
+        lang = key["itemLabel"]["xml:lang"]
         r = results
         for k in keys:
             r = r.setdefault(k, {})
-        r = r.setdefault('*', {})
+        r = r.setdefault("*", {})
         if lang in LANGUAGES:
             r.setdefault(lang, label)
 
     # special cases
-    results['delivery']['covid19']['*'].clear()
-    for k, v in results['delivery']['*'].items():
-        results['delivery']['covid19']['*'][k] = v + ' (COVID19)'
+    results["delivery"]["covid19"]["*"].clear()
+    for k, v in results["delivery"]["*"].items():
+        results["delivery"]["covid19"]["*"][k] = v + " (COVID19)"
 
-    results['opening_hours']['covid19']['*'].clear()
-    for k, v in results['opening_hours']['*'].items():
-        results['opening_hours']['covid19']['*'][k] = v + ' (COVID19)'
+    results["opening_hours"]["covid19"]["*"].clear()
+    for k, v in results["opening_hours"]["*"].items():
+        results["opening_hours"]["covid19"]["*"][k] = v + " (COVID19)"
 
     return results
 
@@ -150,16 +150,18 @@ def get_keys():
 def get_tags():
     results = collections.OrderedDict()
     response = send_wikidata_query(SPARQL_TAGS_REQUEST)
-    for tag in response['results']['bindings']:
-        tag_names = tag['tag']['value'].split(':')[1].split('=')
+    for tag in response["results"]["bindings"]:
+        tag_names = tag["tag"]["value"].split(":")[1].split("=")
         if len(tag_names) == 2:
             tag_category, tag_type = tag_names
         else:
-            tag_category, tag_type = tag_names[0], ''
-        label = tag['itemLabel']['value'].lower()
-        lang = tag['itemLabel']['xml:lang']
+            tag_category, tag_type = tag_names[0], ""
+        label = tag["itemLabel"]["value"].lower()
+        lang = tag["itemLabel"]["xml:lang"]
         if lang in LANGUAGES:
-            results.setdefault(tag_category, {}).setdefault(tag_type, {}).setdefault(lang, label)
+            results.setdefault(tag_category, {}).setdefault(tag_type, {}).setdefault(
+                lang, label
+            )
     return results
 
 
@@ -168,8 +170,8 @@ def optimize_data_lang(translations):
     # remove "zh-hk" entry if the value is the same as "zh"
     # same for "en-ca" / "en" etc...
     for language in translations:
-        if '-' in language:
-            base_language = language.split('-')[0]
+        if "-" in language:
+            base_language = language.split("-")[0]
             if translations.get(base_language) == translations.get(language):
                 language_to_delete.append(language)
 
@@ -178,10 +180,10 @@ def optimize_data_lang(translations):
     language_to_delete = []
 
     # remove entries that have the same value than the "en" entry
-    value_en = translations.get('en')
+    value_en = translations.get("en")
     if value_en:
         for language, value in translations.items():
-            if language != 'en' and value == value_en:
+            if language != "en" and value == value_en:
                 language_to_delete.append(language)
 
     for language in language_to_delete:
@@ -197,18 +199,18 @@ def optimize_tags(data):
 
 def optimize_keys(data):
     for k, v in data.items():
-        if k == '*':
+        if k == "*":
             optimize_data_lang(v)
         elif isinstance(v, dict):
             optimize_keys(v)
     return data
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     set_timeout_for_thread(60)
     result = {
-        'keys': optimize_keys(get_keys()),
-        'tags': optimize_tags(get_tags()),
+        "keys": optimize_keys(get_keys()),
+        "tags": optimize_tags(get_tags()),
     }
-    with DATA_FILE.open('w', encoding="utf8") as f:
+    with DATA_FILE.open("w", encoding="utf8") as f:
         json.dump(result, f, indent=4, sort_keys=True, ensure_ascii=False)

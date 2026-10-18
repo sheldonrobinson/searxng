@@ -18,7 +18,7 @@ Usage in a Flask app route:
 
 """
 
-__all__ = ['InfoPage', 'InfoPageSet']
+__all__ = ["InfoPage", "InfoPageSet"]
 
 import typing as t
 
@@ -36,13 +36,13 @@ from .. import get_setting
 from ..version import GIT_URL
 from ..locales import LOCALE_NAMES
 
-logger = logging.getLogger('searx.infopage')
+logger = logging.getLogger("searx.infopage")
 _INFO_FOLDER = os.path.abspath(os.path.dirname(__file__))
-INFO_PAGES: 'InfoPageSet'
+INFO_PAGES: "InfoPageSet"
 
 
 def __getattr__(name: str):
-    if name == 'INFO_PAGES':
+    if name == "INFO_PAGES":
         global INFO_PAGES  # pylint: disable=global-statement
         INFO_PAGES = InfoPageSet()
         return INFO_PAGES
@@ -59,7 +59,7 @@ class InfoPage:
     @cached_property
     def raw_content(self):
         """Raw content of the page (without any jinja rendering)"""
-        with open(self.fname, 'r', encoding='utf-8') as f:
+        with open(self.fname, "r", encoding="utf-8") as f:
             return f.read()
 
     @cached_property
@@ -73,9 +73,9 @@ class InfoPage:
     def title(self):
         """Title of the content (without any markup)"""
         _t = ""
-        for l in self.raw_content.split('\n'):
-            if l.startswith('# '):
-                _t = l.strip('# ')
+        for l in self.raw_content.split("\n"):
+            if l.startswith("# "):
+                _t = l.strip("# ")
         return _t
 
     @cached_property
@@ -87,7 +87,9 @@ class InfoPage:
 
         """
         return (
-            MarkdownIt("commonmark", {"typographer": True}).enable(["replacements", "smartquotes"]).render(self.content)
+            MarkdownIt("commonmark", {"typographer": True})
+            .enable(["replacements", "smartquotes"])
+            .render(self.content)
         )
 
     def get_ctx(self) -> dict[str, str]:
@@ -98,19 +100,22 @@ class InfoPage:
             return "[%s](%s)" % (name, url)
 
         def _md_search(query: str):
-            url = '%s?q=%s' % (url_for('search', _external=True), urllib.parse.quote(query))
-            return '[%s](%s)' % (query, url)
+            url = "%s?q=%s" % (
+                url_for("search", _external=True),
+                urllib.parse.quote(query),
+            )
+            return "[%s](%s)" % (query, url)
 
         ctx: dict[str, t.Any] = {}
-        ctx['GIT_URL'] = GIT_URL
-        ctx['get_setting'] = get_setting
-        ctx['link'] = _md_link
-        ctx['search'] = _md_search
+        ctx["GIT_URL"] = GIT_URL
+        ctx["get_setting"] = get_setting
+        ctx["link"] = _md_link
+        ctx["search"] = _md_search
 
         return ctx
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} fname={self.fname!r}>'
+        return f"<{self.__class__.__name__} fname={self.fname!r}>"
 
 
 class InfoPageSet:  # pylint: disable=too-few-public-methods
@@ -123,25 +128,29 @@ class InfoPageSet:  # pylint: disable=too-few-public-methods
     :type info_folder: str
     """
 
-    def __init__(self, page_class: type[InfoPage] | None = None, info_folder: str | None = None):
+    def __init__(
+        self, page_class: type[InfoPage] | None = None, info_folder: str | None = None
+    ):
         self.page_class: type[InfoPage] = page_class or InfoPage
         self.folder: str = info_folder or _INFO_FOLDER
         """location of the Markdown files"""
 
         self.CACHE: dict[tuple[str, str], InfoPage | None] = {}
 
-        self.locale_default: str = 'en'
+        self.locale_default: str = "en"
         """default language"""
 
         self.locales: list[str] = [
-            locale.replace('_', '-') for locale in os.listdir(_INFO_FOLDER) if locale.replace('_', '-') in LOCALE_NAMES
+            locale.replace("_", "-")
+            for locale in os.listdir(_INFO_FOLDER)
+            if locale.replace("_", "-") in LOCALE_NAMES
         ]
         """list of supported languages (aka locales)"""
 
         self.toc: list[str] = [
-            'search-syntax',
-            'about',
-            'donate',
+            "search-syntax",
+            "about",
+            "donate",
         ]
         """list of articles in the online documentation"""
 
@@ -170,9 +179,9 @@ class InfoPageSet:  # pylint: disable=too-few-public-methods
 
         # not yet instantiated
 
-        fname = os.path.join(self.folder, locale.replace('-', '_'), pagename) + '.md'
+        fname = os.path.join(self.folder, locale.replace("-", "_"), pagename) + ".md"
         if not os.path.exists(fname):
-            logger.info('file %s does not exists', fname)
+            logger.info("file %s does not exists", fname)
             self.CACHE[cache_key] = None
             return None
 

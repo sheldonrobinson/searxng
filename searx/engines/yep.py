@@ -37,7 +37,11 @@ _LANGUAGE_RE = re.compile(r"\{english:\".*?\",code_string:\"(.*?)\",code:\".*?\"
 
 
 def request(query: str, params: "OnlineParams") -> None:
-    args = {"query": query, "safeSearch": safesearch_map[params["safesearch"]], "limit": results_per_page}
+    args = {
+        "query": query,
+        "safeSearch": safesearch_map[params["safesearch"]],
+        "limit": results_per_page,
+    }
 
     engine_language: str | None = traits.get_language(params["searxng_locale"])
     if engine_language:
@@ -130,6 +134,9 @@ def fetch_traits(engine_traits: "EngineTraits"):
         conflict = engine_traits.languages.get(sxng_tag)
         if conflict:
             if conflict != sxng_tag:
-                print("CONFLICT: babel %s --> %s, %s" % (sxng_tag, conflict, language_code))
+                print(
+                    "CONFLICT: babel %s --> %s, %s"
+                    % (sxng_tag, conflict, language_code)
+                )
             continue
         engine_traits.languages[sxng_tag] = language_code

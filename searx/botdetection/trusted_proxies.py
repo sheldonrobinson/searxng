@@ -8,7 +8,14 @@
 import typing as t
 
 from collections import abc
-from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network, IPv4Network, IPv6Network
+from ipaddress import (
+    IPv4Address,
+    IPv6Address,
+    ip_address,
+    ip_network,
+    IPv4Network,
+    IPv6Network,
+)
 from werkzeug.http import parse_list_header
 
 from . import config
@@ -92,7 +99,9 @@ class ProxyFix:
         # fallback to first address
         return x_forwarded_for[0].compressed
 
-    def __call__(self, environ: "WSGIEnvironment", start_response: "StartResponse") -> abc.Iterable[bytes]:
+    def __call__(
+        self, environ: "WSGIEnvironment", start_response: "StartResponse"
+    ) -> abc.Iterable[bytes]:
         # pylint: disable=too-many-statements
 
         trusted_proxies = self.trusted_proxies()
@@ -114,7 +123,9 @@ class ProxyFix:
                     orig_remote_ip = orig_remote_ip.ipv4_mapped
                 orig_remote_addr = orig_remote_ip.compressed
             except ValueError as exc:
-                logger.error("REMOTE_ADDR: %s / discard REMOTE_ADDR from WSGI environment", exc)
+                logger.error(
+                    "REMOTE_ADDR: %s / discard REMOTE_ADDR from WSGI environment", exc
+                )
                 orig_remote_addr = None
                 orig_remote_ip = None
 
@@ -126,7 +137,9 @@ class ProxyFix:
                     addr = addr.ipv4_mapped
                 x_real_ip = addr.compressed
             except ValueError as exc:
-                logger.error("X-Real-IP: %s / discard HTTP_X_REAL_IP from WSGI environment", exc)
+                logger.error(
+                    "X-Real-IP: %s / discard HTTP_X_REAL_IP from WSGI environment", exc
+                )
                 environ.pop("HTTP_X_REAL_IP")
                 x_real_ip = None
 
@@ -136,7 +149,10 @@ class ProxyFix:
                 try:
                     addr = ip_address(x_for_ip)
                 except ValueError as exc:
-                    logger.error("X-Forwarded-For: %s / discard HTTP_X_FORWARDED_FOR from WSGI environment", exc)
+                    logger.error(
+                        "X-Forwarded-For: %s / discard HTTP_X_FORWARDED_FOR from WSGI environment",
+                        exc,
+                    )
                     environ.pop("HTTP_X_FORWARDED_FOR")
                     x_forwarded_for = []
                     break
@@ -160,12 +176,16 @@ class ProxyFix:
 
         # securing the WSGI environment variables that are adjusted
 
-        environ.update({"botdetection.trusted_proxies.orig": {"REMOTE_ADDR": orig_remote_addr}})
+        environ.update(
+            {"botdetection.trusted_proxies.orig": {"REMOTE_ADDR": orig_remote_addr}}
+        )
 
         # determine *the real IP*
 
         if x_forwarded_for:
-            environ["REMOTE_ADDR"] = self.trusted_remote_addr(x_forwarded_for, trusted_proxies)
+            environ["REMOTE_ADDR"] = self.trusted_remote_addr(
+                x_forwarded_for, trusted_proxies
+            )
 
         elif x_real_ip:
             environ["REMOTE_ADDR"] = x_real_ip
@@ -174,7 +194,9 @@ class ProxyFix:
             environ["REMOTE_ADDR"] = orig_remote_addr
 
         else:
-            logger.error("No remote IP could be determined, use black-hole address: 100::")
+            logger.error(
+                "No remote IP could be determined, use black-hole address: 100::"
+            )
             environ["REMOTE_ADDR"] = "100::"
 
         try:

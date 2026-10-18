@@ -15,7 +15,7 @@ import pathlib
 
 import tomllib
 
-__all__ = ['Config', 'UNSET', 'SchemaIssue', 'set_global_cfg', 'get_global_cfg']
+__all__ = ["Config", "UNSET", "SchemaIssue", "set_global_cfg", "get_global_cfg"]
 
 log = logging.getLogger(__name__)
 
@@ -51,14 +51,14 @@ class FALSE:
     __repr__ = __str__
 
 
-UNSET = FALSE('<UNSET>')
+UNSET = FALSE("<UNSET>")
 
 
 @typing.final
 class SchemaIssue(ValueError):
     """Exception to store and/or raise a message from a schema issue."""
 
-    def __init__(self, level: typing.Literal['warn', 'invalid'], msg: str):
+    def __init__(self, level: typing.Literal["warn", "invalid"], msg: str):
         self.level = level
         super().__init__(msg)
 
@@ -72,7 +72,12 @@ class Config:
     UNSET: object = UNSET
 
     @classmethod
-    def from_toml(cls, schema_file: pathlib.Path, cfg_file: pathlib.Path, deprecated: dict[str, str]) -> "Config":
+    def from_toml(
+        cls,
+        schema_file: pathlib.Path,
+        cfg_file: pathlib.Path,
+        deprecated: dict[str, str],
+    ) -> "Config":
 
         # init schema
 
@@ -126,7 +131,9 @@ class Config:
         """Returns default value of field ``name`` in ``self.cfg_schema``."""
         return value(name, self.cfg_schema)
 
-    def get(self, name: str, default: typing.Any = UNSET, replace: bool = True) -> typing.Any:
+    def get(
+        self, name: str, default: typing.Any = UNSET, replace: bool = True
+    ) -> typing.Any:
         """Returns the value to which ``name`` points in the configuration.
 
         If there is no such ``name`` in the config and the ``default`` is
@@ -134,7 +141,7 @@ class Config:
         """
 
         parent = self._get_parent_dict(name)
-        val = parent.get(name.split('.')[-1], UNSET)
+        val = parent.get(name.split(".")[-1], UNSET)
         if val is UNSET:
             if default is UNSET:
                 raise KeyError(name)
@@ -151,10 +158,10 @@ class Config:
         raised.
         """
         parent = self._get_parent_dict(name)
-        parent[name.split('.')[-1]] = val
+        parent[name.split(".")[-1]] = val
 
     def _get_parent_dict(self, name: str) -> dict[str, typing.Any]:
-        parent_name = '.'.join(name.split('.')[:-1])
+        parent_name = ".".join(name.split(".")[:-1])
         if parent_name:
             parent: dict[str, typing.Any] = value(parent_name, self.cfg)
         else:
@@ -182,7 +189,7 @@ class Config:
             if default is UNSET:
                 raise KeyError(name)
             return default
-        modulename, name = str(fqn).rsplit('.', 1)
+        modulename, name = str(fqn).rsplit(".", 1)
         m = __import__(modulename, {}, {}, [name], 0)
         return getattr(m, name)
 
@@ -192,7 +199,7 @@ def toml_load(file_name: str | pathlib.Path):
         with open(file_name, "rb") as f:
             return tomllib.load(f)
     except tomllib.TOMLDecodeError as exc:
-        msg = str(exc).replace('\t', '').replace('\n', ' ')
+        msg = str(exc).replace("\t", "").replace("\n", " ")
         log.error("%s: %s", file_name, msg)
         raise
 
@@ -220,7 +227,7 @@ def value(name: str, data_dict: dict[str, typing.Any]):
     """
 
     ret_val = data_dict
-    for part in name.split('.'):
+    for part in name.split("."):
         if isinstance(ret_val, dict):
             ret_val = ret_val.get(part, UNSET)
         if ret_val is UNSET:
@@ -229,7 +236,9 @@ def value(name: str, data_dict: dict[str, typing.Any]):
 
 
 def validate(
-    schema_dict: dict[str, typing.Any], data_dict: dict[str, typing.Any], deprecated: dict[str, str]
+    schema_dict: dict[str, typing.Any],
+    data_dict: dict[str, typing.Any],
+    deprecated: dict[str, str],
 ) -> tuple[bool, list[SchemaIssue]]:
     """Deep validation of dictionary in ``data_dict`` against dictionary in
     ``schema_dict``.  Argument deprecated is a dictionary that maps deprecated
@@ -261,11 +270,15 @@ def validate(
     issue_list: list[SchemaIssue] = []
 
     if not isinstance(schema_dict, dict):
-        raise SchemaIssue('invalid', "schema_dict is not a dict type")
+        raise SchemaIssue("invalid", "schema_dict is not a dict type")
     if not isinstance(data_dict, dict):
-        raise SchemaIssue('invalid', f"data_dict issue{'.'.join(names)} is not a dict type")
+        raise SchemaIssue(
+            "invalid", f"data_dict issue{'.'.join(names)} is not a dict type"
+        )
 
-    is_valid, issue_list = _validate(names, issue_list, schema_dict, data_dict, deprecated)
+    is_valid, issue_list = _validate(
+        names, issue_list, schema_dict, data_dict, deprecated
+    )
     return is_valid, issue_list
 
 
@@ -283,38 +296,57 @@ def _validate(
     for key, data_value in data_dict.items():
 
         names.append(key)
-        name = '.'.join(names)
+        name = ".".join(names)
 
         deprecated_msg = deprecated.get(name)
         # print("XXX %s: key %s //   data_value: %s" % (name, key, data_value))
         if deprecated_msg:
-            issue_list.append(SchemaIssue('warn', f"data_dict '{name}': deprecated - {deprecated_msg}"))
+            issue_list.append(
+                SchemaIssue(
+                    "warn", f"data_dict '{name}': deprecated - {deprecated_msg}"
+                )
+            )
 
         schema_value = value(name, schema_dict)
         # print("YYY %s: key %s // schema_value: %s" % (name, key, schema_value))
         if schema_value is UNSET:
             if not deprecated_msg:
-                issue_list.append(SchemaIssue('invalid', f"data_dict '{name}': key unknown in schema_dict"))
+                issue_list.append(
+                    SchemaIssue(
+                        "invalid", f"data_dict '{name}': key unknown in schema_dict"
+                    )
+                )
                 is_valid = False
 
-        elif type(schema_value) != type(data_value):  # pylint: disable=unidiomatic-typecheck
+        elif type(schema_value) != type(
+            data_value
+        ):  # pylint: disable=unidiomatic-typecheck
             issue_list.append(
                 SchemaIssue(
-                    'invalid',
-                    (f"data_dict: type mismatch '{name}':" f" expected {type(schema_value)}, is: {type(data_value)}"),
+                    "invalid",
+                    (
+                        f"data_dict: type mismatch '{name}':"
+                        f" expected {type(schema_value)}, is: {type(data_value)}"
+                    ),
                 )
             )
             is_valid = False
 
         elif isinstance(data_value, dict):
-            _valid, _ = _validate(names, issue_list, schema_dict, data_value, deprecated)
+            _valid, _ = _validate(
+                names, issue_list, schema_dict, data_value, deprecated
+            )
             is_valid = is_valid and _valid
         names.pop()
 
     return is_valid, issue_list
 
 
-def dict_deepupdate(base_dict: dict[str, typing.Any], upd_dict: dict[str, typing.Any], names: list[str] | None = None):
+def dict_deepupdate(
+    base_dict: dict[str, typing.Any],
+    upd_dict: dict[str, typing.Any],
+    names: list[str] | None = None,
+):
     """Deep-update of dictionary in ``base_dict`` by dictionary in ``upd_dict``.
 
     For each ``upd_key`` & ``upd_val`` pair in ``upd_dict``:
@@ -350,7 +382,9 @@ def dict_deepupdate(base_dict: dict[str, typing.Any], upd_dict: dict[str, typing
             if upd_key in base_dict:
                 # if base_dict[upd_key] exists, recursively deep-update it
                 if not isinstance(base_dict[upd_key], dict):
-                    raise TypeError(f"type mismatch {'.'.join(names)}: is not a dict type in base_dict")
+                    raise TypeError(
+                        f"type mismatch {'.'.join(names)}: is not a dict type in base_dict"
+                    )
                 dict_deepupdate(
                     base_dict[upd_key],
                     upd_val,  # pyright: ignore[reportUnknownArgumentType]
@@ -362,7 +396,9 @@ def dict_deepupdate(base_dict: dict[str, typing.Any], upd_dict: dict[str, typing
 
             else:
                 # if base_dict[upd_key] not exist, set base_dict[upd_key] from deepcopy of upd_val
-                base_dict[upd_key] = copy.deepcopy(upd_val)  # pyright: ignore[reportUnknownArgumentType]
+                base_dict[upd_key] = copy.deepcopy(
+                    upd_val
+                )  # pyright: ignore[reportUnknownArgumentType]
 
         elif isinstance(upd_val, list):
 
@@ -370,20 +406,26 @@ def dict_deepupdate(base_dict: dict[str, typing.Any], upd_dict: dict[str, typing
                 # if base_dict[upd_key] exists, base_dict[up_key] is extended by
                 # the list from upd_val
                 if not isinstance(base_dict[upd_key], list):
-                    raise TypeError(f"type mismatch {'.'.join(names)}: is not a list type in base_dict")
+                    raise TypeError(
+                        f"type mismatch {'.'.join(names)}: is not a list type in base_dict"
+                    )
                 base_dict[upd_key].extend(upd_val)
 
             else:
                 # if base_dict[upd_key] doesn't exists, set base_dict[key] from a deepcopy of the
                 # list in upd_val.
-                base_dict[upd_key] = copy.deepcopy(upd_val)  # pyright: ignore[reportUnknownArgumentType]
+                base_dict[upd_key] = copy.deepcopy(
+                    upd_val
+                )  # pyright: ignore[reportUnknownArgumentType]
 
         elif isinstance(upd_val, set):
 
             if upd_key in base_dict:
                 # if base_dict[upd_key] exists, base_dict[up_key] is updated by the set in upd_val
                 if not isinstance(base_dict[upd_key], set):
-                    raise TypeError(f"type mismatch {'.'.join(names)}: is not a set type in base_dict")
+                    raise TypeError(
+                        f"type mismatch {'.'.join(names)}: is not a set type in base_dict"
+                    )
                 base_dict[upd_key].update(upd_val.copy())
 
             else:

@@ -19,7 +19,7 @@ if t.TYPE_CHECKING:
 
 
 about = {
-    "website": 'https://www.iseek.com',
+    "website": "https://www.iseek.com",
     "wikidata_id": None,
     "official_api_documentation": None,
     "use_official_api": False,

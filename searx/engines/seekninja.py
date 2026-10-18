@@ -73,7 +73,7 @@ def _solve_pow(challenge: PowChallenge) -> list[int]:
     return solutions
 
 
-def request(query: str, params: 'OnlineParams') -> None:
+def request(query: str, params: "OnlineParams") -> None:
     challenge = _get_challenge(query)
     solution = _solve_pow(challenge)
     args = {
@@ -85,7 +85,7 @@ def request(query: str, params: 'OnlineParams') -> None:
     params["url"] = f"{base_url}/search-sse?{urlencode(args)}"
 
 
-def response(resp: 'SXNG_Response') -> EngineResults:
+def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
     # The response is a stream of server-side events,
     # so it is split into `event: <type>` and `data: {"results": ...}`

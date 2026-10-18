@@ -83,7 +83,9 @@ class PluginStorage(SearxTestCase):
         self.storage.register(PluginMock("plg001", "first plugin", True))
         self.storage.register(PluginMock("plg002", "second plugin", True))
         self.storage.init(self.app)
-        self.pref = searx.preferences.Preferences(["simple"], ["general"], engines, self.storage)
+        self.pref = searx.preferences.Preferences(
+            ["simple"], ["general"], engines, self.storage
+        )
         self.pref.parse_dict({"locale": "en"})
 
     def test_init(self):

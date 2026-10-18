@@ -95,7 +95,9 @@ class Code(MainResult, kw_only=True):
         if not self.title and self.filename:
             self.title = self.filename
 
-        if self.code_language != "<guess>" and not is_valid_language(self.code_language):
+        if self.code_language != "<guess>" and not is_valid_language(
+            self.code_language
+        ):
             raise ValueError(f"unknown code_language: {self.code_language}")
 
     def __hash__(self):
@@ -121,7 +123,9 @@ class Code(MainResult, kw_only=True):
             pass
         return get_lexer_by_name("text")
 
-    def HTML(self, **options) -> str:  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
+    def HTML(
+        self, **options
+    ) -> str:  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
         """Rendered HTML, additional options are accepted, for more details have
         a look at HtmlFormatter_.
 
@@ -135,14 +139,18 @@ class Code(MainResult, kw_only=True):
         code_block: list[str] = []  # lines of the current code block
         html_code_blocks: list[str] = []  # HTML representation of all code blocks
 
-        def _render(**kwargs):  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
+        def _render(
+            **kwargs,
+        ):  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
             for k, default in [
                 ("linenos", "inline"),
                 ("linenostart", code_block_start),
                 ("cssclass", "code-highlight"),
                 ("hl_lines", [hl - code_block_start + 1 for hl in self.hl_lines]),
             ]:
-                kwargs[k] = kwargs.get(k, default)  # pyright: ignore[reportUnknownMemberType]
+                kwargs[k] = kwargs.get(
+                    k, default
+                )  # pyright: ignore[reportUnknownMemberType]
 
             # Wrap the code inside <pre> blocks using <code>, as recommended by
             # the HTML5 specification (default is False).  Do we need this?
@@ -152,7 +160,9 @@ class Code(MainResult, kw_only=True):
                 highlight(
                     "\n".join(code_block),
                     lexer,
-                    HtmlFormatter(**kwargs),  # pyright: ignore[reportUnknownArgumentType]
+                    HtmlFormatter(
+                        **kwargs
+                    ),  # pyright: ignore[reportUnknownArgumentType]
                 )
             )
 

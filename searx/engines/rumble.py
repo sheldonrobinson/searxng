@@ -9,20 +9,20 @@ from urllib.parse import urlencode
 from searx.utils import extract_text
 
 about = {
-    "website": 'https://rumble.com/',
-    "wikidata_id": 'Q104765127',
-    "official_api_documentation": 'https://help.rumble.com/',
+    "website": "https://rumble.com/",
+    "wikidata_id": "Q104765127",
+    "official_api_documentation": "https://help.rumble.com/",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
 # engine dependent config
-categories = ['videos']
+categories = ["videos"]
 paging = True
 
 # search-url
-base_url = 'https://rumble.com/'
+base_url = "https://rumble.com/"
 
 url_xpath = './/a[@class="video-item--a"]/@href'
 thumbnail_xpath = './/img[@class="video-item--img"]/@src'
@@ -38,8 +38,8 @@ length_xpath = './/span[@class="video-item--duration"]/@data-value'
 def request(query, params):
     args = {"q": query}
     if params["pageno"] > 1:
-        args['page'] = params["pageno"]
-    params['url'] = f'{base_url}search/video?{urlencode(args)}'
+        args["page"] = params["pageno"]
+    params["url"] = f"{base_url}search/video?{urlencode(args)}"
     return params
 
 
@@ -70,14 +70,14 @@ def response(resp):
 
         results.append(
             {
-                'url': url,
-                'title': title,
-                'content': content,
-                'author': author,
-                'length': length,
-                'template': 'videos.html',
-                'publishedDate': fixed_date,
-                'thumbnail': thumbnail,
+                "url": url,
+                "title": title,
+                "content": content,
+                "author": author,
+                "length": length,
+                "template": "videos.html",
+                "publishedDate": fixed_date,
+                "thumbnail": thumbnail,
             }
         )
     return results

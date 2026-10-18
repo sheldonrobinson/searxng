@@ -31,6 +31,8 @@ def filter_request(
     cfg: config.Config,  # pylint: disable=unused-argument
 ) -> werkzeug.Response | None:
 
-    if 'text/html' not in request.accept_mimetypes:
-        return too_many_requests(network, "HTTP header Accept did not contain text/html")
+    if "text/html" not in request.accept_mimetypes:
+        return too_many_requests(
+            network, "HTTP header Accept did not contain text/html"
+        )
     return None

@@ -59,7 +59,7 @@ def _cache_key(fireball_settings: dict[str, str]) -> str:
     return f"fireball_settings_{fireball_settings['safesearch']}_{fireball_settings['market']}"
 
 
-def _get_search_settings_cookie(params: 'OnlineParams') -> str:
+def _get_search_settings_cookie(params: "OnlineParams") -> str:
     """Get a 'fireball' cookie for the given locale and safesearch setting set
     in params."""
 

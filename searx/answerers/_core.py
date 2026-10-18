@@ -112,7 +112,8 @@ class AnswerStorage(dict):  # type: ignore
 
             if f.is_dir() and (f / "answerer.py").exists():
                 warnings.warn(
-                    f"answerer module {f} is deprecated / migrate to searx.answerers.Answerer", DeprecationWarning
+                    f"answerer module {f} is deprecated / migrate to searx.answerers.Answerer",
+                    DeprecationWarning,
                 )
                 mod = load_module("answerer.py", str(f))
                 self.register(ModuleAnswerer(mod))
@@ -120,7 +121,7 @@ class AnswerStorage(dict):  # type: ignore
     def register_by_fqn(self, fqn: str):
         """Register a :py:obj:`Answerer` via its fully qualified class namen(FQN)."""
 
-        mod_name, _, obj_name = fqn.rpartition('.')
+        mod_name, _, obj_name = fqn.rpartition(".")
         mod = importlib.import_module(mod_name)
         code_obj = getattr(mod, obj_name, None)
 

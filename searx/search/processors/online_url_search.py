@@ -34,12 +34,16 @@ class OnlineUrlSearchProcessor(OnlineProcessor):
 
     engine_type: str = "online_url_search"
 
-    def get_params(self, search_query: "SearchQuery", engine_category: str) -> OnlineUrlSearchParams | None:
+    def get_params(
+        self, search_query: "SearchQuery", engine_category: str
+    ) -> OnlineUrlSearchParams | None:
         """Returns a dictionary with the :ref:`request params <engine request
         online_currency>` (:py:obj:`OnlineUrlSearchParams`).  ``None`` is
         returned if the search query does not match :py:obj:`search_syntax`."""
 
-        online_params: OnlineParams | None = super().get_params(search_query, engine_category)
+        online_params: OnlineParams | None = super().get_params(
+            search_query, engine_category
+        )
         if online_params is None:
             return None
 

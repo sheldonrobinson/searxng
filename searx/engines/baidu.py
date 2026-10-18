@@ -15,7 +15,11 @@ from html import unescape
 import time
 import json
 
-from searx.exceptions import SearxEngineAPIException, SearxEngineCaptchaException, SearxEngineAccessDeniedException
+from searx.exceptions import (
+    SearxEngineAPIException,
+    SearxEngineCaptchaException,
+    SearxEngineAccessDeniedException,
+)
 from searx.enginelib import EngineCache
 from searx.network import get as http_get
 from searx.utils import html_to_text
@@ -34,7 +38,7 @@ paging = True
 categories = []
 results_per_page = 10
 
-baidu_category = 'general'
+baidu_category = "general"
 
 time_range_support = True
 time_range_dict = {"day": 86400, "week": 604800, "month": 2592000, "year": 31536000}
@@ -49,7 +53,7 @@ CACHE: EngineCache
 
 
 def setup(engine_settings: dict[str, t.Any]) -> bool:
-    if baidu_category not in ('general', 'images', 'it'):
+    if baidu_category not in ("general", "images", "it"):
         raise SearxEngineAPIException(f"Unsupported category: {baidu_category}")
 
     global CACHE  # pylint: disable=global-statement
@@ -64,7 +68,9 @@ def get_image_cookies(headers: dict[str, str]) -> dict[str, str]:
 
     warmup = http_get(image_base_url, headers=headers, timeout=10)
     cookies = dict(warmup.cookies.items())
-    CACHE.set(key=COOKIE_CACHE_KEY, value=cookies, expire=COOKIE_CACHE_EXPIRATION_SECONDS)
+    CACHE.set(
+        key=COOKIE_CACHE_KEY, value=cookies, expire=COOKIE_CACHE_EXPIRATION_SECONDS
+    )
     return cookies
 
 
@@ -72,27 +78,27 @@ def request(query, params):
     page_num = params["pageno"]
 
     category_config = {
-        'general': {
-            'endpoint': 'https://www.baidu.com/s',
-            'params': {
+        "general": {
+            "endpoint": "https://www.baidu.com/s",
+            "params": {
                 "wd": query,
                 "rn": results_per_page,
                 "pn": (page_num - 1) * results_per_page,
                 "tn": "json",
             },
         },
-        'images': {
-            'endpoint': 'https://image.baidu.com/search/acjson',
-            'params': {
+        "images": {
+            "endpoint": "https://image.baidu.com/search/acjson",
+            "params": {
                 "word": query,
                 "rn": results_per_page,
                 "pn": (page_num - 1) * results_per_page,
                 "tn": "resultjson_com",
             },
         },
-        'it': {
-            'endpoint': 'https://kaifa.baidu.com/rest/v1/search',
-            'params': {
+        "it": {
+            "endpoint": "https://kaifa.baidu.com/rest/v1/search",
+            "params": {
                 "wd": query,
                 "pageSize": results_per_page,
                 "pageNum": page_num,
@@ -102,20 +108,20 @@ def request(query, params):
         },
     }
 
-    query_params = category_config[baidu_category]['params']
-    query_url = category_config[baidu_category]['endpoint']
+    query_params = category_config[baidu_category]["params"]
+    query_url = category_config[baidu_category]["endpoint"]
 
     if params.get("time_range") in time_range_dict:
         now = int(time.time())
         past = now - time_range_dict[params["time_range"]]
 
-        if baidu_category == 'general':
+        if baidu_category == "general":
             query_params["gpc"] = f"stf={past},{now}|stftype=1"
 
-        if baidu_category == 'it':
+        if baidu_category == "it":
             query_params["paramList"] += f",timestamp_range={past}-{now}"
 
-    if baidu_category == 'images':
+    if baidu_category == "images":
         params["cookies"] = get_image_cookies(params["headers"])
 
     params["url"] = f"{query_url}?{urlencode(query_params)}"
@@ -125,17 +131,19 @@ def request(query, params):
 
 def response(resp):
     # Detect Baidu Captcha, it will redirect to wappass.baidu.com
-    if 'wappass.baidu.com/static/captcha' in resp.headers.get('Location', ''):
+    if "wappass.baidu.com/static/captcha" in resp.headers.get("Location", ""):
         raise SearxEngineCaptchaException()
 
     text = resp.text
-    if baidu_category == 'images':
+    if baidu_category == "images":
         # baidu's JSON encoder wrongly quotes / and ' characters by \\ and \'
         text = text.replace(r"\/", "/").replace(r"\'", "'")
     data = json.loads(text, strict=False)
     if data.get("antiFlag") == 1:
-        raise SearxEngineAccessDeniedException(data.get("message", "Forbid spider access"))
-    parsers = {'general': parse_general, 'images': parse_images, 'it': parse_it}
+        raise SearxEngineAccessDeniedException(
+            data.get("message", "Forbid spider access")
+        )
+    parsers = {"general": parse_general, "images": parse_images, "it": parse_it}
 
     return parsers[baidu_category](data)
 
@@ -210,9 +218,9 @@ def parse_it(data):
     for entry in data["data"]["documents"]["data"]:
         results.append(
             {
-                'title': entry["techDocDigest"]["title"],
-                'url': entry["techDocDigest"]["url"],
-                'content': entry["techDocDigest"]["summary"],
+                "title": entry["techDocDigest"]["title"],
+                "url": entry["techDocDigest"]["url"],
+                "content": entry["techDocDigest"]["summary"],
             }
         )
     return results

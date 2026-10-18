@@ -36,8 +36,8 @@ about = {
 
 def request(query, params):
 
-    if params['language'] == 'all':
-        params['language'] = 'en-us'
+    if params["language"] == "all":
+        params["language"] = "en-us"
 
     query_params = [
         ("search", query),
@@ -63,6 +63,12 @@ def response(resp) -> EngineResults:
     json_data = resp.json()
 
     for result in json_data["results"]:
-        res.add(res.types.MainResult(url=result["url"], title=result["title"], content=result.get("description", "")))
+        res.add(
+            res.types.MainResult(
+                url=result["url"],
+                title=result["title"],
+                content=result.get("description", ""),
+            )
+        )
 
     return res

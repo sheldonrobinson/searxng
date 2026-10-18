@@ -45,14 +45,14 @@ def extract(
     namespace = {}
     exec(fileobj.read(), {}, namespace)  # pylint: disable=exec-used
 
-    for obj_name in namespace['__all__']:
+    for obj_name in namespace["__all__"]:
         obj = namespace[obj_name]
         if isinstance(obj, list):
             for msg in obj:
                 # (lineno, funcname, message, comments)
-                yield 0, '_', msg, [f"{obj_name}"]
+                yield 0, "_", msg, [f"{obj_name}"]
         elif isinstance(obj, dict):
             for k, msg in obj.items():
-                yield 0, '_', msg, [f"{obj_name}['{k}']"]
+                yield 0, "_", msg, [f"{obj_name}['{k}']"]
         else:
             raise ValueError(f"{obj_name} should be list or dict")

@@ -34,7 +34,9 @@ class SXNGAnswerer(Answerer):
 
         return AnswererInfo(
             name=gettext(self.__doc__),
-            description=gettext("Compute {func} of the arguments".format(func='/'.join(self.keywords))),
+            description=gettext(
+                "Compute {func} of the arguments".format(func="/".join(self.keywords))
+            ),
             keywords=self.keywords,
             examples=["avg 123 548 2.04 24.2"],
         )
@@ -46,10 +48,15 @@ class SXNGAnswerer(Answerer):
         if len(parts) < 2:
             return results
 
-        ui_locale = babel.Locale.parse(sxng_request.preferences.get_value('locale'), sep='-')
+        ui_locale = babel.Locale.parse(
+            sxng_request.preferences.get_value("locale"), sep="-"
+        )
 
         try:
-            args = [babel.numbers.parse_decimal(num, ui_locale, numbering_system="latn") for num in parts[1:]]
+            args = [
+                babel.numbers.parse_decimal(num, ui_locale, numbering_system="latn")
+                for num in parts[1:]
+            ]
         except:  # pylint: disable=bare-except
             # seems one of the args is not a float type, can't be converted to float
             return results
@@ -58,7 +65,9 @@ class SXNGAnswerer(Answerer):
             if k == parts[0]:
                 res = func(args)
                 res = babel.numbers.format_decimal(res, locale=ui_locale)
-                f_str = ', '.join(babel.numbers.format_decimal(arg, locale=ui_locale) for arg in args)
+                f_str = ", ".join(
+                    babel.numbers.format_decimal(arg, locale=ui_locale) for arg in args
+                )
                 results.append(Answer(answer=f"[{ui_locale}] {k}({f_str}) = {res} "))
                 break
 

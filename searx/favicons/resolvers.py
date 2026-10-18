@@ -13,7 +13,7 @@ from searx import network
 from searx import logger
 
 DEFAULT_RESOLVER_MAP: dict[str, Callable]
-logger = logger.getChild('favicons.resolvers')
+logger = logger.getChild("favicons.resolvers")
 
 
 def _req_args(**kwargs):
@@ -33,8 +33,8 @@ def allesedv(domain: str, timeout: int) -> tuple[None | bytes, None | str]:
     # sometimes will be correct size, sometimes not
     response = network.get(url, **_req_args(timeout=timeout))
     if response and response.status_code == 200:
-        mime = response.headers['Content-Type']
-        if mime != 'image/gif':
+        mime = response.headers["Content-Type"]
+        if mime != "image/gif":
             data = response.content
     return data, mime
 
@@ -49,7 +49,7 @@ def duckduckgo(domain: str, timeout: int) -> tuple[None | bytes, None | str]:
     response = network.get(url, **_req_args(timeout=timeout))
     if response and response.status_code == 200:
         # api will respond with a 32x32 png image
-        mime = response.headers['Content-Type']
+        mime = response.headers["Content-Type"]
         data = response.content
     return data, mime
 
@@ -70,7 +70,7 @@ def google(domain: str, timeout: int) -> tuple[None | bytes, None | str]:
     response = network.get(url, **_req_args(timeout=timeout))
     if response and response.status_code == 200:
         # api will respond with a 32x32 png image
-        mime = response.headers['Content-Type']
+        mime = response.headers["Content-Type"]
         data = response.content
     return data, mime
 
@@ -85,7 +85,7 @@ def kagi(domain: str, timeout: int) -> tuple[None | bytes, None | str]:
     # will return a 404 if the favicon does not exist and a 200 if it does,
     response = network.get(url, **_req_args(timeout=timeout))
     if response and response.status_code == 200:
-        mime = response.headers['Content-Type']
+        mime = response.headers["Content-Type"]
         data = response.content
     return data, mime
 
@@ -100,7 +100,7 @@ def yandex(domain: str, timeout: int) -> tuple[None | bytes, None | str]:
     # 1x1 png image (70 bytes)
     response = network.get(url, **_req_args(timeout=timeout))
     if response and response.status_code == 200 and len(response.content) > 70:
-        mime = response.headers['Content-Type']
+        mime = response.headers["Content-Type"]
         data = response.content
     return data, mime
 

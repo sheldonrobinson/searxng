@@ -6,7 +6,7 @@ from searx.utils import html_to_text
 from searx.result_types import EngineResults
 
 about = {
-    "website": 'https://grokipedia.com',
+    "website": "https://grokipedia.com",
     "wikidata_id": "Q136410803",
     "official_api_documentation": None,
     "use_official_api": False,
@@ -15,7 +15,7 @@ about = {
 }
 
 base_url = "https://grokipedia.com/api/full-text-search"
-categories = ['general']
+categories = ["general"]
 paging = True
 results_per_page = 10
 
@@ -43,7 +43,7 @@ def response(resp) -> EngineResults:
 
         results.add(
             results.types.MainResult(
-                url='https://grokipedia.com/page/' + item["slug"],
+                url="https://grokipedia.com/page/" + item["slug"],
                 title=item["title"],
                 content=html_to_text(item["snippet"]),
             )

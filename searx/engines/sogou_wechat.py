@@ -40,8 +40,8 @@ def response(resp):
     results = []
 
     for item in dom.xpath('//li[contains(@id, "sogou_vr_")]'):
-        title = extract_text(item.xpath('.//h3/a'))
-        url = extract_text(item.xpath('.//h3/a/@href'))
+        title = extract_text(item.xpath(".//h3/a"))
+        url = extract_text(item.xpath(".//h3/a/@href"))
 
         if url.startswith("/link?url="):
             url = f"{base_url}{url}"
@@ -55,7 +55,9 @@ def response(resp):
             thumbnail = f"https:{thumbnail}"
 
         published_date = None
-        timestamp = extract_text(item.xpath('.//script[contains(text(), "timeConvert")]'))
+        timestamp = extract_text(
+            item.xpath('.//script[contains(text(), "timeConvert")]')
+        )
         if timestamp:
             match = re.search(r"timeConvert\('(\d+)'\)", timestamp)
             if match:
@@ -67,7 +69,7 @@ def response(resp):
                     "title": title,
                     "url": url,
                     "content": content,
-                    'thumbnail': thumbnail,
+                    "thumbnail": thumbnail,
                     "publishedDate": published_date,
                 }
             )

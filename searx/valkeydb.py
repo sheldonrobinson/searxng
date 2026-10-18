@@ -20,7 +20,7 @@ A valkey DB connect can be tested by::
 
 import os
 
-if os.name == 'nt':  # Windows
+if os.name == "nt":  # Windows
     import getpass
 else:
     try:
@@ -45,9 +45,11 @@ def client() -> valkey.Valkey | None:
 
 def initialize():
     global _CLIENT  # pylint: disable=global-statement
-    if get_setting('redis.url'):
-        warnings.warn("setting redis.url is deprecated, use valkey.url", DeprecationWarning)
-    valkey_url = get_setting('valkey.url') or get_setting('redis.url')
+    if get_setting("redis.url"):
+        warnings.warn(
+            "setting redis.url is deprecated, use valkey.url", DeprecationWarning
+        )
+    valkey_url = get_setting("valkey.url") or get_setting("redis.url")
     if not valkey_url:
         return False
     try:
@@ -56,8 +58,8 @@ def initialize():
 
         # log the parameters as seen by the valkey lib, without the password
         kwargs = _CLIENT.get_connection_kwargs().copy()
-        kwargs.pop('password', None)
-        kwargs = ' '.join([f'{k}={v!r}' for k, v in kwargs.items()])
+        kwargs.pop("password", None)
+        kwargs = " ".join([f"{k}={v!r}" for k, v in kwargs.items()])
         logger.info("connecting to Valkey %s", kwargs)
 
         # check the connection
@@ -68,12 +70,14 @@ def initialize():
         return True
     except valkey.exceptions.ValkeyError:
         _CLIENT = None
-        if os.name == 'nt':
+        if os.name == "nt":
             _user = getpass.getuser()
             logger.exception("[%s] can't connect valkey DB ...", _user)
         elif pwd:
             _pw = pwd.getpwuid(os.getuid())
-            logger.exception("[%s (%s)] can't connect valkey DB ...", _pw.pw_name, _pw.pw_uid)
+            logger.exception(
+                "[%s (%s)] can't connect valkey DB ...", _pw.pw_name, _pw.pw_uid
+            )
         else:
             logger.exception("Can't connect valkey DB ...")
     return False

@@ -16,23 +16,23 @@ from searx.utils import (
 )
 
 about = {
-    "website": 'https://emojipedia.org',
-    "wikidata_id": 'Q22908129',
+    "website": "https://emojipedia.org",
+    "wikidata_id": "Q22908129",
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
 categories = []
 
-base_url = 'https://emojipedia.org'
-search_url = base_url + '/search?{query}'
+base_url = "https://emojipedia.org"
+search_url = base_url + "/search?{query}"
 
 
 def request(query, params):
-    params['url'] = search_url.format(
-        query=urlencode({'q': query}),
+    params["url"] = search_url.format(
+        query=urlencode({"q": query}),
     )
     return params
 
@@ -44,8 +44,8 @@ def response(resp):
 
     for result in eval_xpath_list(dom, '//div[starts-with(@class, "EmojisList")]/a'):
 
-        url = base_url + result.attrib.get('href')
-        res = {'url': url, 'title': extract_text(result), 'content': ''}
+        url = base_url + result.attrib.get("href")
+        res = {"url": url, "title": extract_text(result), "content": ""}
 
         results.append(res)
 

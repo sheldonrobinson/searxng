@@ -5,48 +5,48 @@ documentation"""
 from dateutil import parser
 
 about = {
-    'website': 'https://selfh.st/icons/',
-    'official_api_documentation': 'https://selfh.st/icons-about/',
+    "website": "https://selfh.st/icons/",
+    "official_api_documentation": "https://selfh.st/icons-about/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
-categories = ['images', 'icons']
+categories = ["images", "icons"]
 
 
-cdn_base_url = 'https://cdn.jsdelivr.net/gh/selfhst/icons'
+cdn_base_url = "https://cdn.jsdelivr.net/gh/selfhst/icons"
 
 
 def request(query, params):
-    params['url'] = f"{cdn_base_url}/index.json"
-    params['query'] = query
+    params["url"] = f"{cdn_base_url}/index.json"
+    params["query"] = query
     return params
 
 
 def response(resp):
     results = []
 
-    query_parts = resp.search_params['query'].lower().split(' ')
+    query_parts = resp.search_params["query"].lower().split(" ")
     for item in resp.json():
-        keyword = item['Reference'].lower()
+        keyword = item["Reference"].lower()
         if not any(query_part in keyword for query_part in query_parts):
             continue
 
         img_format = None
-        for format_name in ('SVG', 'PNG', 'WebP'):
-            if item[format_name] == 'Yes':
+        for format_name in ("SVG", "PNG", "WebP"):
+            if item[format_name] == "Yes":
                 img_format = format_name.lower()
                 break
 
         img_src = f'{cdn_base_url}/{img_format}/{item["Reference"]}.{img_format}'
         result = {
-            'template': 'images.html',
-            'url': img_src,
-            'title': item['Name'],
-            'content': '',
-            'img_src': img_src,
-            'img_format': img_format,
-            'publishedDate': parser.parse(item['CreatedAt']),
+            "template": "images.html",
+            "url": img_src,
+            "title": item["Name"],
+            "content": "",
+            "img_src": img_src,
+            "img_format": img_format,
+            "publishedDate": parser.parse(item["CreatedAt"]),
         }
         results.append(result)
 

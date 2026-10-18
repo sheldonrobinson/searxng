@@ -6,14 +6,14 @@ from searx.utils import eval_xpath, eval_xpath_list, extract_text
 
 # about
 about = {
-    "website": 'https://www.rottentomatoes.com/',
-    "wikidata_id": 'Q105584',
+    "website": "https://www.rottentomatoes.com/",
+    "wikidata_id": "Q105584",
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
-categories = ['movies']
+categories = ["movies"]
 
 base_url = "https://www.rottentomatoes.com"
 
@@ -47,10 +47,10 @@ def response(resp):
 
         results.append(
             {
-                'url': extract_text(eval_xpath(result, url_xpath)),
-                'title': extract_text(eval_xpath(result, title_xpath)),
-                'content': ', '.join(content),
-                'thumbnail': extract_text(eval_xpath(result, thumbnail_xpath)),
+                "url": extract_text(eval_xpath(result, url_xpath)),
+                "title": extract_text(eval_xpath(result, title_xpath)),
+                "content": ", ".join(content),
+                "thumbnail": extract_text(eval_xpath(result, thumbnail_xpath)),
             }
         )
 

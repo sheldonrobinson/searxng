@@ -17,5 +17,7 @@ import typer
 from .. import enginelib
 
 app = typer.Typer()
-app.add_typer(enginelib.app, name="cache", help="Commands related to the cache of the engines.")
+app.add_typer(
+    enginelib.app, name="cache", help="Commands related to the cache of the engines."
+)
 app()

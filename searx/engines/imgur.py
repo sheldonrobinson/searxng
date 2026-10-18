@@ -5,15 +5,15 @@ from urllib.parse import urlencode
 from searx.utils import extract_text, eval_xpath, eval_xpath_list
 
 about = {
-    "website": 'https://imgur.com/',
-    "wikidata_id": 'Q355022',
-    "official_api_documentation": 'https://api.imgur.com/',
+    "website": "https://imgur.com/",
+    "wikidata_id": "Q355022",
+    "official_api_documentation": "https://api.imgur.com/",
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
-categories = ['images']
+categories = ["images"]
 paging = True
 time_range_support = True
 
@@ -26,13 +26,13 @@ thumbnail_xpath = "./a/img/@src"
 
 
 def request(query, params):
-    time_range = params['time_range'] or 'all'
+    time_range = params["time_range"] or "all"
     args = {
-        'q': query,
-        'qs': 'thumbs',
-        'p': params['pageno'] - 1,
+        "q": query,
+        "qs": "thumbs",
+        "p": params["pageno"] - 1,
     }
-    params['url'] = f"{base_url}/search/score/{time_range}?{urlencode(args)}"
+    params["url"] = f"{base_url}/search/score/{time_range}?{urlencode(args)}"
     return params
 
 
@@ -52,11 +52,11 @@ def response(resp):
 
         results.append(
             {
-                'template': 'images.html',
-                'url': base_url + extract_text(eval_xpath(result, url_xpath)),
-                'title': extract_text(eval_xpath(result, title_xpath)),
-                'img_src': img_src,
-                'thumbnail_src': thumbnail_src,
+                "template": "images.html",
+                "url": base_url + extract_text(eval_xpath(result, url_xpath)),
+                "title": extract_text(eval_xpath(result, title_xpath)),
+                "img_src": img_src,
+                "thumbnail_src": thumbnail_src,
             }
         )
 

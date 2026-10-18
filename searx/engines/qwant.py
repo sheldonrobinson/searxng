@@ -148,7 +148,9 @@ def request(query: str, params: "OnlineParams") -> None:
     params["url"] = f"{api_url}{qwant_categ}?{urlencode(args)}"
 
     params["cookies"]["datadome"] = CACHE.get("datadome")
-    params["headers"].update({"Accept": "application/json", "Referer": f"{base_url}/", "Origin": base_url})
+    params["headers"].update(
+        {"Accept": "application/json", "Referer": f"{base_url}/", "Origin": base_url}
+    )
 
 
 def response(resp: "SXNG_Response") -> EngineResults:
@@ -169,7 +171,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
     except ValueError:
         pass
 
-    data: dict[str, t.Any] = search_results.get("data", {})  # pyright: ignore[reportAny]
+    data: dict[str, t.Any] = search_results.get(
+        "data", {}
+    )  # pyright: ignore[reportAny]
 
     # check for an API error
     if search_results.get("status") != "success":
@@ -289,7 +293,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 thumbnail = item["thumbnail"] or ""
                 # from some locations (DE and others?) the s2 link do
                 # response a 'Please wait ..' but does not deliver the thumbnail
-                thumbnail = thumbnail.replace("https://s2.qwant.com", "https://s1.qwant.com", 1)
+                thumbnail = thumbnail.replace(
+                    "https://s2.qwant.com", "https://s1.qwant.com", 1
+                )
 
                 res.add(
                     res.types.Video(

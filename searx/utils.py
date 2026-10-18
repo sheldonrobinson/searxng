@@ -638,10 +638,7 @@ def get_embedded_stream_url(url: str) -> str:
     # Facebook
     elif parsed_url.netloc in ["www.facebook.com", "facebook.com"]:
         encoded_href = urlencode({"href": url})
-        iframe_src = (
-            "https://www.facebook.com/plugins/video.php?allowfullscreen=true&"
-            + encoded_href
-        )
+        iframe_src = "https://www.facebook.com/plugins/video.php?allowfullscreen=true&" + encoded_href
 
     # Instagram
     elif parsed_url.netloc in [
@@ -688,7 +685,9 @@ def get_embedded_stream_url(url: str) -> str:
         elif video_id.startswith("BV"):
             param_key = "bvid"
 
-        iframe_src = f"https://player.bilibili.com/player.html?{param_key}={video_id}&high_quality=1&autoplay=false&danmaku=0"
+        iframe_src = (
+            f"https://player.bilibili.com/player.html?{param_key}={video_id}&high_quality=1&autoplay=false&danmaku=0"
+        )
 
     return iframe_src
 
@@ -730,9 +729,7 @@ def js_obj_str_to_python(js_obj_str: str) -> t.Any:
     try:
         return json.loads(s)
     except json.JSONDecodeError as e:
-        logger.debug(
-            "Internal error: js_obj_str_to_python creates invalid JSON:\n%s", s
-        )
+        logger.debug("Internal error: js_obj_str_to_python creates invalid JSON:\n%s", s)
         raise ValueError("js_obj_str_to_python creates invalid JSON") from e
 
 
@@ -850,9 +847,7 @@ def _array_startswith(arr: bytes, prefix: bytes) -> bool:
     return arr[: len(prefix)] == prefix
 
 
-def solve_altcha(
-    parameters: dict[str, t.Any], maxCounter: int = 1000
-) -> tuple[str, int] | None:
+def solve_altcha(parameters: dict[str, t.Any], maxCounter: int = 1000) -> tuple[str, int] | None:
     """Solves Altcha CAPTCHAs. It derives keys using PBKDF2 until the derived
     key starts with the ``keyPrefix``` from the challenge. If the solver does not
     finish after ``maxCounter`` iterations, returns ``None``."""

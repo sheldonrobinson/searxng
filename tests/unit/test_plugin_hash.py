@@ -15,8 +15,14 @@ from .test_plugins import do_post_search
 query_res = [
     ("md5 test", "md5 hash digest: 098f6bcd4621d373cade4e832627b4f6"),
     ("sha1 test", "sha1 hash digest: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"),
-    ("sha224 test", "sha224 hash digest: 90a3ed9e32b2aaf4c61c410eb925426119e1a9dc53d4286ade99a809"),
-    ("sha256 test", "sha256 hash digest: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"),
+    (
+        "sha224 test",
+        "sha224 hash digest: 90a3ed9e32b2aaf4c61c410eb925426119e1a9dc53d4286ade99a809",
+    ),
+    (
+        "sha256 test",
+        "sha256 hash digest: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    ),
     (
         "sha384 test",
         "sha384 hash digest: 768412320f7b0aa5812fce428dc4706b3c"
@@ -39,9 +45,13 @@ class PluginHashTest(SearxTestCase):
         engines = {}
 
         self.storage = searx.plugins.PluginStorage()
-        self.storage.load_settings({"searx.plugins.hash_plugin.SXNGPlugin": {"active": True}})
+        self.storage.load_settings(
+            {"searx.plugins.hash_plugin.SXNGPlugin": {"active": True}}
+        )
         self.storage.init(self.app)
-        self.pref = searx.preferences.Preferences(["simple"], ["general"], engines, self.storage)
+        self.pref = searx.preferences.Preferences(
+            ["simple"], ["general"], engines, self.storage
+        )
         self.pref.parse_dict({"locale": "en"})
 
     def test_plugin_store_init(self):

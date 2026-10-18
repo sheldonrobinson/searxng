@@ -34,7 +34,7 @@ from searx import logger
 
 log = logger.getChild("result_types")
 
-WHITESPACE_REGEX = re.compile('( |\t|\n)+', re.M | re.U)
+WHITESPACE_REGEX = re.compile("( |\t|\n)+", re.M | re.U)
 MAXIMUM_TITLE_LENGTH_CHARS = 200
 MAXIMUM_CONTENT_LENGTH_CHARS = 1200
 UNSET = object()
@@ -47,7 +47,7 @@ def _normalize_url_fields(result: "Result | LegacyResult"):
 
     if result.url and not result.parsed_url:
         if not isinstance(result.url, str):
-            log.debug('result: invalid URL: %s', str(result))
+            log.debug("result: invalid URL: %s", str(result))
             result.url = ""
             result.parsed_url = None
         else:
@@ -117,8 +117,12 @@ def _normalize_text_fields(result: "MainResult | LegacyResult"):
     # implemented correctly. Historically, however, we have always had a type
     # check here.
 
-    result.title = _normalize_text_field(result.title, "title", MAXIMUM_TITLE_LENGTH_CHARS)
-    result.content = _normalize_text_field(result.content, "content", MAXIMUM_CONTENT_LENGTH_CHARS)
+    result.title = _normalize_text_field(
+        result.title, "title", MAXIMUM_TITLE_LENGTH_CHARS
+    )
+    result.content = _normalize_text_field(
+        result.content, "content", MAXIMUM_CONTENT_LENGTH_CHARS
+    )
 
     if result.content == result.title:
         # avoid duplicate content between the content and title fields
@@ -126,14 +130,22 @@ def _normalize_text_fields(result: "MainResult | LegacyResult"):
 
 
 def _filter_urls(
-    result: "Result | LegacyResult", filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"
+    result: "Result | LegacyResult",
+    filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]",
 ):
     # pylint: disable=too-many-branches, too-many-statements
 
     # As soon we need LegacyResult not any longer, we can move this function to
     # method Result.
 
-    url_fields = ["url", "iframe_src", "audio_src", "img_src", "thumbnail_src", "thumbnail"]
+    url_fields = [
+        "url",
+        "iframe_src",
+        "audio_src",
+        "img_src",
+        "thumbnail_src",
+        "thumbnail",
+    ]
 
     url_src: str
 
@@ -163,7 +175,12 @@ def _filter_urls(
             log.debug("filter_urls: drop field %s URL %s", field_name, url_src)
             new_url = None
         else:
-            log.debug("filter_urls: modify field %s URL %s -> %s", field_name, url_src, new_url)
+            log.debug(
+                "filter_urls: modify field %s URL %s -> %s",
+                field_name,
+                url_src,
+                new_url,
+            )
 
         setattr(result, field_name, new_url)
         if field_name == "url":
@@ -196,10 +213,17 @@ def _filter_urls(
                     new_infobox_urls.append(item)
                     # log.debug("filter_urls: leave URL in field 'urls' ('infobox_urls') unchanged -> %s", _url)
                     continue
-                log.debug("filter_urls: remove URL from field 'urls' ('infobox_urls') URL %s", url_src)
+                log.debug(
+                    "filter_urls: remove URL from field 'urls' ('infobox_urls') URL %s",
+                    url_src,
+                )
                 new_url = None
             if new_url:
-                log.debug("filter_urls: modify URL from field 'urls' ('infobox_urls') URL %s -> %s", url_src, new_url)
+                log.debug(
+                    "filter_urls: modify URL from field 'urls' ('infobox_urls') URL %s -> %s",
+                    url_src,
+                    new_url,
+                )
                 item["url"] = new_url
                 new_infobox_urls.append(item)
 
@@ -228,7 +252,10 @@ def _filter_urls(
                     new_infobox_attributes.append(item)
                     # log.debug("filter_urls: leave URL in field 'image.src' unchanged -> %s", url_src)
                     continue
-                log.debug("filter_urls: drop field 'image.src' ('infobox_attributes') URL %s", url_src)
+                log.debug(
+                    "filter_urls: drop field 'image.src' ('infobox_attributes') URL %s",
+                    url_src,
+                )
                 new_url = None
 
             if new_url:
@@ -247,9 +274,11 @@ def _filter_urls(
 
 def _normalize_date_fields(result: "MainResult | LegacyResult"):
 
-    if result.publishedDate:  # do not try to get a date from an empty string or a None type
+    if (
+        result.publishedDate
+    ):  # do not try to get a date from an empty string or a None type
         try:  # test if publishedDate >= 1900 (datetime module bug)
-            result.pubdate = result.publishedDate.strftime('%Y-%m-%d %H:%M:%S%z')
+            result.pubdate = result.publishedDate.strftime("%Y-%m-%d %H:%M:%S%z")
         except ValueError:
             result.publishedDate = None
 
@@ -287,7 +316,9 @@ class Result(msgspec.Struct, kw_only=True):
     def __post_init__(self):
         pass
 
-    def filter_urls(self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"):
+    def filter_urls(
+        self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"
+    ):
         """A filter function is passed in the ``filter_func`` argument to
         filter and/or modify the URLs.
 
@@ -419,7 +450,9 @@ class MainResult(Result):  # pylint: disable=missing-class-docstring
     metadata: str = ""
     """Miscellaneous metadata."""
 
-    PriorityType = t.Literal["", "high", "low"]  # pyright: ignore[reportUnannotatedClassAttribute]
+    PriorityType = t.Literal[
+        "", "high", "low"
+    ]  # pyright: ignore[reportUnannotatedClassAttribute]
     priority: "MainResult.PriorityType" = ""
     """The priority can be set via :ref:`hostnames plugin`, for example."""
 
@@ -564,7 +597,10 @@ class LegacyResult(dict[str, t.Any]):
             # the img_src are equal.
             return hash(f"{self.template}|{self.url}|{self.img_src}")
 
-        if not any(cls in self for cls in ["suggestion", "correction", "infobox", "engine_data"]):
+        if not any(
+            cls in self
+            for cls in ["suggestion", "correction", "infobox", "engine_data"]
+        ):
             # Ordinary url-results are equal if their values for template,
             # parsed_url (without schema) and img_src` are equal.
 
@@ -604,6 +640,8 @@ class LegacyResult(dict[str, t.Any]):
             if self_val is UNSET and other_val not in ("", UNSET):
                 self[field_name] = other_val
 
-    def filter_urls(self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"):
+    def filter_urls(
+        self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"
+    ):
         """See :py:obj:`Result.filter_urls`"""
         _filter_urls(self, filter_func=filter_func)

@@ -58,12 +58,12 @@ from searx.utils import humanize_number
 
 # about
 about = {
-    "website": 'https://github.com/TeamPiped/Piped/',
-    "wikidata_id": 'Q107565255',
-    "official_api_documentation": 'https://docs.piped.video/docs/api-documentation/',
+    "website": "https://github.com/TeamPiped/Piped/",
+    "wikidata_id": "Q107565255",
+    "official_api_documentation": "https://docs.piped.video/docs/api-documentation/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
@@ -88,7 +88,7 @@ frontend_url: str | None = None
 .. _Piped-Frontend: https://github.com/TeamPiped/Piped
 """
 
-piped_filter = 'all'
+piped_filter = "all"
 """Content filter ``music_songs`` or ``videos``"""
 
 
@@ -110,17 +110,17 @@ def _frontend_url() -> str:
 def request(query, params):
 
     args = {
-        'q': query,
-        'filter': piped_filter,
+        "q": query,
+        "filter": piped_filter,
     }
 
     path = "/search"
-    if params['pageno'] > 1:
+    if params["pageno"] > 1:
         # don't use nextpage when user selected to jump back to page 1
-        nextpage = params['engine_data'].get('nextpage')
+        nextpage = params["engine_data"].get("nextpage")
         if nextpage:
             path = "/nextpage/search"
-            args['nextpage'] = nextpage
+            args["nextpage"] = nextpage
 
     params["url"] = _backend_url() + f"{path}?" + urlencode(args)
     return params
@@ -139,21 +139,23 @@ def response(resp):
             # the api url differs from the frontend, hence use piped.video as default
             "url": _frontend_url() + result.get("url", ""),
             "title": result.get("title", ""),
-            "publishedDate": parser.parse(time.ctime(uploaded / 1000)) if uploaded != -1 else None,
-            "iframe_src": _frontend_url() + '/embed' + result.get("url", ""),
+            "publishedDate": (
+                parser.parse(time.ctime(uploaded / 1000)) if uploaded != -1 else None
+            ),
+            "iframe_src": _frontend_url() + "/embed" + result.get("url", ""),
             "views": humanize_number(result["views"]),
         }
         length = result.get("duration")
         if length:
             item["length"] = datetime.timedelta(seconds=length)
 
-        if piped_filter == 'videos':
+        if piped_filter == "videos":
             item["template"] = "videos.html"
             # if the value of shortDescription set, but is None, return empty string
             item["content"] = result.get("shortDescription", "") or ""
             item["thumbnail"] = result.get("thumbnail", "")
 
-        elif piped_filter == 'music_songs':
+        elif piped_filter == "music_songs":
             item["template"] = "default.html"
             item["thumbnail"] = result.get("thumbnail", "")
             item["content"] = result.get("uploaderName", "") or ""

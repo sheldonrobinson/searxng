@@ -121,7 +121,7 @@ from searx.botdetection import (
 
 # the configuration are limiter.toml and "limiter" in settings.yml so, for
 # coherency, the logger is "limiter"
-logger = logger.getChild('limiter')
+logger = logger.getChild("limiter")
 
 CFG: config.Config | None = None
 _INSTALLED = False
@@ -137,8 +137,12 @@ def get_cfg() -> config.Config:
     if CFG is None:
         from . import settings_loader  # pylint: disable=import-outside-toplevel
 
-        cfg_file = (settings_loader.get_user_cfg_folder() or Path("/etc/searxng")) / "limiter.toml"
-        CFG = config.Config.from_toml(LIMITER_CFG_SCHEMA, cfg_file, searx.compat.LIMITER_CFG_DEPRECATED)
+        cfg_file = (
+            settings_loader.get_user_cfg_folder() or Path("/etc/searxng")
+        ) / "limiter.toml"
+        CFG = config.Config.from_toml(
+            LIMITER_CFG_SCHEMA, cfg_file, searx.compat.LIMITER_CFG_DEPRECATED
+        )
         searx.compat.limiter_fix_cfg(CFG, cfg_file)
 
     return CFG
@@ -151,7 +155,7 @@ def filter_request(request: SXNG_Request) -> werkzeug.Response | None:
     real_ip = ip_address(request.remote_addr)
     network = get_network(real_ip, cfg)
 
-    if request.path == '/healthz':
+    if request.path == "/healthz":
         return None
 
     # link-local
@@ -176,7 +180,7 @@ def filter_request(request: SXNG_Request) -> werkzeug.Response | None:
     match, msg = ip_lists.block_ip(real_ip, cfg)
     if match:
         logger.error("BLOCK %s: matched BLOCKLIST - %s", network.compressed, msg)
-        return flask.make_response(('IP is on BLOCKLIST - %s' % msg, 429))
+        return flask.make_response(("IP is on BLOCKLIST - %s" % msg, 429))
 
     # methods applied on all requests
 
@@ -185,12 +189,14 @@ def filter_request(request: SXNG_Request) -> werkzeug.Response | None:
     ]:
         val = func.filter_request(network, request, cfg)
         if val is not None:
-            logger.debug(f"NOT OK ({func.__name__}): {network}: %s", dump_request(sxng_request))
+            logger.debug(
+                f"NOT OK ({func.__name__}): {network}: %s", dump_request(sxng_request)
+            )
             return val
 
     # methods applied on /search requests
 
-    if request.path == '/search':
+    if request.path == "/search":
 
         for func in [
             http_accept,
@@ -202,7 +208,10 @@ def filter_request(request: SXNG_Request) -> werkzeug.Response | None:
         ]:
             val = func.filter_request(network, request, cfg)
             if val is not None:
-                logger.debug(f"NOT OK ({func.__name__}): {network}: %s", dump_request(sxng_request))
+                logger.debug(
+                    f"NOT OK ({func.__name__}): {network}: %s",
+                    dump_request(sxng_request),
+                )
                 return val
 
     logger.debug(f"OK {network}: %s", dump_request(sxng_request))
@@ -230,7 +239,7 @@ def initialize(app: flask.Flask, settings):
     valkey_client = valkeydb.client()
     botdetection.init(cfg, valkey_client)
 
-    if not (settings['server']['limiter'] or settings['server']['public_instance']):
+    if not (settings["server"]["limiter"] or settings["server"]["public_instance"]):
         return
 
     if not valkey_client:
@@ -238,14 +247,14 @@ def initialize(app: flask.Flask, settings):
             "The limiter requires Valkey, please consult the documentation: "
             "https://docs.searxng.org/admin/searx.limiter.html"
         )
-        if settings['server']['public_instance']:
+        if settings["server"]["public_instance"]:
             sys.exit(1)
         return
 
     _INSTALLED = True
 
-    if settings['server']['public_instance']:
+    if settings["server"]["public_instance"]:
         # overwrite limiter.toml setting
-        cfg.set('botdetection.ip_limit.link_token', True)
+        cfg.set("botdetection.ip_limit.link_token", True)
 
     app.before_request(pre_request)

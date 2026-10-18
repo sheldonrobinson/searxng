@@ -15,41 +15,52 @@ if t.TYPE_CHECKING:
 
 def is_cloudflare_challenge(resp: "SXNG_Response"):
     if resp.status_code in [429, 503]:
-        if ('__cf_chl_jschl_tk__=' in resp.text) or (
-            '/cdn-cgi/challenge-platform/' in resp.text
-            and 'orchestrate/jsch/v1' in resp.text
-            and 'window._cf_chl_enter(' in resp.text
+        if ("__cf_chl_jschl_tk__=" in resp.text) or (
+            "/cdn-cgi/challenge-platform/" in resp.text
+            and "orchestrate/jsch/v1" in resp.text
+            and "window._cf_chl_enter(" in resp.text
         ):
             return True
-    if resp.status_code == 403 and '__cf_chl_captcha_tk__=' in resp.text:
+    if resp.status_code == 403 and "__cf_chl_captcha_tk__=" in resp.text:
         return True
     return False
 
 
 def is_cloudflare_firewall(resp: "SXNG_Response"):
-    return resp.status_code == 403 and '<span class="cf-error-code">1020</span>' in resp.text
+    return (
+        resp.status_code == 403
+        and '<span class="cf-error-code">1020</span>' in resp.text
+    )
 
 
 def raise_for_cloudflare_captcha(resp: "SXNG_Response"):
-    if resp.headers.get('Server', '').startswith('cloudflare'):
+    if resp.headers.get("Server", "").startswith("cloudflare"):
         if is_cloudflare_challenge(resp):
             # https://support.cloudflare.com/hc/en-us/articles/200170136-Understanding-Cloudflare-Challenge-Passage-Captcha-
             # suspend for 2 weeks
             raise SearxEngineCaptchaException(
-                message='Cloudflare CAPTCHA', suspended_time=get_setting('search.suspended_times.cf_SearxEngineCaptcha')
+                message="Cloudflare CAPTCHA",
+                suspended_time=get_setting(
+                    "search.suspended_times.cf_SearxEngineCaptcha"
+                ),
             )
 
         if is_cloudflare_firewall(resp):
             raise SearxEngineAccessDeniedException(
-                message='Cloudflare Firewall',
-                suspended_time=get_setting('search.suspended_times.cf_SearxEngineAccessDenied'),
+                message="Cloudflare Firewall",
+                suspended_time=get_setting(
+                    "search.suspended_times.cf_SearxEngineAccessDenied"
+                ),
             )
 
 
 def raise_for_recaptcha(resp: "SXNG_Response"):
     if resp.status_code == 503 and '"https://www.google.com/recaptcha/' in resp.text:
         raise SearxEngineCaptchaException(
-            message='ReCAPTCHA', suspended_time=get_setting('search.suspended_times.recaptcha_SearxEngineCaptcha')
+            message="ReCAPTCHA",
+            suspended_time=get_setting(
+                "search.suspended_times.recaptcha_SearxEngineCaptcha"
+            ),
         )
 
 
@@ -70,7 +81,9 @@ def raise_for_httperror(resp: "SXNG_Response") -> None:
     if resp.status_code and resp.status_code >= 400:
         raise_for_captcha(resp)
         if resp.status_code in (402, 403):
-            raise SearxEngineAccessDeniedException(message='HTTP error ' + str(resp.status_code))
+            raise SearxEngineAccessDeniedException(
+                message="HTTP error " + str(resp.status_code)
+            )
         if resp.status_code == 429:
             raise SearxEngineTooManyRequestsException()
         resp.raise_for_status()

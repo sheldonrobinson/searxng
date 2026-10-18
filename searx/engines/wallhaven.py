@@ -10,18 +10,18 @@ from urllib.parse import urlencode
 from searx.utils import humanize_bytes
 
 about = {
-    'website': 'https://wallhaven.cc/',
-    'official_api_documentation': 'https://wallhaven.cc/help/api',
-    'use_official_api': True,
-    'require_api_key': False,
-    'results': 'JSON',
+    "website": "https://wallhaven.cc/",
+    "official_api_documentation": "https://wallhaven.cc/help/api",
+    "use_official_api": True,
+    "require_api_key": False,
+    "results": "JSON",
 }
-categories = ['images']
+categories = ["images"]
 paging = True
 
 base_url = "https://wallhaven.cc"
 
-api_key = ''
+api_key = ""
 """If you own an API key you can add it here, further read `Rate Limiting and
 Errors`_.
 
@@ -30,7 +30,7 @@ Errors`_.
 """
 
 # Possible categories: sfw, sketchy, nsfw
-safesearch_map = {0: '111', 1: '110', 2: '100'}
+safesearch_map = {0: "111", 1: "110", 2: "100"}
 """Turn purities on(1) or off(0) NSFW requires a valid API key.
 
 .. code:: text
@@ -51,15 +51,15 @@ safesearch_map = {0: '111', 1: '110', 2: '100'}
 
 def request(query, params):
     args = {
-        'q': query,
-        'page': params['pageno'],
-        'purity': safesearch_map[params['safesearch']],
+        "q": query,
+        "page": params["pageno"],
+        "purity": safesearch_map[params["safesearch"]],
     }
 
     if api_key:
-        params['headers']['X-API-Key'] = api_key
+        params["headers"]["X-API-Key"] = api_key
 
-    params['url'] = f"{base_url}/api/v1/search?{urlencode(args)}"
+    params["url"] = f"{base_url}/api/v1/search?{urlencode(args)}"
     return params
 
 
@@ -68,20 +68,20 @@ def response(resp):
 
     json = resp.json()
 
-    for result in json['data']:
+    for result in json["data"]:
 
         results.append(
             {
-                'template': 'images.html',
-                'title': '',
-                'content': f"{result['category']} / {result['purity']}",
-                'url': result['url'],
-                'img_src': result['path'],
-                'thumbnail_src': result['thumbs']['small'],
-                'resolution': result['resolution'].replace('x', ' x '),
-                'publishedDate': datetime.fromisoformat(result['created_at']),
-                'img_format': result['file_type'],
-                'filesize': humanize_bytes(result['file_size']),
+                "template": "images.html",
+                "title": "",
+                "content": f"{result['category']} / {result['purity']}",
+                "url": result["url"],
+                "img_src": result["path"],
+                "thumbnail_src": result["thumbs"]["small"],
+                "resolution": result["resolution"].replace("x", " x "),
+                "publishedDate": datetime.fromisoformat(result["created_at"]),
+                "img_format": result["file_type"],
+                "filesize": humanize_bytes(result["file_size"]),
             }
         )
 

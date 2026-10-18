@@ -215,16 +215,25 @@ def response(resp: "SXNG_Response") -> EngineResults:
     dom = resp.html()
 
     for result in eval_xpath_list(dom, '//div[contains(@class,"algo-sr")]'):
-        url = eval_xpath_getindex(result, './/div[contains(@class,"compTitle")]//a/@href', 0, default=None)
+        url = eval_xpath_getindex(
+            result, './/div[contains(@class,"compTitle")]//a/@href', 0, default=None
+        )
         if url is None:
             continue
         url = parse_url(url)
-        title = extract_text(eval_xpath_getindex(result, ".//h3//a/@aria-label", 0, default=None), allow_none=True)
+        title = extract_text(
+            eval_xpath_getindex(result, ".//h3//a/@aria-label", 0, default=None),
+            allow_none=True,
+        )
         if not title:
-            title = extract_text(eval_xpath_getindex(result, ".//a/h3", 0, default=None), allow_none=True)
+            title = extract_text(
+                eval_xpath_getindex(result, ".//a/h3", 0, default=None), allow_none=True
+            )
         if not title:
             continue
-        content = extract_text(eval_xpath_getindex(result, './/div[contains(@class, "compText")]', 0))
+        content = extract_text(
+            eval_xpath_getindex(result, './/div[contains(@class, "compText")]', 0)
+        )
         results.add(
             results.types.MainResult(
                 url=url,
@@ -235,7 +244,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
             )
         )
 
-    for suggestion in eval_xpath_list(dom, '//div[contains(@class, "AlsoTry")]//table//a'):
+    for suggestion in eval_xpath_list(
+        dom, '//div[contains(@class, "AlsoTry")]//table//a'
+    ):
         results.add(results.types.LegacyResult(suggestion=extract_text(suggestion)))
 
     return results

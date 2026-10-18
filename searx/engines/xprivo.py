@@ -13,12 +13,12 @@ if t.TYPE_CHECKING:
 
 
 about = {
-    "website": 'https://www.xprivo.com',
+    "website": "https://www.xprivo.com",
     "wikidata_id": None,
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 categories = ["general"]
@@ -41,7 +41,9 @@ def setup(_):
 
 def request(query: str, params: "OnlineParams"):
     params["url"] = f"{base_url}/v1/searchengine/completions"
-    params["headers"].update({"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
+    params["headers"].update(
+        {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
+    )
 
     params["method"] = "POST"
     params["json"] = {

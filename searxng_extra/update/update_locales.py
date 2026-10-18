@@ -24,8 +24,8 @@ from searx.locales import (
     get_translation_locales,
 )
 
-LOCALE_DATA_FILE = Path(searx_dir) / 'data' / 'locales.json'
-TRANSLATIONS_FOLDER = Path(searx_dir) / 'translations'
+LOCALE_DATA_FILE = Path(searx_dir) / "data" / "locales.json"
+TRANSLATIONS_FOLDER = Path(searx_dir) / "translations"
 
 
 def main():
@@ -34,26 +34,26 @@ def main():
     RTL_LOCALES: Set[str] = set()
 
     for tag, descr in ADDITIONAL_TRANSLATIONS.items():
-        locale = babel.Locale.parse(LOCALE_BEST_MATCH[tag], sep='-')
+        locale = babel.Locale.parse(LOCALE_BEST_MATCH[tag], sep="-")
         LOCALE_NAMES[tag] = descr
-        if locale.text_direction == 'rtl':
+        if locale.text_direction == "rtl":
             RTL_LOCALES.add(tag)
 
     for tag in LOCALE_BEST_MATCH:
         descr = LOCALE_NAMES.get(tag)
         if not descr:
-            locale = babel.Locale.parse(tag, sep='-')
-            LOCALE_NAMES[tag] = get_locale_descr(locale, tag.replace('-', '_'))
-            if locale.text_direction == 'rtl':
+            locale = babel.Locale.parse(tag, sep="-")
+            LOCALE_NAMES[tag] = get_locale_descr(locale, tag.replace("-", "_"))
+            if locale.text_direction == "rtl":
                 RTL_LOCALES.add(tag)
 
     for tr_locale in get_translation_locales():
-        sxng_tag = tr_locale.replace('_', '-')
+        sxng_tag = tr_locale.replace("_", "-")
         descr = LOCALE_NAMES.get(sxng_tag)
         if not descr:
             locale = babel.Locale.parse(tr_locale)
             LOCALE_NAMES[sxng_tag] = get_locale_descr(locale, tr_locale)
-            if locale.text_direction == 'rtl':
+            if locale.text_direction == "rtl":
                 RTL_LOCALES.add(sxng_tag)
 
     content = {
@@ -61,7 +61,7 @@ def main():
         "RTL_LOCALES": sorted(RTL_LOCALES),
     }
 
-    with LOCALE_DATA_FILE.open('w', encoding='utf-8') as f:
+    with LOCALE_DATA_FILE.open("w", encoding="utf-8") as f:
         json.dump(content, f, indent=2, sort_keys=True, ensure_ascii=False)
 
 
@@ -73,7 +73,7 @@ def get_locale_descr(locale: babel.Locale, tr_locale):
     """
 
     native_language, native_territory = _get_locale_descr(locale, tr_locale)
-    english_language, english_territory = _get_locale_descr(locale, 'en')
+    english_language, english_territory = _get_locale_descr(locale, "en")
 
     if native_territory == english_territory:
         english_territory = None
@@ -82,17 +82,17 @@ def get_locale_descr(locale: babel.Locale, tr_locale):
         # none territory name
         if native_language == english_language:
             return native_language
-        return native_language + ' (' + english_language + ')'
+        return native_language + " (" + english_language + ")"
 
-    result = native_language + ', ' + native_territory + ' (' + english_language
+    result = native_language + ", " + native_territory + " (" + english_language
     if english_territory:
-        return result + ', ' + english_territory + ')'
-    return result + ')'
+        return result + ", " + english_territory + ")"
+    return result + ")"
 
 
 def _get_locale_descr(locale: babel.Locale, tr_locale: str) -> tuple[str, str]:
     language_name = locale.get_language_name(tr_locale).capitalize()  # type: ignore
-    if language_name and ('a' <= language_name[0] <= 'z'):
+    if language_name and ("a" <= language_name[0] <= "z"):
         language_name = language_name.capitalize()
     territory_name: str = locale.get_territory_name(tr_locale)  # type: ignore
     return language_name, territory_name

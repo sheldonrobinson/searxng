@@ -85,8 +85,14 @@ def response(resp: "SXNG_Response") -> EngineResults:
         if not title:
             title = result.xpath('.//div[@class="infnmpt"]//a/@title')[0]
 
-        img_format = " ".join(result.xpath('.//div[@class="imgpt"]/div/span/text()')).strip().split(" · ")
-        source = " ".join(result.xpath('.//div[@class="imgpt"]//div[@class="lnkw"]//a/text()')).strip()
+        img_format = (
+            " ".join(result.xpath('.//div[@class="imgpt"]/div/span/text()'))
+            .strip()
+            .split(" · ")
+        )
+        source = " ".join(
+            result.xpath('.//div[@class="imgpt"]//div[@class="lnkw"]//a/text()')
+        ).strip()
 
         res.add(
             res.types.Image(

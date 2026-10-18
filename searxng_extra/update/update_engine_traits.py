@@ -29,7 +29,7 @@ from searx.engines import load_engines
 from searx.enginelib.traits import EngineTraitsMap
 
 # Output files.
-sxng_locales_file = Path(searx_dir) / 'sxng_locales.py'
+sxng_locales_file = Path(searx_dir) / "sxng_locales.py"
 sxng_locales_file_header = """\
 # SPDX-License-Identifier: AGPL-3.0-or-later
 '''List of SearXNG's locale codes used for the search language/region.
@@ -72,11 +72,11 @@ A list of five-digit tuples:
 
 
 lang2emoji = {
-    'ha': '\U0001f1f3\U0001f1ea',  # Hausa / Niger
-    'bs': '\U0001f1e7\U0001f1e6',  # Bosnian / Bosnia & Herzegovina
-    'jp': '\U0001f1ef\U0001f1f5',  # Japanese
-    'ua': '\U0001f1fa\U0001f1e6',  # Ukrainian
-    'he': '\U0001f1ee\U0001f1f1',  # Hebrew
+    "ha": "\U0001f1f3\U0001f1ea",  # Hausa / Niger
+    "bs": "\U0001f1e7\U0001f1e6",  # Bosnian / Bosnia & Herzegovina
+    "jp": "\U0001f1ef\U0001f1f5",  # Japanese
+    "ua": "\U0001f1fa\U0001f1e6",  # Ukrainian
+    "he": "\U0001f1ee\U0001f1f1",  # Hebrew
 }
 
 app = typer.Typer()
@@ -141,14 +141,14 @@ def filter_locales(traits_map: EngineTraitsMap) -> set[str]:
             _[reg] = _.get(reg, 0) + 1
 
     regions = set(k for k, v in _.items() if v >= min_eng_per_region)
-    lang_from_region = set(k.split('-')[0] for k in regions)
+    lang_from_region = set(k.split("-")[0] for k in regions)
 
     _ = {}
     for eng in traits_map.values():
         for lang in eng.languages.keys():
             # ignore script types like zh_Hant, zh_Hans or sr_Latin, pa_Arab (they
             # already counted by existence of 'zh' or 'sr', 'pa')
-            if '_' in lang:
+            if "_" in lang:
                 # print("ignore %s" % lang)
                 continue
             _[lang] = _.get(lang, 0) + 1
@@ -168,15 +168,15 @@ def write_sxng_locales_file(sxng_tag_list: set[str]):
     language_codes: list[tuple[str, str, str, str, str]] = []
 
     for sxng_tag in sorted(sxng_tag_list):
-        sxng_locale: babel.Locale = babel.Locale.parse(sxng_tag, sep='-')
+        sxng_locale: babel.Locale = babel.Locale.parse(sxng_tag, sep="-")
 
-        flag = get_unicode_flag(sxng_locale) or ''
+        flag = get_unicode_flag(sxng_locale) or ""
 
         item = (
             sxng_tag,
             sxng_locale.get_language_name().title(),  # pyright: ignore[reportOptionalMemberAccess]
-            sxng_locale.get_territory_name() or '',
-            sxng_locale.english_name.split(' (')[0] if sxng_locale.english_name else '',
+            sxng_locale.get_territory_name() or "",
+            sxng_locale.english_name.split(" (")[0] if sxng_locale.english_name else "",
             UnicodeEscape(flag),
         )
 
@@ -184,7 +184,7 @@ def write_sxng_locales_file(sxng_tag_list: set[str]):
 
     _codes = tuple(language_codes)
 
-    with sxng_locales_file.open('w', encoding='utf-8') as new_file:
+    with sxng_locales_file.open("w", encoding="utf-8") as new_file:
         file_content = "{header} {language_codes}{footer}".format(
             header=sxng_locales_file_header,
             language_codes=pformat(_codes, width=120, indent=4)[1:-1],
@@ -198,7 +198,7 @@ class UnicodeEscape(str):
     """Escape unicode string in :py:obj:`pprint.pformat`"""
 
     def __repr__(self):
-        return "'" + "".join([chr(c) for c in self.encode('unicode-escape')]) + "'"
+        return "'" + "".join([chr(c) for c in self.encode("unicode-escape")]) + "'"
 
 
 def get_unicode_flag(locale: babel.Locale):
@@ -209,15 +209,15 @@ def get_unicode_flag(locale: babel.Locale):
         return emoji
 
     if not locale.territory:
-        return '\U0001f310'
+        return "\U0001f310"
 
     emoji = lang2emoji.get(locale.territory.lower())
     if emoji:
         return emoji
 
     try:
-        c1 = lookup('REGIONAL INDICATOR SYMBOL LETTER ' + locale.territory[0])
-        c2 = lookup('REGIONAL INDICATOR SYMBOL LETTER ' + locale.territory[1])
+        c1 = lookup("REGIONAL INDICATOR SYMBOL LETTER " + locale.territory[0])
+        c2 = lookup("REGIONAL INDICATOR SYMBOL LETTER " + locale.territory[1])
         # print("OK   : %s --> %s%s" % (locale, c1, c2))
     except KeyError as exc:
         print("ERROR: %s --> %s" % (locale, exc))

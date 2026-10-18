@@ -30,11 +30,11 @@ from urllib.parse import urlencode
 from searx.utils import html_to_text
 
 about = {
-    'website': "https://www.moviepilot.de",
-    'official_api_documentation': None,
-    'use_official_api': False,
-    'require_api_key': False,
-    'results': 'JSON',
+    "website": "https://www.moviepilot.de",
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": "JSON",
 }
 language = "de"
 
@@ -44,7 +44,16 @@ categories = ["movies"]
 base_url = "https://www.moviepilot.de"
 image_url = "https://assets.cdn.moviepilot.de/files/{image_id}/fill/155/223/{filename}"
 
-filter_types = ["fsk", "genre", "jahr", "jahrzehnt", "land", "online", "stimmung", "person"]
+filter_types = [
+    "fsk",
+    "genre",
+    "jahr",
+    "jahrzehnt",
+    "land",
+    "online",
+    "stimmung",
+    "person",
+]
 
 
 def request(query, params):
@@ -62,21 +71,21 @@ def request(query, params):
         if filter_category in filter_types:
             discovery_filters.append(query_part)
 
-    params['discovery'] = len(discovery_filters) != 0
+    params["discovery"] = len(discovery_filters) != 0
 
-    if params['discovery']:
+    if params["discovery"]:
         args = {
-            'page': params['pageno'],
-            'order': 'beste',
+            "page": params["pageno"],
+            "order": "beste",
         }
         params["url"] = f"{base_url}/api/discovery?{urlencode(args)}"
         for discovery_filter in discovery_filters:
             params["url"] += f"&filters[]={discovery_filter}"
     else:
         args = {
-            'q': query,
-            'page': params['pageno'],
-            'type': 'suggest',
+            "q": query,
+            "page": params["pageno"],
+            "type": "suggest",
         }
         params["url"] = f"{base_url}/api/search?{urlencode(args)}"
 
@@ -90,26 +99,30 @@ def response(resp):
 
     json_results = []
 
-    if resp.search_params['discovery']:
-        json_results = json['results']
+    if resp.search_params["discovery"]:
+        json_results = json["results"]
     else:
         json_results = json
 
     for result in json_results:
-        item = {'title': result['title']}
+        item = {"title": result["title"]}
 
-        if resp.search_params['discovery']:
-            content_list = [result.get(x) for x in ['abstract', 'summary']]
-            item['url'] = base_url + result['path']
-            item['content'] = html_to_text(' | '.join([x for x in content_list if x]))
-            item['metadata'] = html_to_text(result.get('meta_short', ''))
+        if resp.search_params["discovery"]:
+            content_list = [result.get(x) for x in ["abstract", "summary"]]
+            item["url"] = base_url + result["path"]
+            item["content"] = html_to_text(" | ".join([x for x in content_list if x]))
+            item["metadata"] = html_to_text(result.get("meta_short", ""))
 
-            if result.get('image'):
-                item['thumbnail'] = image_url.format(image_id=result['image'], filename=result['image_filename'])
+            if result.get("image"):
+                item["thumbnail"] = image_url.format(
+                    image_id=result["image"], filename=result["image_filename"]
+                )
         else:
-            item['url'] = result['url']
-            item['content'] = ', '.join([result['class'], result['info'], result['more']])
-            item['thumbnail'] = result['image']
+            item["url"] = result["url"]
+            item["content"] = ", ".join(
+                [result["class"], result["info"], result["more"]]
+            )
+            item["thumbnail"] = result["image"]
 
         results.append(item)
 

@@ -8,16 +8,16 @@ from datetime import datetime
 from urllib.parse import urlencode
 
 about = {
-    'website': "https://www.bpb.de",
-    'official_api_documentation': None,
-    'use_official_api': False,
-    'require_api_key': False,
-    'results': 'JSON',
+    "website": "https://www.bpb.de",
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": "JSON",
 }
 language = "de"
 
 paging = True
-categories = ['general']
+categories = ["general"]
 
 
 base_url = "https://www.bpb.de"
@@ -25,12 +25,12 @@ base_url = "https://www.bpb.de"
 
 def request(query, params):
     args = {
-        'query[term]': query,
-        'page': params['pageno'] - 1,
-        'sort[direction]': 'descending',
-        'payload[nid]': 65350,
+        "query[term]": query,
+        "page": params["pageno"] - 1,
+        "sort[direction]": "descending",
+        "payload[nid]": 65350,
     }
-    params['url'] = f"{base_url}/bpbapi/filter/search?{urlencode(args)}"
+    params["url"] = f"{base_url}/bpbapi/filter/search?{urlencode(args)}"
     return params
 
 
@@ -39,28 +39,32 @@ def response(resp):
 
     json_resp = resp.json()
 
-    for result in json_resp['teaser']:
+    for result in json_resp["teaser"]:
         thumbnail = None
-        if result['teaser']['image']:
-            thumbnail = base_url + result['teaser']['image']['sources'][-1]['url']
+        if result["teaser"]["image"]:
+            thumbnail = base_url + result["teaser"]["image"]["sources"][-1]["url"]
 
-        metadata = result['extension']['overline']
-        authors = ', '.join(author['name'] for author in result['extension'].get('authors', []))
+        metadata = result["extension"]["overline"]
+        authors = ", ".join(
+            author["name"] for author in result["extension"].get("authors", [])
+        )
         if authors:
             metadata += f" | {authors}"
 
         publishedDate = None
-        if result['extension'].get('publishingDate'):
-            publishedDate = datetime.fromtimestamp(result['extension']['publishingDate'])
+        if result["extension"].get("publishingDate"):
+            publishedDate = datetime.fromtimestamp(
+                result["extension"]["publishingDate"]
+            )
 
         results.append(
             {
-                'url': base_url + result['teaser']['link']['url'],
-                'title': result['teaser']['title'],
-                'content': result['teaser']['text'],
-                'thumbnail': thumbnail,
-                'publishedDate': publishedDate,
-                'metadata': metadata,
+                "url": base_url + result["teaser"]["link"]["url"],
+                "title": result["teaser"]["title"],
+                "content": result["teaser"]["text"],
+                "thumbnail": thumbnail,
+                "publishedDate": publishedDate,
+                "metadata": metadata,
             }
         )
 

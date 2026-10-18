@@ -5,11 +5,11 @@ from datetime import datetime
 from urllib.parse import urlencode
 
 about = {
-    'website': "https://www.chefkoch.de",
-    'official_api_documentation': None,
-    'use_official_api': False,
-    'require_api_key': False,
-    'results': 'JSON',
+    "website": "https://www.chefkoch.de",
+    "official_api_documentation": None,
+    "use_official_api": False,
+    "require_api_key": False,
+    "results": "JSON",
 }
 language = "de"
 
@@ -25,8 +25,12 @@ thumbnail_format = "crop-240x300"
 
 
 def request(query, params):
-    args = {'query': query, 'limit': page_size, 'offset': (params['pageno'] - 1) * page_size}
-    params['url'] = f"{base_url}/v2/search-gateway/recipes?{urlencode(args)}"
+    args = {
+        "query": query,
+        "limit": page_size,
+        "offset": (params["pageno"] - 1) * page_size,
+    }
+    params["url"] = f"{base_url}/v2/search-gateway/recipes?{urlencode(args)}"
     return params
 
 
@@ -35,15 +39,17 @@ def response(resp):
 
     json = resp.json()
 
-    for result in json['results']:
-        recipe = result['recipe']
+    for result in json["results"]:
+        recipe = result["recipe"]
 
-        if skip_premium and (recipe['isPremium'] or recipe['isPlus']):
+        if skip_premium and (recipe["isPremium"] or recipe["isPlus"]):
             continue
 
         publishedDate = None
-        if recipe['submissionDate']:
-            publishedDate = datetime.fromisoformat(result['recipe']['submissionDate'][:19])
+        if recipe["submissionDate"]:
+            publishedDate = datetime.fromisoformat(
+                result["recipe"]["submissionDate"][:19]
+            )
 
         content = [
             f"Schwierigkeitsstufe (1-3): {recipe['difficulty']}",
@@ -51,16 +57,18 @@ def response(resp):
             f"Anzahl der Zutaten: {recipe['ingredientCount']}",
         ]
 
-        if recipe['subtitle']:
-            content.insert(0, recipe['subtitle'])
+        if recipe["subtitle"]:
+            content.insert(0, recipe["subtitle"])
 
         results.append(
             {
-                'url': recipe['siteUrl'],
-                'title': recipe['title'],
-                'content': " | ".join(content),
-                'thumbnail': recipe['previewImageUrlTemplate'].replace("<format>", thumbnail_format),
-                'publishedDate': publishedDate,
+                "url": recipe["siteUrl"],
+                "title": recipe["title"],
+                "content": " | ".join(content),
+                "thumbnail": recipe["previewImageUrlTemplate"].replace(
+                    "<format>", thumbnail_format
+                ),
+                "publishedDate": publishedDate,
             }
         )
 

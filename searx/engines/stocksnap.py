@@ -30,7 +30,9 @@ paging = True
 
 
 def request(query: str, params: "OnlineParams") -> None:
-    params["url"] = f"{base_url}/api/search-photos/{query}/relevance/desc/{params['pageno']}"
+    params["url"] = (
+        f"{base_url}/api/search-photos/{query}/relevance/desc/{params['pageno']}"
+    )
 
 
 def response(resp: "SXNG_Response"):
@@ -38,7 +40,7 @@ def response(resp: "SXNG_Response"):
 
     result: dict[str, str]  # TBH: dict[str, t.Any]
     for result in resp.json()["results"]:
-        slug = "-".join(result['keywords'][:1]) + "-" + result["img_id"]
+        slug = "-".join(result["keywords"][:1]) + "-" + result["img_id"]
         res.add(
             res.types.Image(
                 title=result["tags"],

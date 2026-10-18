@@ -135,7 +135,10 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     for record in json_data["records"]:
         published = datetime.fromisoformat(record["publicationDate"])
-        authors: list[str] = [" ".join(author["creator"].split(", ")[::-1]) for author in record["creators"]]
+        authors: list[str] = [
+            " ".join(author["creator"].split(", ")[::-1])
+            for author in record["creators"]
+        ]
 
         pdf_url = ""
         html_url = ""
@@ -164,7 +167,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
             publisher=field("publisher"),
             journal=field("publicationName"),
             volume=field("volume"),
-            pages="-".join([x for x in [field("startingPage"), field("endingPage")] if x]),
+            pages="-".join(
+                [x for x in [field("startingPage"), field("endingPage")] if x]
+            ),
             number=field("number"),
             doi=field("doi"),
             issn=[x for x in [field("issn")] if x],

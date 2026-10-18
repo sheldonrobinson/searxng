@@ -6,20 +6,20 @@ from urllib.parse import quote_plus
 from searx.utils import eval_xpath, eval_xpath_list, extract_text
 
 about = {
-    "website": 'https://uxwing.com',
+    "website": "https://uxwing.com",
     "wikidata_id": None,
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
-categories = ['images', 'icons']
+categories = ["images", "icons"]
 
 base_url = "https://uxwing.com"
 
 
 def request(query, params):
-    params['url'] = f"{base_url}/?s={quote_plus(query)}"
+    params["url"] = f"{base_url}/?s={quote_plus(query)}"
 
 
 def response(resp):
@@ -37,11 +37,11 @@ def response(resp):
 
         results.append(
             {
-                'template': 'images.html',
-                'url': extract_text(eval_xpath(result, "./a/@href")),
-                'img_src': extract_text(eval_xpath(result, ".//img/@src")),
-                'title': extract_text(eval_xpath(result, ".//img/@alt")),
-                'content': ', '.join(tags),
+                "template": "images.html",
+                "url": extract_text(eval_xpath(result, "./a/@href")),
+                "img_src": extract_text(eval_xpath(result, ".//img/@src")),
+                "title": extract_text(eval_xpath(result, ".//img/@alt")),
+                "content": ", ".join(tags),
             }
         )
 

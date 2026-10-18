@@ -13,19 +13,19 @@ from tests import SearxTestCase
 
 
 def random_string(length, choices=string.ascii_letters):
-    return ''.join(random.choices(choices, k=length))
+    return "".join(random.choices(choices, k=length))
 
 
 class TestUtils(SearxTestCase):
     def test_gen_useragent(self):
         self.assertIsInstance(utils.gen_useragent(), str)
         self.assertIsNotNone(utils.gen_useragent())
-        self.assertTrue(utils.gen_useragent().startswith('Mozilla'))
+        self.assertTrue(utils.gen_useragent().startswith("Mozilla"))
 
     def test_searxng_useragent(self):
         self.assertIsInstance(utils.searxng_useragent(), str)
         self.assertIsNotNone(utils.searxng_useragent())
-        self.assertTrue(utils.searxng_useragent().startswith('SearXNG'))
+        self.assertTrue(utils.searxng_useragent().startswith("SearXNG"))
 
     def test_extract_text(self):
         html_str = """
@@ -41,13 +41,13 @@ class TestUtils(SearxTestCase):
         </a>
         """
         dom = html.fromstring(html_str)
-        self.assertEqual(utils.extract_text(dom), 'Test text')
-        self.assertEqual(utils.extract_text(dom.xpath('//span')), 'Test text')
-        self.assertEqual(utils.extract_text(dom.xpath('//span/text()')), 'Test text')
-        self.assertEqual(utils.extract_text(dom.xpath('count(//span)')), '3.0')
-        self.assertEqual(utils.extract_text(dom.xpath('boolean(//span)')), 'True')
-        self.assertEqual(utils.extract_text(dom.xpath('//img/@src')), 'test.jpg')
-        self.assertEqual(utils.extract_text(dom.xpath('//unexistingtag')), '')
+        self.assertEqual(utils.extract_text(dom), "Test text")
+        self.assertEqual(utils.extract_text(dom.xpath("//span")), "Test text")
+        self.assertEqual(utils.extract_text(dom.xpath("//span/text()")), "Test text")
+        self.assertEqual(utils.extract_text(dom.xpath("count(//span)")), "3.0")
+        self.assertEqual(utils.extract_text(dom.xpath("boolean(//span)")), "True")
+        self.assertEqual(utils.extract_text(dom.xpath("//img/@src")), "test.jpg")
+        self.assertEqual(utils.extract_text(dom.xpath("//unexistingtag")), "")
 
     def test_extract_text_allow_none(self):
         self.assertEqual(utils.extract_text(None, allow_none=True), None)
@@ -64,28 +64,47 @@ class TestUtils(SearxTestCase):
         def f(html_str, search_url):
             return utils.extract_url(html.fromstring(html_str), search_url)
 
-        self.assertEqual(f('<span id="42">https://example.com</span>', 'http://example.com/'), 'https://example.com/')
-        self.assertEqual(f('https://example.com', 'http://example.com/'), 'https://example.com/')
-        self.assertEqual(f('//example.com', 'http://example.com/'), 'http://example.com/')
-        self.assertEqual(f('//example.com', 'https://example.com/'), 'https://example.com/')
-        self.assertEqual(f('/path?a=1', 'https://example.com'), 'https://example.com/path?a=1')
+        self.assertEqual(
+            f('<span id="42">https://example.com</span>', "http://example.com/"),
+            "https://example.com/",
+        )
+        self.assertEqual(
+            f("https://example.com", "http://example.com/"), "https://example.com/"
+        )
+        self.assertEqual(
+            f("//example.com", "http://example.com/"), "http://example.com/"
+        )
+        self.assertEqual(
+            f("//example.com", "https://example.com/"), "https://example.com/"
+        )
+        self.assertEqual(
+            f("/path?a=1", "https://example.com"), "https://example.com/path?a=1"
+        )
         with self.assertRaises(lxml.etree.ParserError):
-            f('', 'https://example.com')
+            f("", "https://example.com")
         with self.assertRaises(Exception):
-            utils.extract_url([], 'https://example.com')
+            utils.extract_url([], "https://example.com")
 
     def test_ecma_unscape(self):
-        self.assertEqual(utils.ecma_unescape('text%20with%20space'), 'text with space')
-        self.assertEqual(utils.ecma_unescape('text using %xx: %F3'), 'text using %xx: ó')
-        self.assertEqual(utils.ecma_unescape('text using %u: %u5409, %u4E16%u754c'), 'text using %u: 吉, 世界')
+        self.assertEqual(utils.ecma_unescape("text%20with%20space"), "text with space")
+        self.assertEqual(
+            utils.ecma_unescape("text using %xx: %F3"), "text using %xx: ó"
+        )
+        self.assertEqual(
+            utils.ecma_unescape("text using %u: %u5409, %u4E16%u754c"),
+            "text using %u: 吉, 世界",
+        )
 
     @parameterized.expand(
         [
-            ('Example <span id="42">#2</span>', 'Example #2'),
-            ('<style>.span { color: red; }</style><span>Example</span>', 'Example'),
-            (r'regexp: (?&lt;![a-zA-Z]', r'regexp: (?<![a-zA-Z]'),
-            (r'<p><b>Lorem ipsum </i>dolor sit amet</p>', 'Lorem ipsum </i>dolor sit amet</p>'),
-            (r'&#x3e &#x3c &#97', '> < a'),
+            ('Example <span id="42">#2</span>', "Example #2"),
+            ("<style>.span { color: red; }</style><span>Example</span>", "Example"),
+            (r"regexp: (?&lt;![a-zA-Z]", r"regexp: (?<![a-zA-Z]"),
+            (
+                r"<p><b>Lorem ipsum </i>dolor sit amet</p>",
+                "Lorem ipsum </i>dolor sit amet</p>",
+            ),
+            (r"&#x3e &#x3c &#97", "> < a"),
         ]
     )
     def test_html_to_text(self, html_str: str, text_str: str):
@@ -121,77 +140,80 @@ class TestXPathUtils(SearxTestCase):  # pylint: disable=missing-class-docstring
         </ul>"""
 
     def test_get_xpath_cache(self):
-        xp1 = utils.get_xpath('//a')
-        xp2 = utils.get_xpath('//div')
-        xp3 = utils.get_xpath('//a')
+        xp1 = utils.get_xpath("//a")
+        xp2 = utils.get_xpath("//div")
+        xp3 = utils.get_xpath("//a")
 
         self.assertEqual(id(xp1), id(xp3))
         self.assertNotEqual(id(xp1), id(xp2))
 
     def test_get_xpath_type(self):
-        utils.get_xpath(lxml.etree.XPath('//a'))
+        utils.get_xpath(lxml.etree.XPath("//a"))
 
         with self.assertRaises(TypeError):
             utils.get_xpath([])
 
     def test_get_xpath_invalid(self):
-        invalid_xpath = '//a[0].text'
+        invalid_xpath = "//a[0].text"
         with self.assertRaises(SearxXPathSyntaxException) as context:
             utils.get_xpath(invalid_xpath)
 
-        self.assertEqual(context.exception.message, 'Invalid expression')
+        self.assertEqual(context.exception.message, "Invalid expression")
         self.assertEqual(context.exception.xpath_str, invalid_xpath)
 
     def test_eval_xpath_unregistered_function(self):
         doc = html.fromstring(TestXPathUtils.TEST_DOC)
 
-        invalid_function_xpath = 'int(//a)'
+        invalid_function_xpath = "int(//a)"
         with self.assertRaises(SearxEngineXPathException) as context:
             utils.eval_xpath(doc, invalid_function_xpath)
 
-        self.assertEqual(context.exception.message, 'Unregistered function')
+        self.assertEqual(context.exception.message, "Unregistered function")
         self.assertEqual(context.exception.xpath_str, invalid_function_xpath)
 
     def test_eval_xpath(self):
         doc = html.fromstring(TestXPathUtils.TEST_DOC)
 
-        self.assertEqual(utils.eval_xpath(doc, '//p'), [])
-        self.assertEqual(utils.eval_xpath(doc, '//i/text()'), ['italic'])
-        self.assertEqual(utils.eval_xpath(doc, 'count(//i)'), 1.0)
+        self.assertEqual(utils.eval_xpath(doc, "//p"), [])
+        self.assertEqual(utils.eval_xpath(doc, "//i/text()"), ["italic"])
+        self.assertEqual(utils.eval_xpath(doc, "count(//i)"), 1.0)
 
     def test_eval_xpath_list(self):
         doc = html.fromstring(TestXPathUtils.TEST_DOC)
 
         # check a not empty list
-        self.assertEqual(utils.eval_xpath_list(doc, '//i/text()'), ['italic'])
+        self.assertEqual(utils.eval_xpath_list(doc, "//i/text()"), ["italic"])
 
         # check min_len parameter
         with self.assertRaises(SearxEngineXPathException) as context:
-            utils.eval_xpath_list(doc, '//p', min_len=1)
-        self.assertEqual(context.exception.message, 'len(xpath_str) < 1')
-        self.assertEqual(context.exception.xpath_str, '//p')
+            utils.eval_xpath_list(doc, "//p", min_len=1)
+        self.assertEqual(context.exception.message, "len(xpath_str) < 1")
+        self.assertEqual(context.exception.xpath_str, "//p")
 
     def test_eval_xpath_getindex(self):
         doc = html.fromstring(TestXPathUtils.TEST_DOC)
 
         # check index 0
-        self.assertEqual(utils.eval_xpath_getindex(doc, '//i/text()', 0), 'italic')
+        self.assertEqual(utils.eval_xpath_getindex(doc, "//i/text()", 0), "italic")
 
         # default is 'something'
-        self.assertEqual(utils.eval_xpath_getindex(doc, '//i/text()', 1, default='something'), 'something')
+        self.assertEqual(
+            utils.eval_xpath_getindex(doc, "//i/text()", 1, default="something"),
+            "something",
+        )
 
         # default is None
-        self.assertIsNone(utils.eval_xpath_getindex(doc, '//i/text()', 1, default=None))
+        self.assertIsNone(utils.eval_xpath_getindex(doc, "//i/text()", 1, default=None))
 
         # index not found
         with self.assertRaises(SearxEngineXPathException) as context:
-            utils.eval_xpath_getindex(doc, '//i/text()', 1)
-        self.assertEqual(context.exception.message, 'index 1 not found')
+            utils.eval_xpath_getindex(doc, "//i/text()", 1)
+        self.assertEqual(context.exception.message, "index 1 not found")
 
         # not a list
         with self.assertRaises(SearxEngineXPathException) as context:
-            utils.eval_xpath_getindex(doc, 'count(//i)', 1)
-        self.assertEqual(context.exception.message, 'the result is not a list')
+            utils.eval_xpath_getindex(doc, "count(//i)", 1)
+        self.assertEqual(context.exception.message, "the result is not a list")
 
     def test_altcha_solver(self):
         # copied from a real Mojeek challenge
@@ -208,9 +230,13 @@ class TestXPathUtils(SearxTestCase):  # pylint: disable=missing-class-docstring
             },
             "signature": "aecf8725f019643766920b67c7e21bc383d8ff166a8e1137c6b5f4d6d19d00c1",
         }
-        solution = utils.solve_altcha(challenge["parameters"])  # pyright: ignore[reportArgumentType]
+        solution = utils.solve_altcha(
+            challenge["parameters"]
+        )  # pyright: ignore[reportArgumentType]
         self.assertIsNotNone(solution)
 
         key, counter = solution  # pyright: ignore[reportGeneralTypeIssues]
-        self.assertEqual(key, "71087e0b10d819181fc5463588a230b5744e6b9f19b86667c71ff73a9c7567aa")
+        self.assertEqual(
+            key, "71087e0b10d819181fc5463588a230b5744e6b9f19b86667c71ff73a9c7567aa"
+        )
         self.assertEqual(counter, 260)

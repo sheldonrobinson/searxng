@@ -20,26 +20,26 @@ from urllib.parse import urlencode
 from searx.utils import eval_xpath, eval_xpath_list, extract_text
 
 about = {
-    'website': 'https://geizhals.de',
-    'wikidata_id': 'Q15977657',
-    'use_official_api': False,
-    'official_api_documentation': None,
-    'require_api_key': False,
-    'results': 'HTML',
+    "website": "https://geizhals.de",
+    "wikidata_id": "Q15977657",
+    "use_official_api": False,
+    "official_api_documentation": None,
+    "require_api_key": False,
+    "results": "HTML",
 }
 language = "de"
 paging = True
-categories = ['shopping']
+categories = ["shopping"]
 
 base_url = "https://geizhals.de"
-sort_order = 'relevance'
+sort_order = "relevance"
 
 SORT_RE = re.compile(r"sort:(\w+)")
 sort_order_map = {
-    'relevance': None,
-    'price': 'p',
-    'asc': 'p',
-    'desc': '-p',
+    "relevance": None,
+    "price": "p",
+    "asc": "p",
+    "desc": "-p",
 }
 
 
@@ -53,12 +53,12 @@ def request(query, params):
         logger.debug(query)
 
     args = {
-        'fs': query,
-        'pg': params['pageno'],
-        'toggle_all': 1,  # load item specs
-        'sort': sort,
+        "fs": query,
+        "pg": params["pageno"],
+        "toggle_all": 1,  # load item specs
+        "sort": sort,
     }
-    params['url'] = f"{base_url}/?{urlencode(args)}"
+    params["url"] = f"{base_url}/?{urlencode(args)}"
 
     return params
 
@@ -69,26 +69,46 @@ def response(resp):
     dom = resp.html()
     for result in eval_xpath_list(dom, "//article[contains(@class, 'listview__item')]"):
         content = []
-        for spec in eval_xpath_list(result, ".//div[contains(@class, 'specs-grid__item')]"):
-            content.append(f"{extract_text(eval_xpath(spec, './dt'))}: {extract_text(eval_xpath(spec, './dd'))}")
+        for spec in eval_xpath_list(
+            result, ".//div[contains(@class, 'specs-grid__item')]"
+        ):
+            content.append(
+                f"{extract_text(eval_xpath(spec, './dt'))}: {extract_text(eval_xpath(spec, './dd'))}"
+            )
 
         metadata = [
-            extract_text(eval_xpath(result, ".//div[contains(@class, 'stars-rating-label')]")),
-            extract_text(eval_xpath(result, ".//div[contains(@class, 'listview__offercount')]")),
+            extract_text(
+                eval_xpath(result, ".//div[contains(@class, 'stars-rating-label')]")
+            ),
+            extract_text(
+                eval_xpath(result, ".//div[contains(@class, 'listview__offercount')]")
+            ),
         ]
 
         item = {
-            'template': 'products.html',
-            'url': (
-                base_url + "/" + extract_text(eval_xpath(result, ".//a[contains(@class, 'listview__name-link')]/@href"))
+            "template": "products.html",
+            "url": (
+                base_url
+                + "/"
+                + extract_text(
+                    eval_xpath(
+                        result, ".//a[contains(@class, 'listview__name-link')]/@href"
+                    )
+                )
             ),
-            'title': extract_text(eval_xpath(result, ".//h3[contains(@class, 'listview__name')]")),
-            'content': ' | '.join(content),
-            'thumbnail': extract_text(eval_xpath(result, ".//img[contains(@class, 'listview__image')]/@src")),
-            'metadata': ', '.join(item for item in metadata if item),
+            "title": extract_text(
+                eval_xpath(result, ".//h3[contains(@class, 'listview__name')]")
+            ),
+            "content": " | ".join(content),
+            "thumbnail": extract_text(
+                eval_xpath(result, ".//img[contains(@class, 'listview__image')]/@src")
+            ),
+            "metadata": ", ".join(item for item in metadata if item),
         }
 
-        best_price = extract_text(eval_xpath(result, ".//a[contains(@class, 'listview__price-link')]")).split(" ")
+        best_price = extract_text(
+            eval_xpath(result, ".//a[contains(@class, 'listview__price-link')]")
+        ).split(" ")
         if len(best_price) > 1:
             item["price"] = f"Bestes Angebot: {best_price[1]}€"
         results.append(item)

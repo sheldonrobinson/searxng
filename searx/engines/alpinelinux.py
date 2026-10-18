@@ -17,18 +17,18 @@ from dateutil import parser
 from searx.utils import eval_xpath, eval_xpath_list, extract_text
 
 about = {
-    'website': 'https://www.alpinelinux.org',
-    'wikidata_id': 'Q4033826',
-    'use_official_api': False,
-    'official_api_documentation': None,
-    'require_api_key': False,
-    'results': 'HTML',
+    "website": "https://www.alpinelinux.org",
+    "wikidata_id": "Q4033826",
+    "use_official_api": False,
+    "official_api_documentation": None,
+    "require_api_key": False,
+    "results": "HTML",
 }
 paging = True
-categories = ['packages', 'it']
+categories = ["packages", "it"]
 
 base_url = "https://pkgs.alpinelinux.org"
-alpine_arch = 'x86_64'
+alpine_arch = "x86_64"
 """Kernel architecture: ``x86_64``, ``x86``, ``aarch64``, ``armhf``,
 ``ppc64le``, ``s390x``, ``armv7`` or ``riscv64``"""
 
@@ -40,16 +40,16 @@ def request(query, params):
     query_arch = ARCH_RE.search(query)
     if query_arch:
         query_arch = query_arch.group(0)
-        query = query.replace(query_arch, '').strip()
+        query = query.replace(query_arch, "").strip()
 
     args = {
         # use wildcards to match more than just packages with the exact same
         # name as the query
-        'name': f"*{query}*",
-        'page': params['pageno'],
-        'arch': query_arch or alpine_arch,
+        "name": f"*{query}*",
+        "page": params["pageno"],
+        "arch": query_arch or alpine_arch,
     }
-    params['url'] = f"{base_url}/packages?{urlencode(args)}"
+    params["url"] = f"{base_url}/packages?{urlencode(args)}"
     return params
 
 
@@ -66,16 +66,35 @@ def response(resp):
 
         results.append(
             {
-                'template': 'packages.html',
-                'url': base_url + extract_text(eval_xpath(result, './td[contains(@class, "package")]/a/@href')),
-                'title': extract_text(eval_xpath(result, './td[contains(@class, "package")]')),
-                'package_name': extract_text(eval_xpath(result, './td[contains(@class, "package")]')),
-                'publishedDate': parser.parse(extract_text(eval_xpath(result, './td[contains(@class, "bdate")]'))),
-                'version': extract_text(eval_xpath(result, './td[contains(@class, "version")]')),
-                'homepage': extract_text(eval_xpath(result, './td[contains(@class, "url")]/a/@href')),
-                'maintainer': extract_text(eval_xpath(result, './td[contains(@class, "maintainer")]')),
-                'license_name': extract_text(eval_xpath(result, './td[contains(@class, "license")]')),
-                'tags': [extract_text(eval_xpath(result, './td[contains(@class, "repo")]'))],
+                "template": "packages.html",
+                "url": base_url
+                + extract_text(
+                    eval_xpath(result, './td[contains(@class, "package")]/a/@href')
+                ),
+                "title": extract_text(
+                    eval_xpath(result, './td[contains(@class, "package")]')
+                ),
+                "package_name": extract_text(
+                    eval_xpath(result, './td[contains(@class, "package")]')
+                ),
+                "publishedDate": parser.parse(
+                    extract_text(eval_xpath(result, './td[contains(@class, "bdate")]'))
+                ),
+                "version": extract_text(
+                    eval_xpath(result, './td[contains(@class, "version")]')
+                ),
+                "homepage": extract_text(
+                    eval_xpath(result, './td[contains(@class, "url")]/a/@href')
+                ),
+                "maintainer": extract_text(
+                    eval_xpath(result, './td[contains(@class, "maintainer")]')
+                ),
+                "license_name": extract_text(
+                    eval_xpath(result, './td[contains(@class, "license")]')
+                ),
+                "tags": [
+                    extract_text(eval_xpath(result, './td[contains(@class, "repo")]'))
+                ],
             }
         )
 

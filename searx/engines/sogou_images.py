@@ -33,7 +33,7 @@ def request(query, params):
 
 def response(resp):
     results = []
-    match = re.search(r'window\.__INITIAL_STATE__\s*=\s*({.*?});', resp.text, re.S)
+    match = re.search(r"window\.__INITIAL_STATE__\s*=\s*({.*?});", resp.text, re.S)
     if not match:
         return results
 

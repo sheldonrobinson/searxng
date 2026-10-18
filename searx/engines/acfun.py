@@ -36,7 +36,9 @@ def request(query, params):
 def response(resp):
     results = []
 
-    matches = re.findall(r'bigPipe\.onPageletArrive\((\{.*?\})\);', resp.text, re.DOTALL)
+    matches = re.findall(
+        r"bigPipe\.onPageletArrive\((\{.*?\})\);", resp.text, re.DOTALL
+    )
     if not matches:
         return results
 
@@ -66,7 +68,7 @@ def response(resp):
 
 def extract_video_data(video_block):
     try:
-        data_exposure_log = video_block.get('data-exposure-log')
+        data_exposure_log = video_block.get("data-exposure-log")
         video_data = json.loads(data_exposure_log)
 
         content_id = video_data.get("content_id", "")
@@ -75,10 +77,18 @@ def extract_video_data(video_block):
         url = f"{base_url}/v/ac{content_id}"
         iframe_src = f"{base_url}/player/ac{content_id}"
 
-        create_time = extract_text(video_block.xpath('.//span[contains(@class, "info__create-time")]'))
-        video_cover = extract_text(video_block.xpath('.//div[contains(@class, "video__cover")]/a/img/@src')[0])
-        video_duration = extract_text(video_block.xpath('.//span[contains(@class, "video__duration")]'))
-        video_intro = extract_text(video_block.xpath('.//div[contains(@class, "video__main__intro")]'))
+        create_time = extract_text(
+            video_block.xpath('.//span[contains(@class, "info__create-time")]')
+        )
+        video_cover = extract_text(
+            video_block.xpath('.//div[contains(@class, "video__cover")]/a/img/@src')[0]
+        )
+        video_duration = extract_text(
+            video_block.xpath('.//span[contains(@class, "video__duration")]')
+        )
+        video_intro = extract_text(
+            video_block.xpath('.//div[contains(@class, "video__main__intro")]')
+        )
 
         published_date = None
         if create_time:

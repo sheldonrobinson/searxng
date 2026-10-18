@@ -7,20 +7,22 @@ import urllib.parse
 
 from searx.utils import eval_xpath, extract_text
 from searx.result_types import EngineResults
-from searx.network import get as http_get  # https://github.com/searxng/searxng/issues/762
+from searx.network import (
+    get as http_get,
+)  # https://github.com/searxng/searxng/issues/762
 
 # about
 about = {
-    "website": 'https://dictzone.com/',
+    "website": "https://dictzone.com/",
     "wikidata_id": None,
     "official_api_documentation": None,
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": "HTML",
 }
 
-engine_type = 'online_dictionary'
-categories = ['general', 'translate']
+engine_type = "online_dictionary"
+categories = ["general", "translate"]
 base_url = "https://dictzone.com"
 weight = 100
 
@@ -31,7 +33,9 @@ def request(query, params):  # pylint: disable=unused-argument
     to_lang = params["to_lang"][2]  # "german"
     query = params["query"]
 
-    params["url"] = f"{base_url}/{from_lang}-{to_lang}-dictionary/{urllib.parse.quote_plus(query)}"
+    params["url"] = (
+        f"{base_url}/{from_lang}-{to_lang}-dictionary/{urllib.parse.quote_plus(query)}"
+    )
     return params
 
 
@@ -94,10 +98,16 @@ def response(resp) -> EngineResults:
     query = resp.search_params["query"]
 
     # works only sometimes?
-    autotranslate = http_get(f"{base_url}/trans/{query}/{from_lang}_{to_lang}", timeout=1.0)
+    autotranslate = http_get(
+        f"{base_url}/trans/{query}/{from_lang}_{to_lang}", timeout=1.0
+    )
     if autotranslate.ok and autotranslate.text:
         item_list.insert(0, results.types.Translations.Item(text=autotranslate.text))
 
     if item_list:
-        results.add(results.types.Translations(translations=item_list, url=resp.search_params["url"]))
+        results.add(
+            results.types.Translations(
+                translations=item_list, url=resp.search_params["url"]
+            )
+        )
     return results

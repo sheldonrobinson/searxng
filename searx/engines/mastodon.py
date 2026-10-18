@@ -20,14 +20,14 @@ from urllib.parse import urlencode
 from datetime import datetime
 
 about = {
-    "website": 'https://joinmastodon.org/',
-    "wikidata_id": 'Q27986619',
-    "official_api_documentation": 'https://docs.joinmastodon.org/api/',
+    "website": "https://joinmastodon.org/",
+    "wikidata_id": "Q27986619",
+    "official_api_documentation": "https://docs.joinmastodon.org/api/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
-categories = ['social media']
+categories = ["social media"]
 
 base_url = "https://mastodon.social"
 mastodon_type = "accounts"
@@ -38,12 +38,12 @@ page_size = 40
 
 def request(query, params):
     args = {
-        'q': query,
-        'resolve': 'false',
-        'type': mastodon_type,
-        'limit': page_size,
+        "q": query,
+        "resolve": "false",
+        "type": mastodon_type,
+        "limit": page_size,
     }
-    params['url'] = f"{base_url}/api/v2/search?{urlencode(args)}"
+    params["url"] = f"{base_url}/api/v2/search?{urlencode(args)}"
     return params
 
 
@@ -56,21 +56,22 @@ def response(resp):
         if mastodon_type == "accounts":
             results.append(
                 {
-                    'url': result['uri'],
-                    'title': result['username'] + f" ({result['followers_count']} followers)",
-                    'content': result['note'],
-                    'thumbnail': result.get('avatar'),
-                    'publishedDate': datetime.fromisoformat(result['created_at'][:10]),
+                    "url": result["uri"],
+                    "title": result["username"]
+                    + f" ({result['followers_count']} followers)",
+                    "content": result["note"],
+                    "thumbnail": result.get("avatar"),
+                    "publishedDate": datetime.fromisoformat(result["created_at"][:10]),
                 }
             )
         elif mastodon_type == "hashtags":
-            uses_count = sum(int(entry['uses']) for entry in result['history'])
-            user_count = sum(int(entry['accounts']) for entry in result['history'])
+            uses_count = sum(int(entry["uses"]) for entry in result["history"])
+            user_count = sum(int(entry["accounts"]) for entry in result["history"])
             results.append(
                 {
-                    'url': result['url'],
-                    'title': result['name'],
-                    'content': f"Hashtag has been used {uses_count} times by {user_count} different users",
+                    "url": result["url"],
+                    "title": result["name"],
+                    "content": f"Hashtag has been used {uses_count} times by {user_count} different users",
                 }
             )
         else:

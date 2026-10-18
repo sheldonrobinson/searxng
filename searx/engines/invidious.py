@@ -18,12 +18,12 @@ from searx.utils import humanize_number
 
 # about
 about = {
-    "website": 'https://api.invidious.io/',
-    "wikidata_id": 'Q79343316',
-    "official_api_documentation": 'https://docs.invidious.io/api/',
+    "website": "https://api.invidious.io/",
+    "wikidata_id": "Q79343316",
+    "official_api_documentation": "https://docs.invidious.io/api/",
     "use_official_api": True,
     "require_api_key": False,
-    "results": 'JSON',
+    "results": "JSON",
 }
 
 # engine dependent config
@@ -54,10 +54,14 @@ def request(query, params):
         params["base_url"] = base_url
 
     search_url = params["base_url"] + "/api/v1/search?q={query}"
-    params["url"] = search_url.format(query=quote_plus(query)) + "&page={pageno}".format(pageno=params["pageno"])
+    params["url"] = search_url.format(
+        query=quote_plus(query)
+    ) + "&page={pageno}".format(pageno=params["pageno"])
 
     if params["time_range"] in time_range_dict:
-        params["url"] += "&date={timerange}".format(timerange=time_range_dict[params["time_range"]])
+        params["url"] += "&date={timerange}".format(
+            timerange=time_range_dict[params["time_range"]]
+        )
 
     if params["language"] != "all":
         lang = params["language"].split("-")
@@ -71,7 +75,7 @@ def response(resp):
     results = []
 
     search_results = resp.json()
-    base_invidious_url = resp.search_params['base_url'] + "/watch?v="
+    base_invidious_url = resp.search_params["base_url"] + "/watch?v="
 
     for result in search_results:
         rtype = result.get("type", None)
@@ -91,7 +95,7 @@ def response(resp):
             # some instances return a partial thumbnail url
             # we check if the url is partial, and prepend the base_url if it is
             if thumbnail and not urlparse(thumbnail).netloc:
-                thumbnail = resp.search_params['base_url'] + thumbnail
+                thumbnail = resp.search_params["base_url"] + thumbnail
 
             publishedDate = parser.parse(time.ctime(result.get("published", 0)))
             length = time.gmtime(result.get("lengthSeconds"))
@@ -106,11 +110,11 @@ def response(resp):
                     "title": result.get("title", ""),
                     "content": result.get("description", ""),
                     "length": length,
-                    "views": humanize_number(result['viewCount']),
+                    "views": humanize_number(result["viewCount"]),
                     "template": "videos.html",
                     "author": result.get("author"),
                     "publishedDate": publishedDate,
-                    "iframe_src": resp.search_params['base_url'] + '/embed/' + videoid,
+                    "iframe_src": resp.search_params["base_url"] + "/embed/" + videoid,
                     "thumbnail": thumbnail,
                 }
             )

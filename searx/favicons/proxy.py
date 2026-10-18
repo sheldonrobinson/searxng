@@ -72,7 +72,7 @@ class FaviconProxyConfig(msgspec.Struct):
         fqn = self.resolver_map.get(name)
         if fqn is None:
             return None
-        mod_name, _, func_name = fqn.rpartition('.')
+        mod_name, _, func_name = fqn.rpartition(".")
         mod = importlib.import_module(mod_name)
         func = getattr(mod, func_name)
         if func is None:
@@ -92,7 +92,9 @@ class FaviconProxyConfig(msgspec.Struct):
     def favicon_data_url(self, **replacements):
         """Returns data image URL of the default favicon."""
 
-        cache_key = ", ".join(f"{x}:{replacements[x]}" for x in sorted(list(replacements.keys()), key=str))
+        cache_key = ", ".join(
+            f"{x}:{replacements[x]}" for x in sorted(list(replacements.keys()), key=str)
+        )
         data_url = DEFAULT_FAVICON_URL.get(cache_key)
         if data_url is not None:
             return data_url
@@ -123,21 +125,21 @@ def favicon_proxy():
       server>` setting.
 
     """
-    authority = sxng_request.args.get('authority')
+    authority = sxng_request.args.get("authority")
 
     # malformed request or RFC 3986 authority
     if not authority or "/" in authority:
-        return '', 400
+        return "", 400
 
     # malformed request / does not have authorisation
     if not is_hmac_of(
         CFG.secret_key,
         authority.encode(),
-        sxng_request.args.get('h', ''),
+        sxng_request.args.get("h", ""),
     ):
-        return '', 400
+        return "", 400
 
-    resolver = sxng_request.preferences.get_value('favicon_resolver')  # type: ignore
+    resolver = sxng_request.preferences.get_value("favicon_resolver")  # type: ignore
     # if resolver is empty or not valid, just return HTTP 400.
     if not resolver or resolver not in CFG.resolver_map.keys():
         return "", 400
@@ -146,7 +148,7 @@ def favicon_proxy():
 
     if data is not None and mime is not None:
         resp = flask.Response(data, mimetype=mime)  # type: ignore
-        resp.headers['Cache-Control'] = f"max-age={CFG.max_age}"
+        resp.headers["Cache-Control"] = f"max-age={CFG.max_age}"
         return resp
 
     # return default favicon from static path
@@ -214,7 +216,7 @@ def favicon_url(authority: str) -> str:
 
     """
 
-    resolver = sxng_request.preferences.get_value('favicon_resolver')  # type: ignore
+    resolver = sxng_request.preferences.get_value("favicon_resolver")  # type: ignore
     # if resolver is empty or not valid, just return nothing.
     if not resolver or resolver not in CFG.resolver_map.keys():
         return ""
@@ -231,6 +233,6 @@ def favicon_url(authority: str) -> str:
         return f"data:{mime};base64,{str(base64.b64encode(data), 'utf-8')}"  # type: ignore
 
     h = new_hmac(CFG.secret_key, authority.encode())
-    proxy_url = flask.url_for('favicon_proxy')
+    proxy_url = flask.url_for("favicon_proxy")
     query = urllib.parse.urlencode({"authority": authority, "h": h})
     return f"{proxy_url}?{query}"
