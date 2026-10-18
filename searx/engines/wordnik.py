@@ -43,10 +43,6 @@ def response(resp):
                 item.text = def_text
             item.definitions.append(def_text)
 
-        results.add(
-            results.types.Translations(
-                translations=[item], url=resp.search_params["url"]
-            )
-        )
+        results.add(results.types.Translations(translations=[item], url=resp.search_params["url"]))
 
     return results

@@ -167,9 +167,7 @@ def response(resp: SXNG_Response):
 def setup(_: dict[str, t.Any]) -> bool:
 
     if not api_key:
-        logger.error(
-            "missing api_key: see https://about.marginalia-search.com/article/api"
-        )
+        logger.error("missing api_key: see https://about.marginalia-search.com/article/api")
         return False
 
     if api_key == "public":

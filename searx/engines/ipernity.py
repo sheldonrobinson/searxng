@@ -25,9 +25,7 @@ page_size = 10
 
 
 def request(query, params):
-    params["url"] = (
-        f"{base_url}/search/photo/@/page:{params['pageno']}:{page_size}?q={quote_plus(query)}"
-    )
+    params["url"] = f"{base_url}/search/photo/@/page:{params['pageno']}:{page_size}?q={quote_plus(query)}"
     return params
 
 

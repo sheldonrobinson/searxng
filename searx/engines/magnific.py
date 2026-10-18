@@ -81,9 +81,7 @@ def _solve_captcha(original_resp: "SXNG_Response") -> "SXNG_Response":
         cookies=challenge_resp.cookies,
     )
     # cookie is valid for 2 hours
-    CACHE.set(
-        _CAPTCHA_COOKIE_NAME, challenge_resp.cookies[_CAPTCHA_COOKIE_NAME], expire=7200
-    )
+    CACHE.set(_CAPTCHA_COOKIE_NAME, challenge_resp.cookies[_CAPTCHA_COOKIE_NAME], expire=7200)
     return resp
 
 

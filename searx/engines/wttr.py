@@ -119,9 +119,7 @@ def response(resp):
         time_slot_len = 24 // len(day["hourly"])
         for index, forecast in enumerate(day["hourly"]):
             forecast_data = _weather_data(geoloc, forecast)
-            forecast_data.datetime = weather.DateTime(
-                date.replace(hour=index * time_slot_len + 1)
-            )
+            forecast_data.datetime = weather.DateTime(date.replace(hour=index * time_slot_len + 1))
             weather_answer.forecasts.append(forecast_data)
 
     res.add(weather_answer)

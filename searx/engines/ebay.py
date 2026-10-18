@@ -29,18 +29,14 @@ results_xpath = '//li[contains(@class, "s-item")]'
 url_xpath = './/a[@class="s-item__link"]/@href'
 title_xpath = './/h3[@class="s-item__title"]'
 content_xpath = './/div[@span="SECONDARY_INFO"]'
-price_xpath = (
-    './/div[contains(@class, "s-item__detail")]/span[@class="s-item__price"][1]/text()'
-)
+price_xpath = './/div[contains(@class, "s-item__detail")]/span[@class="s-item__price"][1]/text()'
 shipping_xpath = './/span[contains(@class, "s-item__shipping")]/text()'
 source_country_xpath = './/span[contains(@class, "s-item__location")]/text()'
 thumbnail_xpath = './/img[@class="s-item__image-img"]/@src'
 
 
 def request(query, params):
-    params["url"] = f"{base_url}" + search_url.format(
-        query=quote(query), pageno=params["pageno"]
-    )
+    params["url"] = f"{base_url}" + search_url.format(query=quote(query), pageno=params["pageno"])
     return params
 
 

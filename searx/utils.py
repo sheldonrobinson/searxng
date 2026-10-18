@@ -197,9 +197,7 @@ def markdown_to_text(markdown_str: str) -> str:
     """
 
     html_str: str = (
-        MarkdownIt("commonmark", {"typographer": True})
-        .enable(["replacements", "smartquotes"])
-        .render(markdown_str)
+        MarkdownIt("commonmark", {"typographer": True}).enable(["replacements", "smartquotes"]).render(markdown_str)
     )
     return html_to_text(html_str)
 
@@ -338,9 +336,7 @@ def extract_url(
     raise ValueError("URL not found")
 
 
-def dict_subset(
-    dictionary: MutableMapping[t.Any, t.Any], properties: set[str]
-) -> MutableMapping[str, t.Any]:
+def dict_subset(dictionary: MutableMapping[t.Any, t.Any], properties: set[str]) -> MutableMapping[str, t.Any]:
     """Extract a subset of a dict
 
     Examples:
@@ -532,9 +528,7 @@ def get_xpath(xpath_spec: XPathSpecType) -> XPath:
     if isinstance(xpath_spec, XPath):
         return xpath_spec
 
-    raise TypeError(
-        "xpath_spec must be either a str or a lxml.etree.XPath"
-    )  # pyright: ignore[reportUnreachable]
+    raise TypeError("xpath_spec must be either a str or a lxml.etree.XPath")  # pyright: ignore[reportUnreachable]
 
 
 def eval_xpath(element: ElementType, xpath_spec: XPathSpecType) -> t.Any:
@@ -565,9 +559,7 @@ def eval_xpath(element: ElementType, xpath_spec: XPathSpecType) -> t.Any:
         raise SearxEngineXPathException(xpath_spec, arg) from e
 
 
-def eval_xpath_list(
-    element: ElementType, xpath_spec: XPathSpecType, min_len: int | None = None
-) -> list[t.Any]:
+def eval_xpath_list(element: ElementType, xpath_spec: XPathSpecType, min_len: int | None = None) -> list[t.Any]:
     """Same as :py:obj:`searx.utils.eval_xpath`, but additionally ensures the
     return value is a :py:obj:`list`.  The minimum length of the list is also
     checked (if ``min_len`` is set)."""
@@ -600,9 +592,7 @@ def eval_xpath_getindex(
     if default == _NOTSET:
         # raise an SearxEngineXPathException instead of IndexError to record
         # xpath_spec
-        raise SearxEngineXPathException(
-            xpath_spec, "index " + str(index) + " not found"
-        )
+        raise SearxEngineXPathException(xpath_spec, "index " + str(index) + " not found")
     return default
 
 
@@ -626,11 +616,7 @@ def get_embedded_stream_url(url: str) -> str:
     iframe_src = ""
 
     # YouTube
-    if (
-        parsed_url.netloc in ["www.youtube.com", "youtube.com"]
-        and parsed_url.path == "/watch"
-        and parsed_url.query
-    ):
+    if parsed_url.netloc in ["www.youtube.com", "youtube.com"] and parsed_url.path == "/watch" and parsed_url.query:
         video_id = parse_qs(parsed_url.query).get("v", [])
         if video_id:
             iframe_src = "https://www.youtube-nocookie.com/embed/" + video_id[0]

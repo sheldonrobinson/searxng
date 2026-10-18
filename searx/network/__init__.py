@@ -125,9 +125,7 @@ def multi_requests(request_list: list["Request"]) -> list[SXNG_Response | Except
         for request_desc in request_list:
             timeout = _get_timeout(start_time, request_desc.kwargs)
             future = asyncio.run_coroutine_threadsafe(
-                network.request(
-                    request_desc.method, request_desc.url, **request_desc.kwargs
-                ),
+                network.request(request_desc.method, request_desc.url, **request_desc.kwargs),
                 loop,
             )
             future_list.append((future, timeout))
@@ -195,21 +193,15 @@ def head(url: str, **kwargs: t.Any) -> SXNG_Response:
     return request("head", url, **kwargs)
 
 
-def post(
-    url: str, data: dict[str, t.Any] | None = None, **kwargs: t.Any
-) -> SXNG_Response:
+def post(url: str, data: dict[str, t.Any] | None = None, **kwargs: t.Any) -> SXNG_Response:
     return request("post", url, data=data, **kwargs)
 
 
-def put(
-    url: str, data: dict[str, t.Any] | None = None, **kwargs: t.Any
-) -> SXNG_Response:
+def put(url: str, data: dict[str, t.Any] | None = None, **kwargs: t.Any) -> SXNG_Response:
     return request("put", url, data=data, **kwargs)
 
 
-def patch(
-    url: str, data: dict[str, t.Any] | None = None, **kwargs: t.Any
-) -> SXNG_Response:
+def patch(url: str, data: dict[str, t.Any] | None = None, **kwargs: t.Any) -> SXNG_Response:
     return request("patch", url, data=data, **kwargs)
 
 
@@ -246,9 +238,7 @@ async def stream_chunk_to_queue(network, queue, method: str, url: str, **kwargs:
 def _stream_generator(method: str, url: str, **kwargs: t.Any):
     queue = SimpleQueue()
     network = get_context_network()
-    future = asyncio.run_coroutine_threadsafe(
-        stream_chunk_to_queue(network, queue, method, url, **kwargs), get_loop()
-    )
+    future = asyncio.run_coroutine_threadsafe(stream_chunk_to_queue(network, queue, method, url, **kwargs), get_loop())
 
     # yield chunks
     obj_or_exception = queue.get()
@@ -270,9 +260,7 @@ def _close_response_method(self):
         continue
 
 
-def stream(
-    method: str, url: str, **kwargs: t.Any
-) -> tuple[SXNG_Response, Iterable[bytes]]:
+def stream(method: str, url: str, **kwargs: t.Any) -> tuple[SXNG_Response, Iterable[bytes]]:
     """Stream for the image proxy.
 
     Usage:

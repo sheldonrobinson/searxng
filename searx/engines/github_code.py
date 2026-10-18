@@ -142,9 +142,7 @@ This might break the lexer and thus result in the lack of code highlighting.
 
 def request(query: str, params: dict[str, t.Any]) -> None:
 
-    params["url"] = search_url.format(
-        query=urlencode({"q": query}), page=urlencode({"page": params["pageno"]})
-    )
+    params["url"] = search_url.format(query=urlencode({"q": query}), page=urlencode({"page": params["pageno"]}))
     params["headers"]["Accept"] = accept_header
     params["headers"]["X-GitHub-Api-Version"] = ghc_api_version
 
@@ -174,9 +172,7 @@ def extract_code(code_matches: list[dict[str, t.Any]]) -> tuple[list[str], set[i
         if i > 0 and ghc_insert_block_separator:
             lines.append("...")
         buffer: list[str] = []
-        highlight_groups = [
-            highlight_group["indices"] for highlight_group in match["matches"]
-        ]
+        highlight_groups = [highlight_group["indices"] for highlight_group in match["matches"]]
 
         code: str = match["fragment"]
         original_code_lenght = len(code)
@@ -226,14 +222,10 @@ def response(resp: SXNG_Response) -> EngineResults:
 
     for item in resp.json().get("items", []):
         repo: dict[str, str] = item["repository"]  # pyright: ignore[reportAny]
-        text_matches: list[dict[str, str]] = item[
-            "text_matches"
-        ]  # pyright: ignore[reportAny]
+        text_matches: list[dict[str, str]] = item["text_matches"]  # pyright: ignore[reportAny]
         # ensure picking only the code contents in the blob
         code_matches = [
-            match
-            for match in text_matches
-            if match["object_type"] == "FileContent" and match["property"] == "content"
+            match for match in text_matches if match["object_type"] == "FileContent" and match["property"] == "content"
         ]
         lines, highlighted_lines_index = extract_code(code_matches)
         if not ghc_highlight_matching_lines:

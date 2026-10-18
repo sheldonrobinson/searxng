@@ -60,16 +60,12 @@ def pass_ip(real_ip: IPv4Address | IPv6Address, cfg: config.Config) -> Tuple[boo
     return ip_is_subnet_of_member_in_list(real_ip, "botdetection.ip_lists.pass_ip", cfg)
 
 
-def block_ip(
-    real_ip: IPv4Address | IPv6Address, cfg: config.Config
-) -> Tuple[bool, str]:
+def block_ip(real_ip: IPv4Address | IPv6Address, cfg: config.Config) -> Tuple[bool, str]:
     """Checks if the IP on the subnet is in one of the members of the
     ``botdetection.ip_lists.block_ip`` list.
     """
 
-    block, msg = ip_is_subnet_of_member_in_list(
-        real_ip, "botdetection.ip_lists.block_ip", cfg
-    )
+    block, msg = ip_is_subnet_of_member_in_list(real_ip, "botdetection.ip_lists.block_ip", cfg)
     if block:
         msg += " To remove IP from list, please contact the maintainer of the service."
     return block, msg

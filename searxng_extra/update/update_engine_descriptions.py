@@ -94,9 +94,7 @@ def normalize_description(description: str):
     return description
 
 
-def update_description(
-    engine_name: str, lang: str, description: str, source: str, replace: bool = True
-) -> None:
+def update_description(engine_name: str, lang: str, description: str, source: str, replace: bool = True) -> None:
     if not isinstance(description, str):
         return  # pyright: ignore[reportUnreachable]
     description = normalize_description(description)
@@ -182,13 +180,9 @@ def get_website_description(url: str, lang1: str | None, lang2: str | None = Non
     except ValueError:
         html = fromstring(response.content)
 
-    description = extract_text(
-        html.xpath('/html/head/meta[@name="description"]/@content')
-    )
+    description = extract_text(html.xpath('/html/head/meta[@name="description"]/@content'))
     if not description:
-        description = extract_text(
-            html.xpath('/html/head/meta[@property="og:description"]/@content')
-        )
+        description = extract_text(html.xpath('/html/head/meta[@property="og:description"]/@content'))
     if not description:
         description = extract_text(html.xpath("/html/head/title"))
     lang = extract_text(html.xpath("/html/@lang"))
@@ -223,9 +217,7 @@ def initialize():
     for engine_name, engine in searx.engines.engines.items():
         descriptions[engine_name] = {}
         if engine.about.wikidata_id:
-            wd_to_engine_name.setdefault(engine.about.wikidata_id, set()).add(
-                engine_name
-            )
+            wd_to_engine_name.setdefault(engine.about.wikidata_id, set()).add(engine_name)
 
     IDS = " ".join(list(map(lambda wd_id: "wd:" + wd_id, wd_to_engine_name.keys())))
 
@@ -234,20 +226,14 @@ def fetch_wikidata_descriptions():
     print("Fetching wikidata descriptions")
     searx.network.set_timeout_for_thread(60)
     result = send_wikidata_query(
-        SPARQL_DESCRIPTION.replace("%IDS%", IDS).replace(
-            "%LANGUAGES_SPARQL%", LANGUAGES_SPARQL
-        )
+        SPARQL_DESCRIPTION.replace("%IDS%", IDS).replace("%LANGUAGES_SPARQL%", LANGUAGES_SPARQL)
     )
     if not result:
-        print(
-            "ERROR: fetching wikiDATA descriptions - SPARQL_DESCRIPTION query without results."
-        )
+        print("ERROR: fetching wikiDATA descriptions - SPARQL_DESCRIPTION query without results.")
         return
 
     for binding in result["results"]["bindings"]:
-        wikidata_id = binding["item"]["value"].replace(
-            "http://www.wikidata.org/entity/", ""
-        )
+        wikidata_id = binding["item"]["value"].replace("http://www.wikidata.org/entity/", "")
         wikidata_lang = binding["itemDescription"]["xml:lang"]
         desc = binding["itemDescription"]["value"]
         for engine_name in wd_to_engine_name[wikidata_id]:
@@ -264,25 +250,17 @@ def fetch_wikidata_descriptions():
 def fetch_wikipedia_descriptions():
     print("Fetching wikipedia descriptions")
     result = send_wikidata_query(
-        SPARQL_WIKIPEDIA_ARTICLE.replace("%IDS%", IDS).replace(
-            "%LANGUAGES_SPARQL%", LANGUAGES_SPARQL
-        )
+        SPARQL_WIKIPEDIA_ARTICLE.replace("%IDS%", IDS).replace("%LANGUAGES_SPARQL%", LANGUAGES_SPARQL)
     )
     if not result:
-        print(
-            "ERROR: fetching wikiPEDIA descriptions - SPARQL_WIKIPEDIA_ARTICLE query without results."
-        )
+        print("ERROR: fetching wikiPEDIA descriptions - SPARQL_WIKIPEDIA_ARTICLE query without results.")
         return
 
     # pylint: disable=too-many-nested-blocks
     for binding in result["results"]["bindings"]:
-        wikidata_id = binding["item"]["value"].replace(
-            "http://www.wikidata.org/entity/", ""
-        )
+        wikidata_id = binding["item"]["value"].replace("http://www.wikidata.org/entity/", "")
         wikidata_lang = binding["name"]["xml:lang"]
-        wikipedia_url = binding["article"][
-            "value"
-        ]  # for example the URL https://de.wikipedia.org/wiki/PubMed
+        wikipedia_url = binding["article"]["value"]  # for example the URL https://de.wikipedia.org/wiki/PubMed
         for engine_name in wd_to_engine_name[wikidata_id]:
             for searxng_locale in LOCALE_NAMES:
                 if WIKIPEDIA_LANGUAGES[searxng_locale] != wikidata_lang:
@@ -290,16 +268,12 @@ def fetch_wikipedia_descriptions():
                 desc = get_wikipedia_summary(wikipedia_url, searxng_locale)
                 if not desc:
                     if descriptions.get(searxng_locale, {}).get(engine_name) is None:
-                        _descr = ENGINE_DESCRIPTIONS.get(searxng_locale, {}).get(
-                            engine_name
-                        )
+                        _descr = ENGINE_DESCRIPTIONS.get(searxng_locale, {}).get(engine_name)
                         if _descr is not None:
                             if len(_descr) == 2 and _descr[1] == "ref":
                                 ref_engine, ref_lang = _descr[0].split(":")
                                 _descr = ENGINE_DESCRIPTIONS[ref_lang][ref_engine]
-                                update_description(
-                                    engine_name, searxng_locale, _descr[0], _descr[1]
-                                )
+                                update_description(engine_name, searxng_locale, _descr[0], _descr[1])
 
                     continue
                 print(
@@ -336,9 +310,7 @@ def fetch_website_description(engine_name: str, website: str):
         if lang in descriptions[engine_name]:
             continue
 
-        fetched_lang, desc = get_website_description(
-            website, lang, WIKIPEDIA_LANGUAGES[lang]
-        )
+        fetched_lang, desc = get_website_description(website, lang, WIKIPEDIA_LANGUAGES[lang])
         if fetched_lang is None or desc is None:
             continue
 
@@ -373,11 +345,7 @@ def fetch_website_description(engine_name: str, website: str):
 def fetch_website_descriptions():
     print("Fetching website descriptions")
     for engine_name, engine in searx.engines.engines.items():
-        website = (
-            engine.about.website
-            or getattr(engine, "search_url", "")
-            or getattr(engine, "base_url", "")
-        )
+        website = engine.about.website or getattr(engine, "search_url", "") or getattr(engine, "base_url", "")
         if website:
             fetch_website_description(engine_name, website)
 
@@ -400,9 +368,7 @@ def get_output():
     - ``[f"engine:lang", "ref"]`` reference to another existing description
 
     """
-    output: dict[str, dict[str, list[str] | str]] = {
-        locale: {} for locale in LOCALE_NAMES
-    }
+    output: dict[str, dict[str, list[str] | str]] = {locale: {} for locale in LOCALE_NAMES}
     seen_descriptions: dict[str, tuple[str, str]] = {}
 
     for engine_name, lang_descriptions in sorted(descriptions.items()):

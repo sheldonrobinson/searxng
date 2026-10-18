@@ -109,13 +109,10 @@ def response(resp):
                 "title": item.get("full_name"),
                 "content": " / ".join(content),
                 # Use Repository Avatar and fall back to Owner Avatar if not set.
-                "thumbnail": item.get("avatar_url")
-                or item.get("owner", {}).get("avatar_url"),
+                "thumbnail": item.get("avatar_url") or item.get("owner", {}).get("avatar_url"),
                 "package_name": item.get("name"),
                 "maintainer": item.get("owner", {}).get("username"),
-                "publishedDate": parser.parse(
-                    item.get("updated_at") or item.get("created_at")
-                ),
+                "publishedDate": parser.parse(item.get("updated_at") or item.get("created_at")),
                 "tags": item.get("topics", []),
                 "popularity": item.get("stars_count"),
                 "homepage": item.get("website"),

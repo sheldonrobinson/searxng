@@ -26,9 +26,7 @@ base_url = "https://search.seznam.cz/"
 
 
 def request(query, params):
-    response_index = get(
-        base_url, headers=params["headers"], raise_for_httperror=True, timeout=3
-    )
+    response_index = get(base_url, headers=params["headers"], raise_for_httperror=True, timeout=3)
     dom = response_index.html()
 
     url_params = {

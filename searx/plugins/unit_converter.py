@@ -45,9 +45,7 @@ class SXNGPlugin(Plugin):
             preference_section="general",
         )
 
-    def post_search(
-        self, request: "SXNG_Request", search: "SearchWithPlugins"
-    ) -> EngineResults:
+    def post_search(self, request: "SXNG_Request", search: "SearchWithPlugins") -> EngineResults:
         results = EngineResults()
 
         # only convert between units on the first page
@@ -64,9 +62,7 @@ class SXNGPlugin(Plugin):
             for keyword in CONVERT_KEYWORDS:
                 if query_part == keyword:
                     from_query, to_query = query.split(keyword, 1)
-                    target_val = _parse_text_and_convert(
-                        from_query.strip(), to_query.strip()
-                    )
+                    target_val = _parse_text_and_convert(from_query.strip(), to_query.strip())
                     if target_val:
                         results.add(results.types.Answer(answer=target_val))
 
@@ -129,9 +125,7 @@ def _parse_text_and_convert(from_query, to_query) -> str | None:
 
     _locale = get_locale() or "en_US"
 
-    value = (
-        measured.group("sign") + measured.group("number") + (measured.group("E") or "")
-    )
+    value = measured.group("sign") + measured.group("number") + (measured.group("E") or "")
     value = babel.numbers.parse_decimal(value, locale=_locale)
 
     # convert value to SI unit
@@ -152,8 +146,6 @@ def _parse_text_and_convert(from_query, to_query) -> str | None:
         # when incoming notation is scientific, outgoing notation is scientific
         result = babel.numbers.format_scientific(value, locale=_locale)
     else:
-        result = babel.numbers.format_decimal(
-            value, locale=_locale, format="#,##0.##########;-#"
-        )
+        result = babel.numbers.format_decimal(value, locale=_locale, format="#,##0.##########;-#")
 
     return f"{result} {target_symbol}"

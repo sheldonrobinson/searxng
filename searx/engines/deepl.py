@@ -50,9 +50,7 @@ def response(resp) -> EngineResults:
     if not data.get("translations"):
         return res
 
-    translations = [
-        res.types.Translations.Item(text=t["text"]) for t in data["translations"]
-    ]
+    translations = [res.types.Translations.Item(text=t["text"]) for t in data["translations"]]
     res.add(res.types.Translations(translations=translations))
 
     return res

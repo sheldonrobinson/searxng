@@ -48,9 +48,7 @@ class ResultContainerTestCase(SearxTestCase):
             content="Lorem ipsum dolor sit amet ..",
         )
         result.normalize_result_fields()
-        eng1 = dict(
-            url=result.url, title="short title", content=result.content, engine="google"
-        )
+        eng1 = dict(url=result.url, title="short title", content=result.content, engine="google")
         eng2 = dict(
             url="http://example.org",
             title=result.title,

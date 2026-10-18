@@ -84,9 +84,7 @@ def response(resp):
                 "thumbnail": item.get("avatar_url"),
                 "package_name": item.get("name"),
                 "maintainer": item.get("namespace", {}).get("name"),
-                "publishedDate": parser.parse(
-                    item.get("last_activity_at") or item.get("created_at")
-                ),
+                "publishedDate": parser.parse(item.get("last_activity_at") or item.get("created_at")),
                 "tags": item.get("tag_list", []),
                 "popularity": item.get("star_count"),
                 "homepage": item.get("readme_url"),

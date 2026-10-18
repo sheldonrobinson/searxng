@@ -43,16 +43,14 @@ def build_flickr_url(user_id, photo_id):
 
 def _get_time_range_url(time_range):
     if time_range in time_range_dict:
-        return time_range_url.format(
-            start=time(), end=str(int(time()) - time_range_dict[time_range])
-        )
+        return time_range_url.format(start=time(), end=str(int(time()) - time_range_dict[time_range]))
     return ""
 
 
 def request(query, params):
-    params["url"] = search_url.format(
-        query=urlencode({"text": query}), page=params["pageno"]
-    ) + _get_time_range_url(params["time_range"])
+    params["url"] = search_url.format(query=urlencode({"text": query}), page=params["pageno"]) + _get_time_range_url(
+        params["time_range"]
+    )
     return params
 
 
@@ -79,9 +77,9 @@ def response(resp):  # pylint: disable=too-many-branches
             logger.debug("skip legend enty %s : %s", x, index)
             continue
 
-        photo = model_export["main"][index[0]][int(index[1])][index[2]][index[3]][
-            index[4]
-        ][index[5]][int(index[6])][index[7]]
+        photo = model_export["main"][index[0]][int(index[1])][index[2]][index[3]][index[4]][index[5]][int(index[6])][
+            index[7]
+        ]
         author = ecma_unescape(photo.get("realname", ""))
         source = ecma_unescape(photo.get("username", ""))
         if source:
@@ -98,9 +96,7 @@ def response(resp):  # pylint: disable=too-many-branches
                 break
 
         if not size_data:
-            logger.debug(
-                "cannot find valid image size: {0}".format(repr(photo["sizes"]["data"]))
-            )
+            logger.debug("cannot find valid image size: {0}".format(repr(photo["sizes"]["data"])))
             continue
 
         img_src = size_data["url"]

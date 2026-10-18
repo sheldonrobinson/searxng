@@ -74,9 +74,7 @@ def request(query, params):
         CACHE.set("ahmia-tokens", token_str, expire=60 * 60)
     name_token, value_token = token_str.split(":")
 
-    params["url"] = search_url.format(
-        query=urlencode({"q": query, name_token: value_token})
-    )
+    params["url"] = search_url.format(query=urlencode({"q": query, name_token: value_token}))
 
     if params["time_range"] in time_range_dict:
         params["url"] += "&" + urlencode({"d": time_range_dict[params["time_range"]]})
@@ -102,9 +100,7 @@ def response(resp):
         title = extract_text(eval_xpath(result, title_xpath))
         content = extract_text(eval_xpath(result, content_xpath))
 
-        results.append(
-            {"url": cleaned_url, "title": title, "content": content, "is_onion": True}
-        )
+        results.append({"url": cleaned_url, "title": title, "content": content, "is_onion": True})
 
     # get spelling corrections
     for correction in eval_xpath_list(dom, correction_xpath):

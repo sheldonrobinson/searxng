@@ -60,13 +60,9 @@ def _pubtime_range(time_range: str) -> tuple[int, int]:
     ``pubtime_begin_s`` and ``pubtime_end_s`` query parameters.
     """
     now = datetime.now(_CN_TZ)
-    pubtime_end_s = int(
-        now.replace(hour=23, minute=59, second=59, microsecond=0).timestamp()
-    )
+    pubtime_end_s = int(now.replace(hour=23, minute=59, second=59, microsecond=0).timestamp())
     begin_day = now - timedelta(days=time_range_dict[time_range])
-    pubtime_begin_s = int(
-        begin_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-    )
+    pubtime_begin_s = int(begin_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
 
     return pubtime_begin_s, pubtime_end_s
 

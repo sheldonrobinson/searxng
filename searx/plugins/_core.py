@@ -46,9 +46,7 @@ class PluginInfo:
     description: str
     """Short description of the *answerer*."""
 
-    preference_section: t.Literal["general", "ui", "privacy", "query"] | None = (
-        "general"
-    )
+    preference_section: t.Literal["general", "ui", "privacy", "query"] | None = "general"
     """Section (tab/group) in the preferences where this plugin is shown to the
     user.
 
@@ -112,14 +110,10 @@ class Plugin(abc.ABC):
                 raise NotImplementedError(f"plugin {self} is missing attribute {attr}")
 
         if not ID_REGXP.match(self.id):
-            raise ValueError(
-                f"plugin ID {self.id} contains invalid character (use lowercase ASCII)"
-            )
+            raise ValueError(f"plugin ID {self.id} contains invalid character (use lowercase ASCII)")
 
         if not getattr(self, "log", None):
-            pkg_name = inspect.getmodule(
-                self.__class__
-            ).__package__  # pyright: ignore[reportOptionalMemberAccess]
+            pkg_name = inspect.getmodule(self.__class__).__package__  # pyright: ignore[reportOptionalMemberAccess]
             self.log = logging.getLogger(f"{pkg_name}.{self.id}")
 
     def __hash__(self) -> int:
@@ -156,9 +150,7 @@ class Plugin(abc.ABC):
         """
         return True
 
-    def on_result(
-        self, request: SXNG_Request, search: "SearchWithPlugins", result: "Result"
-    ) -> bool:
+    def on_result(self, request: SXNG_Request, search: "SearchWithPlugins", result: "Result") -> bool:
         """Runs for each result of each engine and returns a boolean:
 
         - ``True`` to keep the result
@@ -276,16 +268,12 @@ class PluginStorage:
                 break
         return ret
 
-    def on_result(
-        self, request: SXNG_Request, search: "SearchWithPlugins", result: "Result"
-    ) -> bool:
+    def on_result(self, request: SXNG_Request, search: "SearchWithPlugins", result: "Result") -> bool:
 
         ret = True
         for plugin in [p for p in self.plugin_list if p.id in search.user_plugins]:
             try:
-                ret = bool(
-                    plugin.on_result(request=request, search=search, result=result)
-                )
+                ret = bool(plugin.on_result(request=request, search=search, result=result))
             except Exception:  # pylint: disable=broad-except
                 plugin.log.exception("Exception while calling on_result")
                 continue

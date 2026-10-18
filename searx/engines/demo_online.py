@@ -111,8 +111,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
         kwargs: dict[str, t.Any] = {
             "url": "https://artic.edu/artworks/%(id)s" % result,
-            "title": result["title"]
-            + " (%(date_display)s) // %(artist_display)s" % result,
+            "title": result["title"] + " (%(date_display)s) // %(artist_display)s" % result,
             "content": "%(medium_display)s // %(dimensions)s" % result,
             "author": ", ".join(result["artist_titles"]),
             "img_src": image_api + "/%(image_id)s/full/843,/0/default.jpg" % result,

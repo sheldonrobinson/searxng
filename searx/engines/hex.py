@@ -67,9 +67,7 @@ def response(resp):
         meta = package["meta"]
         published_date = package.get("updated_at")
         published_date = parser.parse(published_date)
-        links = {
-            linked_terms.get(k.lower(), k): v for k, v in meta.get("links").items()
-        }
+        links = {linked_terms.get(k.lower(), k): v for k, v in meta.get("links").items()}
         results.append(
             {
                 "template": "packages.html",

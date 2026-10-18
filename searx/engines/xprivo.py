@@ -41,9 +41,7 @@ def setup(_):
 
 def request(query: str, params: "OnlineParams"):
     params["url"] = f"{base_url}/v1/searchengine/completions"
-    params["headers"].update(
-        {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
-    )
+    params["headers"].update({"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
 
     params["method"] = "POST"
     params["json"] = {

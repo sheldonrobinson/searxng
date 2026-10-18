@@ -32,9 +32,7 @@ search_url = url + "/search?q={search_term}&p={pageno}"
 
 # do search-request
 def request(query, params):
-    params["url"] = search_url.format(
-        search_term=quote(query), pageno=params["pageno"] - 1
-    )
+    params["url"] = search_url.format(search_term=quote(query), pageno=params["pageno"] - 1)
 
     return params
 
@@ -58,9 +56,7 @@ def response(resp):
         title = extract_text(link)
 
         excerpt = result.xpath('.//div[@class="torrent_excerpt"]')[0]
-        content = html.tostring(
-            excerpt, encoding="unicode", method="text", with_tail=False
-        )
+        content = html.tostring(excerpt, encoding="unicode", method="text", with_tail=False)
         content = content.strip().replace("\n", " | ")
         content = " ".join(content.split())
 
@@ -73,9 +69,7 @@ def response(resp):
         except:  # pylint: disable=bare-except
             files = None
 
-        magnetlink = result.xpath('.//div[@class="torrent_magnet"]//a')[0].attrib[
-            "href"
-        ]
+        magnetlink = result.xpath('.//div[@class="torrent_magnet"]//a')[0].attrib["href"]
 
         # append result
         results.append(

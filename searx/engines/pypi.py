@@ -41,22 +41,12 @@ def request(query, params):
 def response(resp):
     results = []
     dom = resp.html()
-    for entry in eval_xpath_list(
-        dom, '/html/body/main/div/div/div/form/div/ul/li/a[@class="package-snippet"]'
-    ):
+    for entry in eval_xpath_list(dom, '/html/body/main/div/div/div/form/div/ul/li/a[@class="package-snippet"]'):
         url = base_url + extract_text(eval_xpath_getindex(entry, "./@href", 0))  # type: ignore
-        title = extract_text(
-            eval_xpath_getindex(entry, './h3/span[@class="package-snippet__name"]', 0)
-        )
-        version = extract_text(
-            eval_xpath_getindex(
-                entry, './h3/span[@class="package-snippet__version"]', 0
-            )
-        )
+        title = extract_text(eval_xpath_getindex(entry, './h3/span[@class="package-snippet__name"]', 0))
+        version = extract_text(eval_xpath_getindex(entry, './h3/span[@class="package-snippet__version"]', 0))
         created_at = extract_text(
-            eval_xpath_getindex(
-                entry, './h3/span[@class="package-snippet__created"]/time/@datetime', 0
-            )
+            eval_xpath_getindex(entry, './h3/span[@class="package-snippet__created"]/time/@datetime', 0)
         )
         content = extract_text(eval_xpath_getindex(entry, "./p", 0))
         results.append(

@@ -53,9 +53,7 @@ def request(query: str, params: "OnlineParams") -> None:
 
 def _span_text(link, css_class: str):
     return extract_text(
-        eval_xpath_getindex(
-            link, f'.//span[contains(@class, "{css_class}")]', 0, default=None
-        ),
+        eval_xpath_getindex(link, f'.//span[contains(@class, "{css_class}")]', 0, default=None),
         allow_none=True,
     )
 
@@ -78,9 +76,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
         source = _span_text(link, "dXDvrc")
         pub_date = _span_text(link, "YVIcad")
-        thumbnail = eval_xpath_getindex(
-            link, './/img[contains(@src, "encrypted-tbn")]/@src', 0, default=None
-        )
+        thumbnail = eval_xpath_getindex(link, './/img[contains(@src, "encrypted-tbn")]/@src', 0, default=None)
 
         seen.add(url)
         results.add(

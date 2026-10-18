@@ -117,9 +117,7 @@ def get_request_exception_messages(
     return (status_code, reason, get_hostname(exc))
 
 
-def get_messages(
-    exc, filename
-) -> tuple[str, ...]:  # pylint: disable=too-many-return-statements
+def get_messages(exc, filename) -> tuple[str, ...]:  # pylint: disable=too-many-return-statements
     if isinstance(exc, JSONDecodeError):
         return (exc.msg,)
     if isinstance(exc, TypeError):
@@ -175,18 +173,14 @@ def get_error_context(
     )
 
 
-def count_exception(
-    engine_name: str, exc: BaseException, secondary: bool = False
-) -> None:
+def count_exception(engine_name: str, exc: BaseException, secondary: bool = False) -> None:
     if not settings["general"]["enable_metrics"]:
         return
     framerecords = inspect.trace()
     try:
         exception_classname = get_exception_classname(exc)
         log_parameters = get_messages(exc, framerecords[-1][1])
-        error_context = get_error_context(
-            framerecords, exception_classname, None, log_parameters, secondary
-        )
+        error_context = get_error_context(framerecords, exception_classname, None, log_parameters, secondary)
         add_error_context(engine_name, error_context)
     finally:
         del framerecords
@@ -202,9 +196,7 @@ def count_error(
         return
     framerecords = list(reversed(inspect.stack()[1:]))
     try:
-        error_context = get_error_context(
-            framerecords, None, log_message, log_parameters or (), secondary
-        )
+        error_context = get_error_context(framerecords, None, log_message, log_parameters or (), secondary)
         add_error_context(engine_name, error_context)
     finally:
         del framerecords

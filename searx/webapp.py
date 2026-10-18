@@ -154,9 +154,7 @@ app = Flask(__name__, static_folder=None, template_folder=templates_path)
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")  # pylint: disable=no-member
-app.jinja_env.filters["group_engines_in_tab"] = (
-    group_engines_in_tab  # pylint: disable=no-member
-)
+app.jinja_env.filters["group_engines_in_tab"] = group_engines_in_tab  # pylint: disable=no-member
 app.secret_key = settings["server"]["secret_key"]
 
 
@@ -187,23 +185,17 @@ def _get_locale_rfc5646(locale):
 
 # code-highlighter
 @app.template_filter("code_highlighter")
-def code_highlighter(
-    codelines, language=None, hl_lines=None, strip_whitespace=True, strip_new_lines=True
-):
+def code_highlighter(codelines, language=None, hl_lines=None, strip_whitespace=True, strip_new_lines=True):
     if not language:
         language = "text"
 
     try:
-        lexer = get_lexer_by_name(
-            language, stripall=strip_whitespace, stripnl=strip_new_lines
-        )
+        lexer = get_lexer_by_name(language, stripall=strip_whitespace, stripnl=strip_new_lines)
 
     except Exception as e:  # pylint: disable=broad-except
         logger.warning("pygments lexer: %s ", e)
         # if lexer is not found, using default one
-        lexer = get_lexer_by_name(
-            "text", stripall=strip_whitespace, stripnl=strip_new_lines
-        )
+        lexer = get_lexer_by_name("text", stripall=strip_whitespace, stripnl=strip_new_lines)
 
     html_code = ""
     tmp_code = ""
@@ -324,8 +316,7 @@ def image_proxify(url: str):
         partial_base64 = url[len("data:image/") : 50].split(";")
         if (
             len(partial_base64) == 2
-            and partial_base64[0]
-            in ["gif", "png", "jpeg", "pjpeg", "webp", "tiff", "bmp"]
+            and partial_base64[0] in ["gif", "png", "jpeg", "pjpeg", "webp", "tiff", "bmp"]
             and partial_base64[1].startswith("base64,")
         ):
             return url
@@ -333,9 +324,7 @@ def image_proxify(url: str):
 
     h = new_hmac(settings["server"]["secret_key"], url.encode())
 
-    return "{0}?{1}".format(
-        url_for("image_proxy"), urlencode(dict(url=url.encode(), h=h))
-    )
+    return "{0}?{1}".format(url_for("image_proxy"), urlencode(dict(url=url.encode(), h=h)))
 
 
 def get_translations():
@@ -377,9 +366,7 @@ def get_enabled_categories(category_names: typing.Iterable[str]):
     """The categories in ``category_names```for which there is no active engine
     are filtered out and a reduced list is returned."""
 
-    enabled_engines = [
-        item[0] for item in sxng_request.preferences.engines.get_enabled()
-    ]
+    enabled_engines = [item[0] for item in sxng_request.preferences.engines.get_enabled()]
     enabled_categories = set()
     for engine_name in enabled_engines:
         enabled_categories.update(engines[engine_name].categories)
@@ -403,9 +390,7 @@ def get_pretty_url(parsed_url: urllib.parse.ParseResult):
     # - 'http://example.org?/foo/bar' --> parsed_url.query is 'foo/bar'
     query_args: list[tuple[str, str]] = list(urllib.parse.parse_qsl(parsed_url.query))
     if not query_args and parsed_url.query:
-        path += (" › .." if len(parsed_url.query) > 24 else " › ") + parsed_url.query[
-            -24:
-        ]
+        path += (" › .." if len(parsed_url.query) > 24 else " › ") + parsed_url.query[-24:]
     return [parsed_url.scheme + "://" + parsed_url.netloc, path]
 
 
@@ -434,9 +419,7 @@ def render(template_name: str, **kwargs):
     # values from the preferences
     # pylint: disable=too-many-statements
     client_settings = get_client_settings()
-    kwargs["client_settings"] = base64.b64encode(
-        json.dumps(client_settings).encode("utf-8")
-    ).decode("utf-8")
+    kwargs["client_settings"] = base64.b64encode(json.dumps(client_settings).encode("utf-8")).decode("utf-8")
     kwargs["preferences"] = sxng_request.preferences
     kwargs.update(client_settings)
 
@@ -451,9 +434,7 @@ def render(template_name: str, **kwargs):
     kwargs["DEFAULT_CATEGORY"] = DEFAULT_CATEGORY
 
     # i18n
-    kwargs["sxng_locales"] = [
-        l for l in sxng_locales if l[0] in settings["search"]["languages"]
-    ]
+    kwargs["sxng_locales"] = [l for l in sxng_locales if l[0] in settings["search"]["languages"]]
 
     locale = sxng_request.preferences.get_value("locale")
     kwargs["locale_rfc5646"] = _get_locale_rfc5646(locale)
@@ -462,9 +443,7 @@ def render(template_name: str, **kwargs):
         kwargs["rtl"] = True
 
     if "current_language" not in kwargs:
-        kwargs["current_language"] = parse_lang(
-            sxng_request.preferences, {}, RawTextQuery("", [])
-        )
+        kwargs["current_language"] = parse_lang(sxng_request.preferences, {}, RawTextQuery("", []))
 
     # values from settings
     kwargs["search_formats"] = [x for x in settings["search"]["formats"] if x != "html"]
@@ -501,9 +480,7 @@ def render(template_name: str, **kwargs):
 
     start_time = default_timer()
     result = render_template("{}/{}".format(kwargs["theme"], template_name), **kwargs)
-    sxng_request.render_time += (
-        default_timer() - start_time
-    )  # pylint: disable=assigning-non-slot
+    sxng_request.render_time += default_timer() - start_time  # pylint: disable=assigning-non-slot
 
     return result
 
@@ -517,9 +494,7 @@ def pre_request():
 
     client_pref = ClientPref.from_http_request(sxng_request)
     # pylint: disable=redefined-outer-name
-    preferences = Preferences(
-        themes, list(categories.keys()), engines, searx.plugins.STORAGE, client_pref
-    )
+    preferences = Preferences(themes, list(categories.keys()), engines, searx.plugins.STORAGE, client_pref)
 
     user_agent = sxng_request.headers.get("User-Agent", "").lower()
     if "webkit" in user_agent and "android" in user_agent:
@@ -531,9 +506,7 @@ def pre_request():
 
     except Exception as e:  # pylint: disable=broad-except
         logger.exception(e, exc_info=True)
-        sxng_request.errors.append(
-            gettext("Invalid settings, please edit your preferences")
-        )
+        sxng_request.errors.append(gettext("Invalid settings, please edit your preferences"))
 
     # merge GET, POST vars
     # HINT request.form is of type werkzeug.datastructures.ImmutableMultiDict
@@ -556,9 +529,7 @@ def pre_request():
     if not preferences.get_value("language"):
         language = _get_browser_language(sxng_request, settings["search"]["languages"])
         preferences.parse_dict({"language": language})
-        logger.debug(
-            "set language %s (from browser)", preferences.get_value("language")
-        )
+        logger.debug("set language %s (from browser)", preferences.get_value("language"))
 
     # UI locale is defined neither in settings nor in preferences
     # use browser headers
@@ -596,8 +567,7 @@ def post_request(response: flask.Response):
     if len(sxng_request.timings) > 0:
         timings = sorted(sxng_request.timings, key=lambda t: t.total)
         timings_total = [
-            "total_" + str(i) + "_" + t.engine + ";dur=" + str(round(t.total * 1000, 3))
-            for i, t in enumerate(timings)
+            "total_" + str(i) + "_" + t.engine + ";dur=" + str(round(t.total * 1000, 3)) for i, t in enumerate(timings)
         ]
         timings_load = [
             "load_" + str(i) + "_" + t.engine + ";dur=" + str(round(t.load * 1000, 3))
@@ -611,9 +581,7 @@ def post_request(response: flask.Response):
 
 def index_error(output_format: str, error_message: str):
     if output_format == "json":
-        return Response(
-            json.dumps({"error": error_message}), mimetype="application/json"
-        )
+        return Response(json.dumps({"error": error_message}), mimetype="application/json")
     if output_format == "csv":
         response = Response("", mimetype="application/csv")
         cont_disp = "attachment;Filename=searx.csv"
@@ -645,11 +613,7 @@ def index():
 
     # redirect to search if there's a query in the request
     if sxng_request.form.get("q"):
-        query = (
-            ("?" + sxng_request.query_string.decode())
-            if sxng_request.query_string
-            else ""
-        )
+        query = ("?" + sxng_request.query_string.decode()) if sxng_request.query_string else ""
         return redirect(url_for("search") + query, 308)
 
     return render(
@@ -669,9 +633,7 @@ def health():
 @app.route("/client<token>.css", methods=["GET", "POST"])
 def client_token(token=None):
     link_token.ping(sxng_request, token)
-    return Response(
-        "", mimetype="text/css", headers={"Cache-Control": "no-store, max-age=0"}
-    )
+    return Response("", mimetype="text/css", headers={"Cache-Control": "no-store, max-age=0"})
 
 
 @app.route("/rss.xsl", methods=["GET", "POST"])
@@ -715,12 +677,10 @@ def search():
     raw_text_query = None
     result_container = None
     try:
-        search_query, raw_text_query, _, _, selected_locale = (
-            get_search_query_from_webapp(sxng_request.preferences, sxng_request.form)
+        search_query, raw_text_query, _, _, selected_locale = get_search_query_from_webapp(
+            sxng_request.preferences, sxng_request.form
         )
-        search_obj = searx.search.SearchWithPlugins(
-            search_query, sxng_request, sxng_request.user_plugins
-        )
+        search_obj = searx.search.SearchWithPlugins(search_query, sxng_request, sxng_request.user_plugins)
         result_container = search_obj.search()
 
     except SearxParameterException as e:
@@ -736,9 +696,7 @@ def search():
 
     # 2. add Server-Timing header for measuring performance characteristics of
     # web applications
-    sxng_request.timings = (
-        result_container.get_timings()
-    )  # pylint: disable=assigning-non-slot
+    sxng_request.timings = result_container.get_timings()  # pylint: disable=assigning-non-slot
 
     # 3. formats without a template
 
@@ -771,22 +729,16 @@ def search():
     for result in results:
         if output_format == "html":
             if "content" in result and result["content"]:
-                result["content"] = highlight_content(
-                    escape(result["content"][:1024]), search_query.query
-                )
+                result["content"] = highlight_content(escape(result["content"][:1024]), search_query.query)
             if "title" in result and result["title"]:
-                result["title"] = highlight_content(
-                    escape(result["title"] or ""), search_query.query
-                )
+                result["title"] = highlight_content(escape(result["title"] or ""), search_query.query)
 
         # set result['open_group'] = True when the template changes from the previous result
         # set result['close_group'] = True when the template changes on the next result
         if current_template != result.template:
             result.open_group = True
             if previous_result:
-                previous_result.close_group = (
-                    True  # pylint: disable=unsupported-assignment-operation
-                )
+                previous_result.close_group = True  # pylint: disable=unsupported-assignment-operation
         current_template = result.template
         previous_result = result
 
@@ -827,9 +779,7 @@ def search():
     )
 
     # engine_timings: get engine response times sorted from slowest to fastest
-    engine_timings = sorted(
-        result_container.get_timings(), reverse=True, key=lambda e: e.total
-    )
+    engine_timings = sorted(result_container.get_timings(), reverse=True, key=lambda e: e.total)
     max_response_time = engine_timings[0].total if engine_timings else None
     engine_timings_pairs = [(timing.engine, timing.total) for timing in engine_timings]
 
@@ -924,9 +874,7 @@ def autocompleter():
 
     if len(raw_text_query.autocomplete_list) > 0:
         for autocomplete_text in raw_text_query.autocomplete_list:
-            results.append(
-                raw_text_query.get_autocomplete_full_query(autocomplete_text)
-            )
+            results.append(raw_text_query.get_autocomplete_full_query(autocomplete_text))
 
     if sxng_request.headers.get("X-Requested-With") == "XMLHttpRequest":
         # the suggestion request comes from the searx search form
@@ -964,32 +912,22 @@ def preferences():
         try:
             sxng_request.preferences.parse_form(sxng_request.form)
         except ValidationException:
-            sxng_request.errors.append(
-                gettext("Invalid settings, please edit your preferences")
-            )
+            sxng_request.errors.append(gettext("Invalid settings, please edit your preferences"))
             return resp
         return sxng_request.preferences.save(resp)
 
     # render preferences
-    image_proxy = sxng_request.preferences.get_value(
-        "image_proxy"
-    )  # pylint: disable=redefined-outer-name
+    image_proxy = sxng_request.preferences.get_value("image_proxy")  # pylint: disable=redefined-outer-name
     disabled_engines = sxng_request.preferences.engines.get_disabled()
     allowed_plugins = sxng_request.preferences.plugins.get_enabled()
 
     # stats for preferences page
-    filtered_engines = dict(
-        filter(
-            lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()
-        )
-    )
+    filtered_engines = dict(filter(lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()))
 
     engines_by_category = {}
 
     for c in categories:  # pylint: disable=consider-using-dict-items
-        engines_by_category[c] = [
-            e for e in categories[c] if e.name in filtered_engines
-        ]
+        engines_by_category[c] = [e for e in categories[c] if e.name in filtered_engines]
         # sort the engines alphabetically since the order in settings.yml is meaningless.
         list.sort(engines_by_category[c], key=lambda e: e.name)
 
@@ -1007,9 +945,7 @@ def preferences():
 
         result_count_sum = histogram("engine", e.name, "result", "count").sum
         successful_count = counter("engine", e.name, "search", "count", "successful")
-        result_count = (
-            int(result_count_sum / float(successful_count)) if successful_count else 0
-        )
+        result_count = int(result_count_sum / float(successful_count)) if successful_count else 0
 
         stats[e.name] = {
             "time": median,
@@ -1030,9 +966,7 @@ def preferences():
             reliability = None
         else:
             # pylint: disable=consider-using-generator
-            reliability = 100 - sum(
-                [error["percentage"] for error in errors if not error.get("secondary")]
-            )
+            reliability = 100 - sum([error["percentage"] for error in errors if not error.get("secondary")])
 
         reliabilities[e.name] = {
             "reliability": reliability,
@@ -1043,9 +977,7 @@ def preferences():
             error_user_text = None
             if error.get("secondary") or "exception_classname" not in error:
                 continue
-            error_user_text = exception_classname_to_text.get(
-                error.get("exception_classname")
-            )
+            error_user_text = exception_classname_to_text.get(error.get("exception_classname"))
             if not error:
                 error_user_text = exception_classname_to_text[None]
             if error_user_text not in reliabilities_errors:
@@ -1106,9 +1038,7 @@ def image_proxy():
     if not url:
         return "", 400
 
-    if not is_hmac_of(
-        settings["server"]["secret_key"], url.encode(), sxng_request.args.get("h", "")
-    ):
+    if not is_hmac_of(settings["server"]["secret_key"], url.encode(), sxng_request.args.get("h", "")):
         return "", 400
 
     maximum_size = 5 * 1024 * 1024
@@ -1121,15 +1051,9 @@ def image_proxy():
             "Sec-GPC": "1",
             "DNT": "1",
         }
-        resp, stream = http_stream(
-            method="GET", url=url, headers=request_headers, allow_redirects=True
-        )
+        resp, stream = http_stream(method="GET", url=url, headers=request_headers, allow_redirects=True)
         content_length = resp.headers.get("Content-Length")
-        if (
-            content_length
-            and content_length.isdigit()
-            and int(content_length) > maximum_size
-        ):
+        if content_length and content_length.isdigit() and int(content_length) > maximum_size:
             return "Max size", 400
 
         if resp.status_code != 200:
@@ -1138,11 +1062,9 @@ def image_proxy():
                 return "", resp.status_code
             return "", 400
 
-        if not resp.headers.get("Content-Type", "").startswith(
-            "image/"
-        ) and not resp.headers.get("Content-Type", "").startswith(
-            "binary/octet-stream"
-        ):
+        if not resp.headers.get("Content-Type", "").startswith("image/") and not resp.headers.get(
+            "Content-Type", ""
+        ).startswith("binary/octet-stream"):
             logger.debug(
                 "image-proxy: wrong content-type: %s",
                 resp.headers.get("Content-Type", ""),
@@ -1197,9 +1119,7 @@ def engine_descriptions():
 
     result = ENGINE_DESCRIPTIONS["en"].copy()
     if sxng_ui_lang_tag != "en":
-        for engine, description in ENGINE_DESCRIPTIONS.get(
-            sxng_ui_lang_tag, {}
-        ).items():
+        for engine, description in ENGINE_DESCRIPTIONS.get(sxng_ui_lang_tag, {}).items():
             result[engine] = description
     for engine, description in result.items():
         if len(description) == 2 and description[1] == "ref":
@@ -1223,11 +1143,7 @@ def stats():
     sort_order = sxng_request.args.get("sort", default="name", type=str)
     selected_engine_name = sxng_request.args.get("engine", default=None, type=str)
 
-    filtered_engines = dict(
-        filter(
-            lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()
-        )
-    )
+    filtered_engines = dict(filter(lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()))
     if selected_engine_name:
         if selected_engine_name not in filtered_engines:
             selected_engine_name = None
@@ -1243,9 +1159,7 @@ def stats():
     reverse, key_name, default_value = STATS_SORT_PARAMETERS[sort_order]
 
     def get_key(engine_stat):
-        reliability = engine_reliabilities.get(engine_stat["name"], {}).get(
-            "reliability", 0
-        )
+        reliability = engine_reliabilities.get(engine_stat["name"], {}).get("reliability", 0)
         reliability_order = 0 if reliability else 1
         if key_name == "reliability":
             key = reliability
@@ -1258,17 +1172,13 @@ def stats():
 
     technical_report = []
     for error in engine_reliabilities.get(selected_engine_name, {}).get("errors", []):
-        technical_report.append(
-            f"\
+        technical_report.append(f"\
             Error: {error['exception_classname'] or error['log_message']} \
             Parameters: {error['log_parameters']} \
             File name: {error['filename'] }:{ error['line_no'] } \
             Error Function: {error['function']} \
             Code: {error['code']} \
-            ".replace(
-                " " * 12, ""
-            ).strip()
-        )
+            ".replace(" " * 12, "").strip())
     technical_report = " ".join(technical_report)
 
     engine_stats["time"] = sorted(engine_stats["time"], reverse=reverse, key=get_key)
@@ -1286,11 +1196,7 @@ def stats():
 
 @app.route("/stats/errors", methods=["GET"])
 def stats_errors():
-    filtered_engines = dict(
-        filter(
-            lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()
-        )
-    )
+    filtered_engines = dict(filter(lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()))
     result = get_engine_errors(filtered_engines)
     return jsonify(result)
 
@@ -1302,17 +1208,10 @@ def stats_open_metrics():
     if not (settings["general"].get("enable_metrics") and password):
         return Response("open metrics is disabled", status=404, mimetype="text/plain")
 
-    if (
-        not sxng_request.authorization
-        or sxng_request.authorization.password != password
-    ):
+    if not sxng_request.authorization or sxng_request.authorization.password != password:
         return Response("access forbidden", status=401, mimetype="text/plain")
 
-    filtered_engines = dict(
-        filter(
-            lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()
-        )
-    )
+    filtered_engines = dict(filter(lambda kv: sxng_request.preferences.validate_token(kv[1]), engines.items()))
 
     engine_stats = get_engines_stats(filtered_engines)
     engine_reliabilities = get_reliabilities(filtered_engines)
@@ -1348,9 +1247,7 @@ def opensearch():
         method = "GET"
 
     ret = render("opensearch.xml", opensearch_method=method, autocomplete=autocomplete)
-    resp = Response(
-        response=ret, status=200, mimetype="application/opensearchdescription+xml"
-    )
+    resp = Response(response=ret, status=200, mimetype="application/opensearchdescription+xml")
     return resp
 
 
@@ -1362,9 +1259,7 @@ def manifest():
 
     theme_color = get_setting(f"brand.pwa_colors.theme_color_{theme}")
     background_color = get_setting(f"brand.pwa_colors.background_color_{theme}")
-    ret = render(
-        "manifest.json", theme_color=theme_color, background_color=background_color
-    )
+    ret = render("manifest.json", theme_color=theme_color, background_color=background_color)
     resp = Response(response=ret, status=200, mimetype="application/json")
     return resp
 
@@ -1449,12 +1344,8 @@ def config():
             },
             "limiter": {
                 "enabled": limiter.is_installed(),
-                "botdetection.ip_limit.link_token": _limiter_cfg.get(
-                    "botdetection.ip_limit.link_token"
-                ),
-                "botdetection.ip_lists.pass_searxng_org": _limiter_cfg.get(
-                    "botdetection.ip_lists.pass_searxng_org"
-                ),
+                "botdetection.ip_limit.link_token": _limiter_cfg.get("botdetection.ip_limit.link_token"),
+                "botdetection.ip_lists.pass_searxng_org": _limiter_cfg.get("botdetection.ip_lists.pass_searxng_org"),
             },
             "doi_resolvers": list(settings["doi_resolvers"].keys()),
             "default_doi_resolver": settings["default_doi_resolver"],
@@ -1516,9 +1407,7 @@ def init():
     # check secret_key in production
 
     if not app.debug and get_setting("server.secret_key") == "ultrasecretkey":
-        logger.error(
-            "server.secret_key is not changed. Please use something else instead of ultrasecretkey."
-        )
+        logger.error("server.secret_key is not changed. Please use something else instead of ultrasecretkey.")
         sys.exit(1)
 
     # init database schema first / DB schema is created with the first connect

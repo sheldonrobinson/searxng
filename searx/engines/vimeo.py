@@ -53,9 +53,7 @@ def fetch_json_web_token():
     resp = get(url=jwt_url, headers=jwt_headers, timeout=5)
     json_web_token = resp.json()["token"]
 
-    CACHE.set(
-        key=JWT_CACHE_KEY, value=json_web_token, expire=JWT_CACHE_EXPIRATION_SECONDS
-    )
+    CACHE.set(key=JWT_CACHE_KEY, value=json_web_token, expire=JWT_CACHE_EXPIRATION_SECONDS)
 
     return json_web_token
 

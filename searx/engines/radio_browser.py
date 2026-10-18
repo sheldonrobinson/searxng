@@ -70,9 +70,7 @@ def init(_):
         try:
             server_list()
         except Exception:
-            CACHE.set(
-                "eng_state", f"ERROR: initialization by PID {os.getpid()} failed."
-            )
+            CACHE.set("eng_state", f"ERROR: initialization by PID {os.getpid()} failed.")
             raise
     else:
         logger.debug(eng_state)

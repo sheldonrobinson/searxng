@@ -12,24 +12,15 @@ SPARQL_ENDPOINT_URL = "https://query.wikidata.org/sparql"
 SPARQL_EXPLAIN_URL = "https://query.wikidata.org/bigdata/namespace/wdq/sparql?explain"
 
 
-def send_wikidata_query(
-    query: str, method: str = "GET", **kwargs: dict[str, t.Any]
-) -> dict[str, t.Any]:
+def send_wikidata_query(query: str, method: str = "GET", **kwargs: dict[str, t.Any]) -> dict[str, t.Any]:
     if method == "GET":
         # query will be cached by wikidata
         http_response = get(
-            SPARQL_ENDPOINT_URL + "?" + urlencode({"query": query}),
-            headers=get_wikidata_headers(),
-            **kwargs
+            SPARQL_ENDPOINT_URL + "?" + urlencode({"query": query}), headers=get_wikidata_headers(), **kwargs
         )
     else:
         # query won't be cached by wikidata
-        http_response = post(
-            SPARQL_ENDPOINT_URL,
-            data={"query": query},
-            headers=get_wikidata_headers(),
-            **kwargs
-        )
+        http_response = post(SPARQL_ENDPOINT_URL, data={"query": query}, headers=get_wikidata_headers(), **kwargs)
 
     http_response.raise_for_status()
     return http_response.json()

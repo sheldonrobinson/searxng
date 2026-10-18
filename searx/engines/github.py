@@ -52,9 +52,7 @@ def response(resp):
                 "package_name": item.get("name"),
                 # 'version': item.get('updated_at'),
                 "maintainer": item.get("owner", {}).get("login"),
-                "publishedDate": parser.parse(
-                    item.get("updated_at") or item.get("created_at")
-                ),
+                "publishedDate": parser.parse(item.get("updated_at") or item.get("created_at")),
                 "tags": item.get("topics", []),
                 "popularity": item.get("stargazers_count"),
                 "license_name": lic.get("name"),

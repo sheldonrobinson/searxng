@@ -67,34 +67,15 @@ def response(resp):
         results.append(
             {
                 "template": "packages.html",
-                "url": base_url
-                + extract_text(
-                    eval_xpath(result, './td[contains(@class, "package")]/a/@href')
-                ),
-                "title": extract_text(
-                    eval_xpath(result, './td[contains(@class, "package")]')
-                ),
-                "package_name": extract_text(
-                    eval_xpath(result, './td[contains(@class, "package")]')
-                ),
-                "publishedDate": parser.parse(
-                    extract_text(eval_xpath(result, './td[contains(@class, "bdate")]'))
-                ),
-                "version": extract_text(
-                    eval_xpath(result, './td[contains(@class, "version")]')
-                ),
-                "homepage": extract_text(
-                    eval_xpath(result, './td[contains(@class, "url")]/a/@href')
-                ),
-                "maintainer": extract_text(
-                    eval_xpath(result, './td[contains(@class, "maintainer")]')
-                ),
-                "license_name": extract_text(
-                    eval_xpath(result, './td[contains(@class, "license")]')
-                ),
-                "tags": [
-                    extract_text(eval_xpath(result, './td[contains(@class, "repo")]'))
-                ],
+                "url": base_url + extract_text(eval_xpath(result, './td[contains(@class, "package")]/a/@href')),
+                "title": extract_text(eval_xpath(result, './td[contains(@class, "package")]')),
+                "package_name": extract_text(eval_xpath(result, './td[contains(@class, "package")]')),
+                "publishedDate": parser.parse(extract_text(eval_xpath(result, './td[contains(@class, "bdate")]'))),
+                "version": extract_text(eval_xpath(result, './td[contains(@class, "version")]')),
+                "homepage": extract_text(eval_xpath(result, './td[contains(@class, "url")]/a/@href')),
+                "maintainer": extract_text(eval_xpath(result, './td[contains(@class, "maintainer")]')),
+                "license_name": extract_text(eval_xpath(result, './td[contains(@class, "license")]')),
+                "tags": [extract_text(eval_xpath(result, './td[contains(@class, "repo")]'))],
             }
         )
 

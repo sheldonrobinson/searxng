@@ -117,9 +117,7 @@ class TestLanguageParser(SearxTestCase):
     def test_autocomplete_empty(self):
         query_text = "the query :"
         query = RawTextQuery(query_text, [])
-        self.assertEqual(
-            query.autocomplete_list, [":en", ":en_us", ":english", ":united_kingdom"]
-        )
+        self.assertEqual(query.autocomplete_list, [":en", ":en_us", ":english", ":united_kingdom"])
 
     @parameterized.expand(
         [
@@ -233,9 +231,7 @@ class TestBang(SearxTestCase):
 
     def test_bang_autocomplete(self):
         query = RawTextQuery("the query !dum", [])
-        self.assertEqual(
-            query.autocomplete_list, ["!dummy_engine", "!dummy_private_engine"]
-        )
+        self.assertEqual(query.autocomplete_list, ["!dummy_engine", "!dummy_private_engine"])
 
         query = RawTextQuery("!dum the query", [])
         self.assertEqual(query.autocomplete_list, [])

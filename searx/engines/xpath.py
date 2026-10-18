@@ -300,15 +300,11 @@ def response(resp) -> EngineResults:  # pylint: disable=too-many-branches
             if thumbnail_xpath:
                 thumbnail_xpath_result = eval_xpath_list(result, thumbnail_xpath)
                 if len(thumbnail_xpath_result) > 0:
-                    tmp_result["thumbnail"] = extract_url(
-                        thumbnail_xpath_result, search_url
-                    )
+                    tmp_result["thumbnail"] = extract_url(thumbnail_xpath_result, search_url)
 
             # add alternative cached url if available
             if cached_xpath:
-                tmp_result["cached_url"] = cached_url + extract_text(
-                    eval_xpath_list(result, cached_xpath, min_len=1)
-                )
+                tmp_result["cached_url"] = cached_url + extract_text(eval_xpath_list(result, cached_xpath, min_len=1))
 
             if is_onion:
                 tmp_result["is_onion"] = True

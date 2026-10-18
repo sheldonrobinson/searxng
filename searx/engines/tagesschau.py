@@ -82,9 +82,7 @@ def response(resp):
 def _story(item):
     return {
         "title": item["title"],
-        "thumbnail": item.get("teaserImage", {})
-        .get("imageVariants", {})
-        .get("16x9-256"),
+        "thumbnail": item.get("teaserImage", {}).get("imageVariants", {}).get("16x9-256"),
         "publishedDate": datetime.fromisoformat(item["date"][:19]),
         "content": item.get("firstSentence"),
         "url": item["shareURL"] if use_source_url else item["detailsweb"],
@@ -93,12 +91,7 @@ def _story(item):
 
 def _video(item) -> Video:
     streams = item["streams"]
-    video_url = (
-        streams.get("h264s")
-        or streams.get("h264m")
-        or streams.get("h264l")
-        or streams.get("h264xl")
-    )
+    video_url = streams.get("h264s") or streams.get("h264m") or streams.get("h264l") or streams.get("h264xl")
     title = item["title"]
 
     if "_vapp.mxf" in title:

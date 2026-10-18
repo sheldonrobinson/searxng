@@ -90,11 +90,7 @@ def search(query, params) -> EngineResults:
         _re = re.compile(".*{0}.*".format(re.escape(query)), re.I | re.M)
         q = {"$regex": _re}
 
-    query = (
-        _client.find({key: q})
-        .skip((params["pageno"] - 1) * results_per_page)
-        .limit(results_per_page)
-    )
+    query = _client.find({key: q}).skip((params["pageno"] - 1) * results_per_page).limit(results_per_page)
 
     for row in query:
         del row["_id"]

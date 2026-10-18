@@ -69,12 +69,8 @@ def response(resp):
     dom = resp.html()
 
     for result in dom.xpath('//div[contains(@id, "mc_vtvc_video")]'):
-        metadata = json.loads(
-            eval_xpath_getindex(result, './/div[@class="vrhdata"]/@vrhm', index=0)
-        )
-        info = " - ".join(
-            eval_xpath(result, './/div[@class="mc_vtvc_meta_block"]//span/text()')
-        ).strip()
+        metadata = json.loads(eval_xpath_getindex(result, './/div[@class="vrhdata"]/@vrhm', index=0))
+        info = " - ".join(eval_xpath(result, './/div[@class="mc_vtvc_meta_block"]//span/text()')).strip()
         thumbnail = eval_xpath_getindex(
             result,
             './/img[starts-with(@class, "rms")]/@data-src-hq',

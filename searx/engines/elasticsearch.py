@@ -70,10 +70,7 @@ page_size = 10
 
 
 def setup(engine_settings: dict[str, t.Any]) -> bool | None:
-    if (
-        "query_type" in engine_settings
-        and engine_settings["query_type"] not in _available_query_types
-    ):
+    if "query_type" in engine_settings and engine_settings["query_type"] not in _available_query_types:
         raise ValueError("unsupported query type", engine_settings["query_type"])
 
     if index == "":
@@ -176,10 +173,7 @@ def response(resp: SXNG_Response) -> EngineResults:
         raise SearxEngineAPIException(resp_json["error"])
 
     for result in resp_json["hits"]["hits"]:
-        kvmap = {
-            key: str(value) if not key.startswith("_") else value
-            for key, value in result["_source"].items()
-        }
+        kvmap = {key: str(value) if not key.startswith("_") else value for key, value in result["_source"].items()}
         if show_metadata:
             kvmap["metadata"] = {
                 "index": result["_index"],

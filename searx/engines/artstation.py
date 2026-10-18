@@ -53,12 +53,8 @@ def fetch_csrf_tokens():
     public_token = resp.json()["public_csrf_token"]
     private_token = resp.cookies["PRIVATE-CSRF-TOKEN"]
 
-    CACHE.set(
-        key=CSRF_PUBLICKEY_CACHE, value=public_token, expire=KEY_EXPIRATION_SECONDS
-    )
-    CACHE.set(
-        key=CSRF_PRIVATEKEY_CACHE, value=private_token, expire=KEY_EXPIRATION_SECONDS
-    )
+    CACHE.set(key=CSRF_PUBLICKEY_CACHE, value=public_token, expire=KEY_EXPIRATION_SECONDS)
+    CACHE.set(key=CSRF_PRIVATEKEY_CACHE, value=private_token, expire=KEY_EXPIRATION_SECONDS)
 
     return public_token, private_token
 
@@ -91,9 +87,7 @@ def response(resp) -> EngineResults:
 
     for item in search_res["data"]:
         thumb = item["smaller_square_cover_url"]
-        fullsize_image = re.sub(r"/\d{6,}/", "/", thumb).replace(
-            "smaller_square", "large"
-        )
+        fullsize_image = re.sub(r"/\d{6,}/", "/", thumb).replace("smaller_square", "large")
 
         results.add(
             results.types.LegacyResult(

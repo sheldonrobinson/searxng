@@ -50,9 +50,7 @@ def response(resp):
                 "url": "https://www.bitchute.com/video/" + item["video_id"],
                 "content": html_to_text(item["description"]),
                 "author": item["channel"]["channel_name"],
-                "publishedDate": datetime.fromisoformat(
-                    item["date_published"].rstrip("Z")
-                ),
+                "publishedDate": datetime.fromisoformat(item["date_published"].rstrip("Z")),
                 "length": item["duration"],
                 "views": item["view_count"],
                 "thumbnail": item["thumbnail_url"],

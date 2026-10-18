@@ -65,9 +65,7 @@ class WDAttribute:
         self.name: str = name
 
     def get_select(self):
-        return "(group_concat(distinct ?{name};separator=', ') as ?{name}s)".replace(
-            "{name}", self.name
-        )
+        return "(group_concat(distinct ?{name};separator=', ') as ?{name}s)".replace("{name}", self.name)
 
     def get_label(self, language: str):
         return get_label_for_entity(self.name, language)
@@ -81,9 +79,7 @@ class WDAttribute:
     def get_group_by(self) -> str:
         return ""
 
-    def get_str(
-        self, result: dict[str, t.Any], language: str
-    ) -> str | None:  # pylint: disable=unused-argument
+    def get_str(self, result: dict[str, t.Any], language: str) -> str | None:  # pylint: disable=unused-argument
         return result.get(self.name + "s")
 
     def __repr__(self):
@@ -97,9 +93,7 @@ class WDAmountAttribute(WDAttribute):
     def get_where(self):
         return """  OPTIONAL { ?item p:{name} ?{name}Node .
     ?{name}Node rdf:type wikibase:BestRank ; ps:{name} ?{name} .
-    OPTIONAL { ?{name}Node psv:{name}/wikibase:quantityUnit ?{name}Unit. } }""".replace(
-            "{name}", self.name
-        )
+    OPTIONAL { ?{name}Node psv:{name}/wikibase:quantityUnit ?{name}Unit. } }""".replace("{name}", self.name)
 
     def get_group_by(self) -> str:
         return self.get_select()
@@ -124,17 +118,13 @@ class WDArticle(WDAttribute):
         return "Wikipedia ({language})".replace("{language}", self.language)
 
     def get_select(self):
-        return "?article{language} ?articleName{language}".replace(
-            "{language}", self.language
-        )
+        return "?article{language} ?articleName{language}".replace("{language}", self.language)
 
     def get_where(self):
         return """OPTIONAL { ?article{language} schema:about ?item ;
              schema:inLanguage "{language}" ;
              schema:isPartOf <https://{language}.wikipedia.org/> ;
-             schema:name ?articleName{language} . }""".replace(
-            "{language}", self.language
-        )
+             schema:name ?articleName{language} . }""".replace("{language}", self.language)
 
     def get_group_by(self):
         return self.get_select()
@@ -146,9 +136,7 @@ class WDArticle(WDAttribute):
 
 class WDLabelAttribute(WDAttribute):
     def get_select(self):
-        return "(group_concat(distinct ?{name}Label;separator=', ') as ?{name}Labels)".replace(
-            "{name}", self.name
-        )
+        return "(group_concat(distinct ?{name}Label;separator=', ') as ?{name}Labels)".replace("{name}", self.name)
 
     def get_where(self):
         return "OPTIONAL { ?item wdt:{name} ?{name} . }".replace("{name}", self.name)
@@ -224,9 +212,7 @@ class WDGeoAttribute(WDAttribute):
     def get_where(self):
         return """OPTIONAL { ?item p:{name}/psv:{name} [
     wikibase:geoLatitude ?{name}Lat ;
-    wikibase:geoLongitude ?{name}Long ] }""".replace(
-            "{name}", self.name
-        )
+    wikibase:geoLongitude ?{name}Long ] }""".replace("{name}", self.name)
 
     def get_group_by(self):
         return self.get_select()
@@ -254,11 +240,7 @@ class WDImageAttribute(WDURLAttribute):
 
 class WDDateAttribute(WDAttribute):
     def get_select(self):
-        return (
-            "?{name} ?{name}timePrecision ?{name}timeZone ?{name}timeCalendar".replace(
-                "{name}", self.name
-            )
-        )
+        return "?{name} ?{name}timePrecision ?{name}timeZone ?{name}timeCalendar".replace("{name}", self.name)
 
     def get_where(self):
         # To remove duplicate, add
@@ -270,16 +252,12 @@ class WDDateAttribute(WDAttribute):
     wikibase:timePrecision ?{name}timePrecision ;
     wikibase:timeTimezone ?{name}timeZone ;
     wikibase:timeCalendarModel ?{name}timeCalendar ] . }
-    hint:Prior hint:rangeSafe true;""".replace(
-            "{name}", self.name
-        )
+    hint:Prior hint:rangeSafe true;""".replace("{name}", self.name)
 
     def get_group_by(self):
         return self.get_select()
 
-    def format_8(
-        self, value: str, locale: str
-    ) -> str:  # pylint: disable=unused-argument
+    def format_8(self, value: str, locale: str) -> str:  # pylint: disable=unused-argument
         # precision: less than a year
         return value
 
@@ -408,9 +386,7 @@ def fetch_properties(units: dict[str, WikiDataUnitType]) -> WikiDataPropertiesTy
             if attribute.name not in properties:
                 wikidata_property_names.append("wd:" + attribute.name)
 
-        query = QUERY_PROPERTY_NAMES.replace(
-            "%ATTRIBUTES%", " ".join(wikidata_property_names)
-        )
+        query = QUERY_PROPERTY_NAMES.replace("%ATTRIBUTES%", " ".join(wikidata_property_names))
         kwargs: dict[str, t.Any] = {"timeout": 60}
         json_response = send_wikidata_query(query, **kwargs)
 
@@ -420,9 +396,7 @@ def fetch_properties(units: dict[str, WikiDataUnitType]) -> WikiDataPropertiesTy
                 continue
             name = name_field["value"]
             lang = name_field["xml:lang"]
-            entity_id = result["item"]["value"].replace(
-                "http://www.wikidata.org/entity/", ""
-            )
+            entity_id = result["item"]["value"].replace("http://www.wikidata.org/entity/", "")
 
             if name:
                 prop = properties.get(entity_id) or {}

@@ -57,8 +57,7 @@ def response(resp):
             results.append(
                 {
                     "url": result["uri"],
-                    "title": result["username"]
-                    + f" ({result['followers_count']} followers)",
+                    "title": result["username"] + f" ({result['followers_count']} followers)",
                     "content": result["note"],
                     "thumbnail": result.get("avatar"),
                     "publishedDate": datetime.fromisoformat(result["created_at"][:10]),

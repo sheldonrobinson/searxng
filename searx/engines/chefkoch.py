@@ -47,9 +47,7 @@ def response(resp):
 
         publishedDate = None
         if recipe["submissionDate"]:
-            publishedDate = datetime.fromisoformat(
-                result["recipe"]["submissionDate"][:19]
-            )
+            publishedDate = datetime.fromisoformat(result["recipe"]["submissionDate"][:19])
 
         content = [
             f"Schwierigkeitsstufe (1-3): {recipe['difficulty']}",
@@ -65,9 +63,7 @@ def response(resp):
                 "url": recipe["siteUrl"],
                 "title": recipe["title"],
                 "content": " | ".join(content),
-                "thumbnail": recipe["previewImageUrlTemplate"].replace(
-                    "<format>", thumbnail_format
-                ),
+                "thumbnail": recipe["previewImageUrlTemplate"].replace("<format>", thumbnail_format),
                 "publishedDate": publishedDate,
             }
         )

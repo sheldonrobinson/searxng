@@ -76,9 +76,7 @@ def get_bang_definition_and_autocomplete(
         bang_ac = current.pop(0)
         done.add(bang_ac)
 
-        current_bang_definition, current_bang_ac_list = get_bang_definition_and_ac(
-            external_bangs_db, bang_ac
-        )
+        current_bang_definition, current_bang_ac_list = get_bang_definition_and_ac(external_bangs_db, bang_ac)
         if current_bang_definition:
             _, order = resolve_bang_definition(current_bang_definition, "")
             new_autocomplete.append((bang_ac, order))
@@ -92,9 +90,7 @@ def get_bang_definition_and_autocomplete(
     return bang_definition, new_autocomplete
 
 
-def get_bang_url(
-    search_query: "SearchQuery", external_bangs_db: dict[str, t.Any] | None = None
-) -> str | None:
+def get_bang_url(search_query: "SearchQuery", external_bangs_db: dict[str, t.Any] | None = None) -> str | None:
     """
     Redirects if the user supplied a correct bang search.
     :param search_query: This is a search_query object which contains preferences and the submitted queries.
@@ -106,9 +102,7 @@ def get_bang_url(
         external_bangs_db = EXTERNAL_BANGS
 
     if search_query.external_bang:
-        bang_definition, _ = get_bang_definition_and_ac(
-            external_bangs_db, search_query.external_bang
-        )
+        bang_definition, _ = get_bang_definition_and_ac(external_bangs_db, search_query.external_bang)
         if bang_definition and isinstance(bang_definition, str):
             ret_val = resolve_bang_definition(bang_definition, search_query.query)[0]
 

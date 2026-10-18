@@ -45,17 +45,13 @@ def response(resp):
             thumbnail = base_url + result["teaser"]["image"]["sources"][-1]["url"]
 
         metadata = result["extension"]["overline"]
-        authors = ", ".join(
-            author["name"] for author in result["extension"].get("authors", [])
-        )
+        authors = ", ".join(author["name"] for author in result["extension"].get("authors", []))
         if authors:
             metadata += f" | {authors}"
 
         publishedDate = None
         if result["extension"].get("publishingDate"):
-            publishedDate = datetime.fromtimestamp(
-                result["extension"]["publishingDate"]
-            )
+            publishedDate = datetime.fromtimestamp(result["extension"]["publishingDate"])
 
         results.append(
             {

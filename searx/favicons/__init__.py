@@ -29,9 +29,7 @@ def init():
     from . import config, cache, proxy
     from .. import settings_loader
 
-    cfg_file = (
-        settings_loader.get_user_cfg_folder() or pathlib.Path("/etc/searxng")
-    ) / "favicons.toml"
+    cfg_file = (settings_loader.get_user_cfg_folder() or pathlib.Path("/etc/searxng")) / "favicons.toml"
     if not cfg_file.exists():
         if is_active():
             logger.error("missing favicon config: %s", cfg_file)

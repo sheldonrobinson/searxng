@@ -33,9 +33,7 @@ language_support = True
 base_url = "https://nominatim.openstreetmap.org/"
 search_string = "search?{query}&polygon_geojson=1&format=jsonv2&addressdetails=1&extratags=1&dedupe=1"
 result_id_url = "https://openstreetmap.org/{osm_type}/{osm_id}"
-result_lat_lon_url = (
-    "https://www.openstreetmap.org/?mlat={lat}&mlon={lon}&zoom={zoom}&layers=M"
-)
+result_lat_lon_url = "https://www.openstreetmap.org/?mlat={lat}&mlon={lon}&zoom={zoom}&layers=M"
 
 route_url = "https://graphhopper.com/maps"
 
@@ -140,9 +138,7 @@ KEY_RANKS = {k: i for i, k in enumerate(KEY_ORDER)}
 
 
 def request(query, params):
-    params["url"] = base_url + search_string.format(
-        query=urllib.parse.urlencode({"q": query})
-    )
+    params["url"] = base_url + search_string.format(query=urllib.parse.urlencode({"q": query}))
     return params
 
 
@@ -198,9 +194,7 @@ def response(resp) -> EngineResults:
                 "thumbnail": thumbnail,
                 "links": links,
                 "data": data,
-                "type": get_tag_label(
-                    result.get("category"), result.get("type", ""), user_language
-                ),
+                "type": get_tag_label(result.get("category"), result.get("type", ""), user_language),
                 "type_icon": result.get("icon"),
                 "content": "",
                 "longitude": result["lon"],
@@ -240,33 +234,23 @@ def fetch_wikidata(nominatim_json, user_language):
     if wikidata_ids:
         user_language = "en" if user_language == "all" else user_language.split("-")[0]
         wikidata_ids_str = " ".join(wikidata_ids)
-        query = wikidata_image_sparql.replace(
-            "%WIKIDATA_IDS%", sparql_string_escape(wikidata_ids_str)
-        ).replace("%LANGUAGE%", sparql_string_escape(user_language))
+        query = wikidata_image_sparql.replace("%WIKIDATA_IDS%", sparql_string_escape(wikidata_ids_str)).replace(
+            "%LANGUAGE%", sparql_string_escape(user_language)
+        )
         wikidata_json = send_wikidata_query(query)
         for wd_result in wikidata_json.get("results", {}).get("bindings", {}):
-            wd_id = wd_result["item"]["value"].replace(
-                "http://www.wikidata.org/entity/", ""
-            )
+            wd_id = wd_result["item"]["value"].replace("http://www.wikidata.org/entity/", "")
             for result in wd_to_results.get(wd_id, []):
                 result["wikidata"] = {
                     "itemLabel": wd_result["itemLabel"]["value"],
-                    "image": get_wikipedia_image(
-                        wd_result.get("image", {}).get("value")
-                    ),
-                    "image_sign": get_wikipedia_image(
-                        wd_result.get("sign", {}).get("value")
-                    ),
-                    "image_symbol": get_wikipedia_image(
-                        wd_result.get("symbol", {}).get("value")
-                    ),
+                    "image": get_wikipedia_image(wd_result.get("image", {}).get("value")),
+                    "image_sign": get_wikipedia_image(wd_result.get("sign", {}).get("value")),
+                    "image_symbol": get_wikipedia_image(wd_result.get("symbol", {}).get("value")),
                 }
                 # overwrite wikipedia link
                 wikipedia_name = wd_result.get("wikipediaName", {}).get("value")
                 if wikipedia_name:
-                    result["extratags"]["wikipedia"] = (
-                        user_language + ":" + wikipedia_name
-                    )
+                    result["extratags"]["wikipedia"] = user_language + ":" + wikipedia_name
                 # get website if not already defined
                 website = wd_result.get("website", {}).get("value")
                 if (

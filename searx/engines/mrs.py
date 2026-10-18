@@ -48,9 +48,7 @@ def setup(_: dict[str, t.Any]) -> bool | None:
 
 
 def request(query, params):
-    params["url"] = (
-        f"{base_url}/search/{quote_plus(query)}/{page_size}/{(params['pageno']-1)*page_size}"
-    )
+    params["url"] = f"{base_url}/search/{quote_plus(query)}/{page_size}/{(params['pageno']-1)*page_size}"
     return params
 
 

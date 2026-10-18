@@ -386,9 +386,7 @@ def extract_response_info(result):
     try:
         if thumbnail_query:
             thumbnail_query_result = query(result, thumbnail_query)[0]
-            tmp_result["thumbnail"] = thumbnail_prefix + to_string(
-                thumbnail_query_result
-            )
+            tmp_result["thumbnail"] = thumbnail_prefix + to_string(thumbnail_query_result)
     except:  # pylint: disable=bare-except
         pass
 

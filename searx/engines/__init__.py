@@ -119,18 +119,14 @@ def load_engine(engine_data: dict[str, t.Any]) -> "Engine | types.ModuleType | N
         return None
 
     if engine_name.lower() != engine_name:
-        logger.warning(
-            'Engine name is not lowercase: "%s", converting to lowercase', engine_name
-        )
+        logger.warning('Engine name is not lowercase: "%s", converting to lowercase', engine_name)
         engine_name = engine_name.lower()
         engine_data["name"] = engine_name
 
     # load_module
     module_name = engine_data.get("engine")
     if module_name is None:
-        logger.error(
-            'The "engine" field is missing for the engine named "%s"', engine_name
-        )
+        logger.error('The "engine" field is missing for the engine named "%s"', engine_name)
         return None
     try:
         module_path = os.path.join(ENGINE_DIR, module_name + ".pyc")
@@ -200,9 +196,7 @@ def set_loggers(engine: "Engine|types.ModuleType", engine_name: str):
             module.logger = logger.getChild(module_engine_name)  # type: ignore
 
 
-def update_engine_attributes(
-    engine: "Engine | types.ModuleType", engine_data: dict[str, t.Any]
-):
+def update_engine_attributes(engine: "Engine | types.ModuleType", engine_data: dict[str, t.Any]):
     # pylint: disable=too-many-branches
 
     # set / update engine attributes from engine_data
@@ -247,13 +241,8 @@ def update_engine_attributes(
         if not hasattr(engine, arg_name):
             setattr(engine, arg_name, copy.deepcopy(arg_value))
 
-    if (
-        ENGINE_TRAITS.get(engine.name, {}).get("languages")
-        and not engine.language_support
-    ):
-        raise ValueError(
-            f"engine '{engine.name}' ({engine_data['engine']}) language_support should be set to True"
-        )
+    if ENGINE_TRAITS.get(engine.name, {}).get("languages") and not engine.language_support:
+        raise ValueError(f"engine '{engine.name}' ({engine_data['engine']}) language_support should be set to True")
 
 
 def update_attributes_for_tor(engine: "Engine | types.ModuleType"):
@@ -270,18 +259,14 @@ def is_missing_required_attributes(engine: "Engine | types.ModuleType"):
     missing = False
     for engine_attr in dir(engine):
         if not engine_attr.startswith("_") and getattr(engine, engine_attr) is None:
-            logger.error(
-                'Missing engine config attribute: "%s.%s"', engine.name, engine_attr
-            )
+            logger.error('Missing engine config attribute: "%s.%s"', engine.name, engine_attr)
             missing = True
     return missing
 
 
 def using_tor_proxy(engine: "Engine | types.ModuleType"):
     """Return True if the engine configuration declares to use Tor."""
-    return settings["outgoing"].get("using_tor_proxy") or getattr(
-        engine, "using_tor_proxy", False
-    )
+    return settings["outgoing"].get("using_tor_proxy") or getattr(engine, "using_tor_proxy", False)
 
 
 def is_engine_active(engine: "Engine | types.ModuleType"):
@@ -296,9 +281,7 @@ def is_engine_active(engine: "Engine | types.ModuleType"):
     return True
 
 
-def call_engine_setup(
-    engine: "Engine | types.ModuleType", engine_data: dict[str, t.Any]
-) -> bool:
+def call_engine_setup(engine: "Engine | types.ModuleType", engine_data: dict[str, t.Any]) -> bool:
 
     setup_ok: bool | None = False
     setup_func = getattr(engine, "setup", None)
@@ -306,9 +289,7 @@ def call_engine_setup(
     if setup_func is None:
         setup_ok = True
     elif not callable(setup_func):
-        logger.error(
-            "engine's setup method isn't a callable (is of type: %s)", type(setup_func)
-        )
+        logger.error("engine's setup method isn't a callable (is of type: %s)", type(setup_func))
     else:
         try:
             setup_ok = engine.setup(engine_data)
@@ -326,9 +307,7 @@ def call_engine_setup(
         setup_ok = True
 
     if not setup_ok:
-        logger.error(
-            "(PID %s) %s: engine setup was not successful", os.getpid(), engine.name
-        )
+        logger.error("(PID %s) %s: engine setup was not successful", os.getpid(), engine.name)
     return setup_ok
 
 

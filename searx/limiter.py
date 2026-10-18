@@ -137,12 +137,8 @@ def get_cfg() -> config.Config:
     if CFG is None:
         from . import settings_loader  # pylint: disable=import-outside-toplevel
 
-        cfg_file = (
-            settings_loader.get_user_cfg_folder() or Path("/etc/searxng")
-        ) / "limiter.toml"
-        CFG = config.Config.from_toml(
-            LIMITER_CFG_SCHEMA, cfg_file, searx.compat.LIMITER_CFG_DEPRECATED
-        )
+        cfg_file = (settings_loader.get_user_cfg_folder() or Path("/etc/searxng")) / "limiter.toml"
+        CFG = config.Config.from_toml(LIMITER_CFG_SCHEMA, cfg_file, searx.compat.LIMITER_CFG_DEPRECATED)
         searx.compat.limiter_fix_cfg(CFG, cfg_file)
 
     return CFG
@@ -189,9 +185,7 @@ def filter_request(request: SXNG_Request) -> werkzeug.Response | None:
     ]:
         val = func.filter_request(network, request, cfg)
         if val is not None:
-            logger.debug(
-                f"NOT OK ({func.__name__}): {network}: %s", dump_request(sxng_request)
-            )
+            logger.debug(f"NOT OK ({func.__name__}): {network}: %s", dump_request(sxng_request))
             return val
 
     # methods applied on /search requests

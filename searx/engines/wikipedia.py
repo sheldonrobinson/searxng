@@ -139,9 +139,7 @@ def get_wiki_params(sxng_locale, eng_traits):
     (region) higher than a language (compare :py:obj:`wiki_lc_locale_variants`).
 
     """
-    eng_tag = eng_traits.get_region(
-        sxng_locale, eng_traits.get_language(sxng_locale, "en")
-    )
+    eng_tag = eng_traits.get_region(sxng_locale, eng_traits.get_language(sxng_locale, "en"))
     wiki_netloc = eng_traits.custom["wiki_netloc"].get(eng_tag, "en.wikipedia.org")
     return eng_tag, wiki_netloc
 
@@ -174,8 +172,7 @@ def response(resp):
             pass
         else:
             if (
-                api_result["type"]
-                == "https://mediawiki.org/wiki/HyperSwitch/errors/bad_request"
+                api_result["type"] == "https://mediawiki.org/wiki/HyperSwitch/errors/bad_request"
                 and api_result["detail"] == "title-invalid-characters"
             ):
                 return []
@@ -183,9 +180,7 @@ def response(resp):
     _network.raise_for_httperror(resp)
 
     api_result = resp.json()
-    title = utils.html_to_text(
-        api_result.get("titles", {}).get("display") or api_result.get("title")
-    )
+    title = utils.html_to_text(api_result.get("titles", {}).get("display") or api_result.get("title"))
     wikipedia_link = api_result["content_urls"]["desktop"]["page"]
 
     if "list" in display_type or api_result.get("type") != "standard":
@@ -304,9 +299,7 @@ def fetch_wikimedia_traits(engine_traits: EngineTraits):
         wiki_url = urllib.parse.urlparse(wiki_url)
 
         try:
-            sxng_tag = locales.language_tag(
-                babel.Locale.parse(lang_map.get(eng_tag, eng_tag), sep="-")
-            )
+            sxng_tag = locales.language_tag(babel.Locale.parse(lang_map.get(eng_tag, eng_tag), sep="-"))
         except babel.UnknownLocaleError:
             # print("ERROR: %s [%s] is unknown by babel" % (cols[0], eng_tag))
             continue

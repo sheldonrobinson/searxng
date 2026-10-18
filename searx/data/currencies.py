@@ -39,9 +39,7 @@ class CurrenciesDB:
         with open(self.json_file, encoding="utf-8") as f:
             data_dict: dict[str, dict[str, str]] = json.load(f)
 
-        rows: "list[CacheRowType]" = [
-            (k, v, None) for k, v in data_dict["names"].items()
-        ]
+        rows: "list[CacheRowType]" = [(k, v, None) for k, v in data_dict["names"].items()]
         self.cache.setmany(rows, ctx=self.ctx_names)
         rows = [(k, v, None) for k, v in data_dict["iso4217"].items()]
         self.cache.setmany(rows, ctx=self.ctx_iso4217)
@@ -49,9 +47,7 @@ class CurrenciesDB:
     def name_to_iso4217(self, name: str) -> str | None:
         self.init()
 
-        ret_val: str | list[str] | None = self.cache.get(
-            key=name, default=None, ctx=self.ctx_names
-        )
+        ret_val: str | list[str] | None = self.cache.get(key=name, default=None, ctx=self.ctx_names)
         if isinstance(ret_val, list):
             # if more alternatives, use the last in the list
             ret_val = ret_val[-1]
@@ -60,9 +56,7 @@ class CurrenciesDB:
     def iso4217_to_name(self, iso4217: str, language: str) -> str | None:
         self.init()
 
-        iso4217_languages: dict[str, str] = self.cache.get(
-            key=iso4217, default={}, ctx=self.ctx_iso4217
-        )
+        iso4217_languages: dict[str, str] = self.cache.get(key=iso4217, default={}, ctx=self.ctx_iso4217)
         return iso4217_languages.get(language)
 
     def is_iso4217(self, iso4217: str) -> bool:

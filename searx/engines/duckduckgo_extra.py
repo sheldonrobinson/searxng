@@ -51,9 +51,7 @@ send_accept_language_header = False
 def setup(engine_settings: dict[str, t.Any]) -> bool | None:
 
     if engine_settings["ddg_category"] not in ["images", "videos", "news"]:
-        raise ValueError(
-            f"Unsupported DuckDuckGo category: {engine_settings['ddg_category']}"
-        )
+        raise ValueError(f"Unsupported DuckDuckGo category: {engine_settings['ddg_category']}")
 
 
 def fetch_vqd(
@@ -74,9 +72,7 @@ def fetch_vqd(
         if value:
             logger.debug("vqd value from duckduckgo.com request: '%s'", value)
         else:
-            logger.error(
-                "vqd: can't parse value from ddg response (return empty string)"
-            )
+            logger.error("vqd: can't parse value from ddg response (return empty string)")
             return ""
     else:
         logger.error("vqd: got HTTP %s from duckduckgo.com", resp.status_code)
@@ -146,9 +142,7 @@ def request(query: str, params: "OnlineParams") -> None:
         params["cookies"]["p"] = safe_search  # "-2", "1"
         args["p"] = safe_search
 
-    params["url"] = (
-        f"https://duckduckgo.com/{search_path_map[ddg_category]}.js?{urlencode(args)}"
-    )
+    params["url"] = f"https://duckduckgo.com/{search_path_map[ddg_category]}.js?{urlencode(args)}"
 
     logger.debug("param headers: %s", params["headers"])
     logger.debug("param data: %s", params["data"])

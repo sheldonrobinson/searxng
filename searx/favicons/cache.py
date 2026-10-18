@@ -156,9 +156,7 @@ class FaviconCacheStats:
 
     def __sub__(self, other: "FaviconCacheStats") -> "FaviconCacheStats":
         if not isinstance(other, self.__class__):
-            raise TypeError(
-                f"unsupported operand type(s) for +: '{self.__class__}' and '{type(other)}'"
-            )
+            raise TypeError(f"unsupported operand type(s) for +: '{self.__class__}' and '{type(other)}'")
         kwargs = {}
         for field, _, _ in self.field_descr:
             self_val, other_val = getattr(self, field), getattr(other, field)
@@ -178,9 +176,7 @@ class FaviconCacheStats:
                 val = "--"
             else:
                 val = cast(val)  # type: ignore
-            s.append(
-                fmt.format(descr=descr, val=val)
-            )  # pyright: ignore[reportUnknownArgumentType]
+            s.append(fmt.format(descr=descr, val=val))  # pyright: ignore[reportUnknownArgumentType]
         return "".join(s)
 
 
@@ -192,17 +188,13 @@ class FaviconCache(abc.ABC):
         """An instance of the favicon cache is build up from the configuration."""
 
     @abc.abstractmethod
-    def __call__(
-        self, resolver: str, authority: str
-    ) -> None | tuple[None | bytes, None | str]:
+    def __call__(self, resolver: str, authority: str) -> None | tuple[None | bytes, None | str]:
         """Returns ``None`` or the tuple of ``(data, mime)`` that has been
         registered in the cache.  The ``None`` indicates that there was no entry
         in the cache."""
 
     @abc.abstractmethod
-    def set(
-        self, resolver: str, authority: str, mime: str | None, data: bytes | None
-    ) -> bool:
+    def set(self, resolver: str, authority: str, mime: str | None, data: bytes | None) -> bool:
         """Set data and mime-type in the cache.  If data is None, the
         :py:obj:`FALLBACK_ICON` is registered. in the cache."""
 
@@ -227,14 +219,10 @@ class FaviconCacheNull(FaviconCache):
     def __init__(self, cfg: FaviconCacheConfig):
         return None
 
-    def __call__(
-        self, resolver: str, authority: str
-    ) -> None | tuple[None | bytes, None | str]:
+    def __call__(self, resolver: str, authority: str) -> None | tuple[None | bytes, None | str]:
         return None
 
-    def set(
-        self, resolver: str, authority: str, mime: str | None, data: bytes | None
-    ) -> bool:
+    def set(self, resolver: str, authority: str, mime: str | None, data: bytes | None) -> bool:
         return False
 
     def state(self):
@@ -245,9 +233,7 @@ class FaviconCacheNull(FaviconCache):
 
 
 @t.final
-class FaviconCacheSQLite(
-    sqlitedb.SQLiteAppl, FaviconCache
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class FaviconCacheSQLite(sqlitedb.SQLiteAppl, FaviconCache):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """Favicon cache that manages the favicon BLOBs in a SQLite DB.  The DB
     model in the SQLite DB is implemented using the abstract class
     :py:obj:`sqlitedb.SQLiteAppl`.
@@ -331,9 +317,7 @@ CREATE TABLE IF NOT EXISTS blob_map (
         super().__init__(cfg.db_url)
         self.cfg = cfg
 
-    def __call__(
-        self, resolver: str, authority: str
-    ) -> None | tuple[None | bytes, None | str]:
+    def __call__(self, resolver: str, authority: str) -> None | tuple[None | bytes, None | str]:
 
         sql = "SELECT sha256 FROM blob_map WHERE resolver = ? AND authority = ?"
         res = self.DB.execute(sql, (resolver, authority)).fetchone()
@@ -351,14 +335,9 @@ CREATE TABLE IF NOT EXISTS blob_map (
             data, mime = res
         return data, mime
 
-    def set(
-        self, resolver: str, authority: str, mime: str | None, data: bytes | None
-    ) -> bool:
+    def set(self, resolver: str, authority: str, mime: str | None, data: bytes | None) -> bool:
 
-        if (
-            self.cfg.MAINTENANCE_MODE == "auto"
-            and int(time.time()) > self.next_maintenance_time
-        ):
+        if self.cfg.MAINTENANCE_MODE == "auto" and int(time.time()) > self.next_maintenance_time:
             # Should automatic maintenance be moved to a new thread?
             self.maintenance()
 
@@ -408,13 +387,9 @@ CREATE TABLE IF NOT EXISTS blob_map (
         # (e.g. in multi thread or process environments).
 
         if not force and int(time.time()) < self.next_maintenance_time:
-            logger.debug(
-                "no maintenance required yet, next maintenance interval is in the future"
-            )
+            logger.debug("no maintenance required yet, next maintenance interval is in the future")
             return
-        self.properties.set(
-            "LAST_MAINTENANCE", ""
-        )  # hint: this (also) sets the m_time of the property!
+        self.properties.set("LAST_MAINTENANCE", "")  # hint: this (also) sets the m_time of the property!
 
         # Do maintenance tasks.  This can be take a little more time, to avoid
         # DB locks, establish a new DB connection.
@@ -431,9 +406,7 @@ CREATE TABLE IF NOT EXISTS blob_map (
             logger.debug("dropped %s obsolete BLOBS from db", res.rowcount)
 
             # drop old items to be in LIMIT_TOTAL_BYTES
-            total_bytes = (
-                conn.execute("SELECT SUM(bytes_c) FROM blobs").fetchone()[0] or 0
-            )
+            total_bytes = conn.execute("SELECT SUM(bytes_c) FROM blobs").fetchone()[0] or 0
             if total_bytes > self.cfg.LIMIT_TOTAL_BYTES:
 
                 x = total_bytes - self.cfg.LIMIT_TOTAL_BYTES
@@ -446,17 +419,9 @@ CREATE TABLE IF NOT EXISTS blob_map (
                     if c > x:
                         break
                 if sha_list:
-                    conn.execute(
-                        "DELETE FROM blobs WHERE sha256 IN ('%s')"
-                        % "','".join(sha_list)
-                    )
-                    conn.execute(
-                        "DELETE FROM blob_map WHERE sha256 IN ('%s')"
-                        % "','".join(sha_list)
-                    )
-                    logger.debug(
-                        "dropped %s blobs with total size of %s bytes", len(sha_list), c
-                    )
+                    conn.execute("DELETE FROM blobs WHERE sha256 IN ('%s')" % "','".join(sha_list))
+                    conn.execute("DELETE FROM blob_map WHERE sha256 IN ('%s')" % "','".join(sha_list))
+                    logger.debug("dropped %s blobs with total size of %s bytes", len(sha_list), c)
 
         # Vacuuming the WALs
         # https://www.theunterminatedstring.com/sqlite-vacuuming/
@@ -504,9 +469,7 @@ class FaviconCacheMEM(FaviconCache):
         self._data: dict[str, t.Any] = {}
         self._sha_mime: dict[str, tuple[str, str | None]] = {}
 
-    def __call__(
-        self, resolver: str, authority: str
-    ) -> None | tuple[bytes | None, str | None]:
+    def __call__(self, resolver: str, authority: str) -> None | tuple[bytes | None, str | None]:
 
         sha, mime = self._sha_mime.get(f"{resolver}:{authority}", (None, None))
         if sha is None:
@@ -516,9 +479,7 @@ class FaviconCacheMEM(FaviconCache):
             data = None
         return data, mime
 
-    def set(
-        self, resolver: str, authority: str, mime: str | None, data: bytes | None
-    ) -> bool:
+    def set(self, resolver: str, authority: str, mime: str | None, data: bytes | None) -> bool:
 
         if data is None:
             data = FALLBACK_ICON

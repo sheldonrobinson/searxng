@@ -72,19 +72,14 @@ class SettingsValue:
         environ_name: str | None = None,
     ):
         self.type_definition: TypeDefinition = (
-            type_definition_arg
-            if isinstance(type_definition_arg, tuple)
-            else (type_definition_arg,)
+            type_definition_arg if isinstance(type_definition_arg, tuple) else (type_definition_arg,)
         )
         self.default: t.Any = default
         self.environ_name: str | None = environ_name
 
     @property
     def type_definition_repr(self):
-        types_str = [
-            td.__name__ if isinstance(td, type) else repr(td)
-            for td in self.type_definition
-        ]
+        types_str = [td.__name__ if isinstance(td, type) else repr(td) for td in self.type_definition]
         return ", ".join(types_str)
 
     def check_type_definition(self, value: t.Any) -> None:
@@ -92,11 +87,7 @@ class SettingsValue:
             return
         type_list = tuple(t for t in self.type_definition if isinstance(t, type))
         if not isinstance(value, type_list):
-            raise ValueError(
-                "The value has to be one of these types/values: {}".format(
-                    self.type_definition_repr
-                )
-            )
+            raise ValueError("The value has to be one of these types/values: {}".format(self.type_definition_repr))
 
     def __call__(self, value: t.Any) -> t.Any:
         if value == _UNDEFINED:
@@ -149,9 +140,7 @@ class SettingsBytesValue(SettingsValue):
         return super().__call__(value)
 
 
-def apply_schema(
-    settings: dict[str, t.Any], schema: dict[str, t.Any], path_list: list[str]
-):
+def apply_schema(settings: dict[str, t.Any], schema: dict[str, t.Any], path_list: list[str]):
     error = False
     for key, value in schema.items():
         if isinstance(value, type) and issubclass(value, msgspec.Struct):
@@ -183,9 +172,7 @@ def apply_schema(
                 logger.error(msg)
                 error = True
         elif isinstance(value, dict):
-            error = error or apply_schema(
-                settings.setdefault(key, {}), schema[key], [*path_list, key]
-            )
+            error = error or apply_schema(settings.setdefault(key, {}), schema[key], [*path_list, key])
         else:
             settings.setdefault(key, value)
     if len(path_list) == 0 and error:
@@ -199,9 +186,7 @@ SCHEMA: dict[str, t.Any] = {
         "instance_name": SettingsValue(str, "SearXNG"),
         "privacypolicy_url": SettingsValue((None, False, str), None),
         "contact_url": SettingsValue((None, False, str), None),
-        "donation_url": SettingsValue(
-            (bool, str), "https://docs.searxng.org/donate.html"
-        ),
+        "donation_url": SettingsValue((bool, str), "https://docs.searxng.org/donate.html"),
         "enable_metrics": SettingsValue(bool, True),
         "open_metrics": SettingsValue(str, ""),
     },
@@ -247,9 +232,7 @@ SCHEMA: dict[str, t.Any] = {
     },
     "ui": {
         "static_path": SettingsDirectoryValue(str, os.path.join(searx_dir, "static")),
-        "templates_path": SettingsDirectoryValue(
-            str, os.path.join(searx_dir, "templates")
-        ),
+        "templates_path": SettingsDirectoryValue(str, os.path.join(searx_dir, "templates")),
         "default_theme": SettingsValue(str, "simple"),
         "default_locale": SettingsValue(str, ""),
         "theme_args": {

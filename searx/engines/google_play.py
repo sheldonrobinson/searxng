@@ -92,9 +92,7 @@ def response_apps(resp):
 
         results.append({"url": url, "title": title, "content": content, "img_src": img})
 
-    more = eval_xpath_list(
-        dom, '//c-wiz[@jsrenderer="RBsfwb"]//div[@role="listitem"]', min_len=1
-    )
+    more = eval_xpath_list(dom, '//c-wiz[@jsrenderer="RBsfwb"]//div[@role="listitem"]', min_len=1)
     for result in more:
         url = extract_url(eval_xpath(result, ".//a/@href"), search_url)
         title = extract_text(eval_xpath(result, './/span[@class="DdYX5"]'))
@@ -108,15 +106,7 @@ def response_apps(resp):
 
         results.append({"url": url, "title": title, "content": content, "img_src": img})
 
-    for suggestion in eval_xpath_list(
-        dom, '//c-wiz[@jsrenderer="qyd4Kb"]//div[@class="ULeU3b neq64b"]'
-    ):
-        results.append(
-            {
-                "suggestion": extract_text(
-                    eval_xpath(suggestion, './/div[@class="Epkrse "]')
-                )
-            }
-        )
+    for suggestion in eval_xpath_list(dom, '//c-wiz[@jsrenderer="qyd4Kb"]//div[@class="ULeU3b neq64b"]'):
+        results.append({"suggestion": extract_text(eval_xpath(suggestion, './/div[@class="Epkrse "]'))})
 
     return results

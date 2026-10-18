@@ -126,9 +126,7 @@ class OnlineProcessor(EngineProcessor):
     def init_engine(self) -> bool:
         """This method is called in a thread, and before the base method is
         called, the network must be set up for the ``online`` engines."""
-        self.init_network_in_thread(
-            start_time=default_timer(), timeout_limit=self.engine.timeout
-        )
+        self.init_network_in_thread(start_time=default_timer(), timeout_limit=self.engine.timeout)
         return super().init_engine()
 
     def init_network_in_thread(self, start_time: float, timeout_limit: float):
@@ -139,16 +137,12 @@ class OnlineProcessor(EngineProcessor):
         # set the network
         searx.network.set_context_network_name(self.engine.name)
 
-    def get_params(
-        self, search_query: "SearchQuery", engine_category: str
-    ) -> OnlineParams | None:
+    def get_params(self, search_query: "SearchQuery", engine_category: str) -> OnlineParams | None:
         """Returns a dictionary with the :ref:`request params <engine request
         online>` (:py:obj:`OnlineParams`), if the search condition is not
         supported by the engine, ``None`` is returned."""
 
-        base_params: RequestParams | None = super().get_params(
-            search_query, engine_category
-        )
+        base_params: RequestParams | None = super().get_params(search_query, engine_category)
         if base_params is None:
             return base_params
 
@@ -166,9 +160,7 @@ class OnlineProcessor(EngineProcessor):
                 headers["Accept-Language"] = f"{_l},{_l}-{_t};q=0.7,en;q=0.3"
             else:
                 headers["Accept-Language"] = "en-US,en;q=0.9"
-        self.logger.debug(
-            "HTTP Accept-Language: %s", headers.get("Accept-Language", "")
-        )
+        self.logger.debug("HTTP Accept-Language: %s", headers.get("Accept-Language", ""))
 
         return params
 
@@ -216,9 +208,7 @@ class OnlineProcessor(EngineProcessor):
                 request_args["content"] = params["content"]
 
         # send the request
-        response = req(
-            params["url"], **request_args
-        )  # pyright: ignore[reportArgumentType]
+        response = req(params["url"], **request_args)  # pyright: ignore[reportArgumentType]
 
         # check soft limit of the redirect count
         if len(response.history) > soft_max_redirects:
@@ -229,9 +219,7 @@ class OnlineProcessor(EngineProcessor):
             hostname = response.url.host
             count_error(
                 self.engine.name,
-                "{} redirects, maximum: {}".format(
-                    len(response.history), soft_max_redirects
-                ),
+                "{} redirects, maximum: {}".format(len(response.history), soft_max_redirects),
                 (status_code, reason, hostname),
                 secondary=True,
             )
@@ -271,11 +259,7 @@ class OnlineProcessor(EngineProcessor):
         except ssl.SSLError as e:
             # requests timeout (connect or read)
             self.handle_exception(result_container, e, suspend=True)
-            self.logger.debug(
-                "SSLError {}, verify={}".format(
-                    e, searx.network.get_network(self.engine.name).verify
-                )
-            )
+            self.logger.debug("SSLError {}, verify={}".format(e, searx.network.get_network(self.engine.name).verify))
         except (Timeout, asyncio.TimeoutError) as e:
             # requests timeout (connect or read)
             self.handle_exception(result_container, e, suspend=True)

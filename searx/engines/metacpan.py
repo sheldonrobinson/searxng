@@ -45,9 +45,7 @@ query_data_template = {
     "_source": ["documentation", "abstract"],
     "size": page_size,
 }
-search_url = urlunparse(
-    ["https", "fastapi.metacpan.org", "/v1/file/_search", "", "", ""]
-)
+search_url = urlunparse(["https", "fastapi.metacpan.org", "/v1/file/_search", "", "", ""])
 
 
 def request(query, params):

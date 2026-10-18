@@ -59,9 +59,7 @@ class SearxTestCase(aiounittest.AsyncTestCase):
         :origin:`tests/unit/settings/`.
         """
 
-        os.environ["SEARXNG_SETTINGS_PATH"] = str(
-            self.SETTINGS_FOLDER / self.TEST_SETTINGS
-        )
+        os.environ["SEARXNG_SETTINGS_PATH"] = str(self.SETTINGS_FOLDER / self.TEST_SETTINGS)
 
         # pylint: disable=import-outside-toplevel
         import searx

@@ -44,9 +44,7 @@ def response(resp):
     dom = resp.html()
 
     # filter out suggested results on further page because they're the same on each page
-    extra_xpath = (
-        results_xpath_filter_recommended if resp.search_params["pageno"] > 1 else ""
-    )
+    extra_xpath = results_xpath_filter_recommended if resp.search_params["pageno"] > 1 else ""
     res_xpath = results_xpath.format(extra=extra_xpath)
 
     for result in eval_xpath_list(dom, res_xpath):

@@ -89,9 +89,7 @@ class TrackerPatternsDB:
                 resp = http_get(url, timeout=3)
 
             except RequestException as exc:
-                log.warning(
-                    "TRACKER_PATTERNS: RequestException while fetching %s: %s", url, exc
-                )
+                log.warning("TRACKER_PATTERNS: RequestException while fetching %s: %s", url, exc)
                 continue
 
             if resp.status_code != 200:

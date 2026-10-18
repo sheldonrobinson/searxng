@@ -90,9 +90,7 @@ def request(query: str, params: "OnlineParams") -> None:
     }
 
     # uses Brave's engine traits
-    ui_lang = locales.get_engine_locale(
-        params["searxng_locale"], traits.custom["ui_lang"], "all"
-    )
+    ui_lang = locales.get_engine_locale(params["searxng_locale"], traits.custom["ui_lang"], "all")
     if ui_lang and ui_lang != "all":
         args["search_lang"] = ui_lang.split("-")[0]
 

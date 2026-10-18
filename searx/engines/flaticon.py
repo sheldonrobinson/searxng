@@ -53,9 +53,7 @@ def response(resp: "SXNG_Response"):
     result: dict[str, str]  # TBH: dict[str, t.Any]
     for result in resp.json()["items"]:
         tags = [
-            tag_info["tag"]
-            for tag_info in result["tags"]
-            if tag_info["tag"]  # pyright: ignore[reportArgumentType]
+            tag_info["tag"] for tag_info in result["tags"] if tag_info["tag"]  # pyright: ignore[reportArgumentType]
         ]
         res.add(
             res.types.Image(

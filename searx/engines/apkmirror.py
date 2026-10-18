@@ -45,9 +45,7 @@ def response(resp):
     dom = resp.html()
 
     # parse results
-    for result in eval_xpath_list(
-        dom, "//div[@id='content']//div[@class='listWidget']/div/div[@class='appRow']"
-    ):
+    for result in eval_xpath_list(dom, "//div[@id='content']//div[@class='listWidget']/div/div[@class='appRow']"):
 
         link = eval_xpath_getindex(result, ".//h5/a", 0)
 

@@ -68,9 +68,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 translations.append(
                     EngineResults.types.Translations.Item(
                         text=translation,
-                        definitions=(
-                            [item["definition"]] if item.get("definition") else []
-                        ),
+                        definitions=([item["definition"]] if item.get("definition") else []),
                         examples=[item["example"]] if item.get("example") else [],
                         synonyms=item.get("synonyms", []),
                     )

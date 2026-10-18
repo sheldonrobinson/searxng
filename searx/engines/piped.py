@@ -139,9 +139,7 @@ def response(resp):
             # the api url differs from the frontend, hence use piped.video as default
             "url": _frontend_url() + result.get("url", ""),
             "title": result.get("title", ""),
-            "publishedDate": (
-                parser.parse(time.ctime(uploaded / 1000)) if uploaded != -1 else None
-            ),
+            "publishedDate": (parser.parse(time.ctime(uploaded / 1000)) if uploaded != -1 else None),
             "iframe_src": _frontend_url() + "/embed" + result.get("url", ""),
             "views": humanize_number(result["views"]),
         }

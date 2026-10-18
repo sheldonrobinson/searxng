@@ -76,18 +76,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
                                 ".//a[contains(@class, 'result-item--title')]/@href",
                             )
                         ),
-                        title=extract_text(
-                            eval_xpath(
-                                result, ".//a[contains(@class, 'result-item--title')]"
-                            )
-                        )
-                        or "",
-                        content=extract_text(
-                            eval_xpath(
-                                result, ".//a[contains(@class, 'result-item--desc')]"
-                            )
-                        )
-                        or "",
+                        title=extract_text(eval_xpath(result, ".//a[contains(@class, 'result-item--title')]")) or "",
+                        content=extract_text(eval_xpath(result, ".//a[contains(@class, 'result-item--desc')]")) or "",
                         thumbnail=extract_text(
                             eval_xpath(
                                 result,
@@ -106,14 +96,9 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 res.add(
                     res.types.Image(
                         url=extract_text(eval_xpath(result, "./@href")),
-                        title=extract_text(
-                            eval_xpath(result, "./div[contains(@class, 'image-title')]")
-                        )
-                        or "",
-                        thumbnail_src=extract_text(eval_xpath(result, "./img/@src"))
-                        or "",
-                        img_src=extract_text(eval_xpath(result, "./@data-full-url"))
-                        or "",
+                        title=extract_text(eval_xpath(result, "./div[contains(@class, 'image-title')]")) or "",
+                        thumbnail_src=extract_text(eval_xpath(result, "./img/@src")) or "",
+                        img_src=extract_text(eval_xpath(result, "./@data-full-url")) or "",
                     )
                 )
 

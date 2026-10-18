@@ -87,9 +87,7 @@ class InfoPage:
 
         """
         return (
-            MarkdownIt("commonmark", {"typographer": True})
-            .enable(["replacements", "smartquotes"])
-            .render(self.content)
+            MarkdownIt("commonmark", {"typographer": True}).enable(["replacements", "smartquotes"]).render(self.content)
         )
 
     def get_ctx(self) -> dict[str, str]:
@@ -128,9 +126,7 @@ class InfoPageSet:  # pylint: disable=too-few-public-methods
     :type info_folder: str
     """
 
-    def __init__(
-        self, page_class: type[InfoPage] | None = None, info_folder: str | None = None
-    ):
+    def __init__(self, page_class: type[InfoPage] | None = None, info_folder: str | None = None):
         self.page_class: type[InfoPage] = page_class or InfoPage
         self.folder: str = info_folder or _INFO_FOLDER
         """location of the Markdown files"""
@@ -141,9 +137,7 @@ class InfoPageSet:  # pylint: disable=too-few-public-methods
         """default language"""
 
         self.locales: list[str] = [
-            locale.replace("_", "-")
-            for locale in os.listdir(_INFO_FOLDER)
-            if locale.replace("_", "-") in LOCALE_NAMES
+            locale.replace("_", "-") for locale in os.listdir(_INFO_FOLDER) if locale.replace("_", "-") in LOCALE_NAMES
         ]
         """list of supported languages (aka locales)"""
 

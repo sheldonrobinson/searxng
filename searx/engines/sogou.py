@@ -105,9 +105,7 @@ def _parse_date(text):
 def _parse_results(item, item_html):
     title = extract_text(item.xpath('.//h3[@class="pt"]/a'))
     content = extract_text(item.xpath('.//div[@class="ft"]'))
-    url = _extract_url(
-        extract_text(item.xpath('.//h3[@class="pt"]/a/@href')), item_html
-    )
+    url = _extract_url(extract_text(item.xpath('.//h3[@class="pt"]/a/@href')), item_html)
     publishedDate = _parse_date(extract_text(item.xpath(".//cite")))
     return {
         "title": title,
@@ -121,9 +119,7 @@ def _parse_results_with_image(item, item_html):
     title = extract_text(item.xpath('.//h3[contains(@class, "vr-title")]/a'))
     content = extract_text(item.xpath('.//div[contains(@class, "attribute-centent")]'))
     if not content:
-        content = extract_text(
-            item.xpath('.//div[contains(@class, "fz-mid space-txt")]')
-        )
+        content = extract_text(item.xpath('.//div[contains(@class, "fz-mid space-txt")]'))
     url = _extract_url(
         extract_text(item.xpath('.//h3[contains(@class, "vr-title")]/a/@href')),
         item_html,
@@ -132,9 +128,7 @@ def _parse_results_with_image(item, item_html):
 
     thumbnail = None
     try:
-        thumbnail_src = extract_text(
-            item.xpath('.//div[contains(@class, "img-layout")]//img/@src')
-        )
+        thumbnail_src = extract_text(item.xpath('.//div[contains(@class, "img-layout")]//img/@src'))
         if thumbnail_src:
             thumbnail = thumbnail_src.replace("http://", "https://")
     except (ValueError, TypeError):

@@ -35,9 +35,7 @@ def request(query, params):
     if params["time_range"]:
         args["date"] = time_range_map[params["time_range"]]
 
-    params["url"] = (
-        f"{base_url}/{pixabay_type}/search/{quote_plus(query)}/?{urlencode(args)}"
-    )
+    params["url"] = f"{base_url}/{pixabay_type}/search/{quote_plus(query)}/?{urlencode(args)}"
     params["headers"] = {
         "User-Agent": gen_useragent() + " Pixabay",
         "Accept": "application/json",

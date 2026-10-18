@@ -92,17 +92,12 @@ class LanguageParser(QueryPartParser):
             # set it as new search-language
 
             if (
-                value == lang_id
-                or value == lang_name
-                or value == english_name
-                or value.replace("-", " ") == country
+                value == lang_id or value == lang_name or value == english_name or value.replace("-", " ") == country
             ) and value not in self.raw_text_query.languages:
                 found = True
                 lang_parts = lang_id.split("-")
                 if len(lang_parts) == 2:
-                    self.raw_text_query.languages.append(
-                        lang_parts[0] + "-" + lang_parts[1].upper()
-                    )
+                    self.raw_text_query.languages.append(lang_parts[0] + "-" + lang_parts[1].upper())
                 else:
                     self.raw_text_query.languages.append(lang_id)
                 # to ensure best match (first match is not necessarily the best one)
@@ -222,10 +217,7 @@ class BangParser(QueryPartParser):
         if not value:
             # show some example queries
             for suggestion in ["images", "wikipedia", "osm"]:
-                if (
-                    suggestion not in self.raw_text_query.disabled_engines
-                    or suggestion in categories
-                ):
+                if suggestion not in self.raw_text_query.disabled_engines or suggestion in categories:
                     self._add_autocomplete(first_char + suggestion)
             return
 
@@ -306,9 +298,7 @@ class RawTextQuery:
             special_part = False
             for parser_class in RawTextQuery.PARSER_CLASSES:
                 if parser_class.check(query_part):
-                    special_part = parser_class(self, i == autocomplete_index)(
-                        query_part
-                    )
+                    special_part = parser_class(self, i == autocomplete_index)(query_part)
                     break
 
             # append query part to query_part list

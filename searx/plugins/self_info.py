@@ -41,9 +41,7 @@ class SXNGPlugin(Plugin):
             preference_section="query",
         )
 
-    def post_search(
-        self, request: "SXNG_Request", search: "SearchWithPlugins"
-    ) -> EngineResults:
+    def post_search(self, request: "SXNG_Request", search: "SearchWithPlugins") -> EngineResults:
         """Returns a result list only for the first page."""
         results = EngineResults()
 
@@ -52,17 +50,10 @@ class SXNGPlugin(Plugin):
 
         if self.ip_regex.search(search.search_query.query) and request.remote_addr:
             results.add(
-                results.types.Answer(
-                    answer=gettext("Your IP is: ")
-                    + ip_address(request.remote_addr).compressed
-                )
+                results.types.Answer(answer=gettext("Your IP is: ") + ip_address(request.remote_addr).compressed)
             )
 
         if self.ua_regex.match(search.search_query.query):
-            results.add(
-                results.types.Answer(
-                    answer=gettext("Your user-agent is: ") + str(request.user_agent)
-                )
-            )
+            results.add(results.types.Answer(answer=gettext("Your user-agent is: ") + str(request.user_agent)))
 
         return results

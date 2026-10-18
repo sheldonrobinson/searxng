@@ -132,9 +132,7 @@ def search(query, params) -> EngineResults:
     if not cmd:
         return res
 
-    reader_thread = Thread(
-        target=_get_results_from_process, args=(res, cmd, params["pageno"])
-    )
+    reader_thread = Thread(target=_get_results_from_process, args=(res, cmd, params["pageno"]))
     reader_thread.start()
     reader_thread.join(timeout=timeout)
 
@@ -174,9 +172,7 @@ def _get_results_from_process(res: EngineResults, cmd, pageno):
                     _command_logger.debug("skipped result: %s", raw_result)
                     continue
 
-                if (
-                    start <= count and count <= end
-                ):  # pylint: disable=chained-comparison
+                if start <= count and count <= end:  # pylint: disable=chained-comparison
                     res.add(res.types.KeyValue(kvmap=result))
 
                 count += 1
@@ -187,9 +183,7 @@ def _get_results_from_process(res: EngineResults, cmd, pageno):
 
         return_code = process.wait(timeout=timeout)
         if return_code != 0:
-            raise RuntimeError(
-                "non-zero return code when running command", cmd, return_code
-            )
+            raise RuntimeError("non-zero return code when running command", cmd, return_code)
         return None
 
 
@@ -207,9 +201,7 @@ def __check_query_params(params):
         query_path = params[-1]
         query_path = expanduser(query_path)
         if commonprefix([realpath(query_path), working_dir]) != working_dir:
-            raise ValueError(
-                "requested path is outside of configured working directory"
-            )
+            raise ValueError("requested path is outside of configured working directory")
     elif query_type == "enum" and len(query_enum) > 0:
         for param in params:
             if param not in query_enum:
@@ -225,17 +217,12 @@ def check_parsing_options(engine_settings):
     """Checks if delimiter based parsing or regex parsing is configured correctly"""
 
     if "delimiter" not in engine_settings and "parse_regex" not in engine_settings:
-        raise ValueError(
-            "failed to init settings for parsing lines: missing delimiter or parse_regex"
-        )
+        raise ValueError("failed to init settings for parsing lines: missing delimiter or parse_regex")
     if "delimiter" in engine_settings and "parse_regex" in engine_settings:
         raise ValueError("failed to init settings for parsing lines: too many settings")
 
     if "delimiter" in engine_settings:
-        if (
-            "chars" not in engine_settings["delimiter"]
-            or "keys" not in engine_settings["delimiter"]
-        ):
+        if "chars" not in engine_settings["delimiter"] or "keys" not in engine_settings["delimiter"]:
             raise ValueError
 
 
@@ -245,9 +232,7 @@ def __parse_single_result(raw_result):
     result = {}
 
     if delimiter:
-        elements = raw_result.split(
-            delimiter["chars"], maxsplit=len(delimiter["keys"]) - 1
-        )
+        elements = raw_result.split(delimiter["chars"], maxsplit=len(delimiter["keys"]) - 1)
         if len(elements) != len(delimiter["keys"]):
             return {}
         for i in range(len(elements)):  # pylint: disable=consider-using-enumerate

@@ -119,9 +119,7 @@ def response(resp: "SXNG_Response") -> EngineResults:  # pylint: disable=too-man
             # this is a [ZITATION] block
             continue
 
-        pub_type: str = (
-            extract_text(eval_xpath(result, ".//span[@class='gs_ctg2']")) or ""
-        )
+        pub_type: str = extract_text(eval_xpath(result, ".//span[@class='gs_ctg2']")) or ""
         if pub_type:
             pub_type = pub_type[1:-1].lower()
 
@@ -147,9 +145,7 @@ def response(resp: "SXNG_Response") -> EngineResults:  # pylint: disable=too-man
         # link to the html or pdf document
         html_url: str = ""
         pdf_url: str = ""
-        doc_url = eval_xpath_getindex(
-            result, ".//div[@class='gs_or_ggsm']/a/@href", 0, default=None
-        )
+        doc_url = eval_xpath_getindex(result, ".//div[@class='gs_or_ggsm']/a/@href", 0, default=None)
         doc_type = extract_text(eval_xpath(result, ".//span[@class='gs_ctg2']"))
         if doc_type == "[PDF]":
             pdf_url = doc_url
@@ -173,9 +169,7 @@ def response(resp: "SXNG_Response") -> EngineResults:  # pylint: disable=too-man
         )
 
     # parse suggestion
-    for suggestion in eval_xpath(
-        dom, "//div[contains(@class, 'gs_qsuggest_wrap')]//li//a"
-    ):
+    for suggestion in eval_xpath(dom, "//div[contains(@class, 'gs_qsuggest_wrap')]//li//a"):
         res.add(res.types.LegacyResult(suggestion=extract_text(suggestion)))
 
     for correction in eval_xpath(dom, "//div[@class='gs_r gs_pda']/a"):

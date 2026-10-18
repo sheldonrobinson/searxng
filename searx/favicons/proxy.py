@@ -92,9 +92,7 @@ class FaviconProxyConfig(msgspec.Struct):
     def favicon_data_url(self, **replacements):
         """Returns data image URL of the default favicon."""
 
-        cache_key = ", ".join(
-            f"{x}:{replacements[x]}" for x in sorted(list(replacements.keys()), key=str)
-        )
+        cache_key = ", ".join(f"{x}:{replacements[x]}" for x in sorted(list(replacements.keys()), key=str))
         data_url = DEFAULT_FAVICON_URL.get(cache_key)
         if data_url is not None:
             return data_url

@@ -47,9 +47,7 @@ def post(*args, **kwargs) -> "SXNG_Response":  # type: ignore
 def baidu(query: str, _sxng_locale: str) -> list[str]:
     # baidu search autocompleter
     base_url = "https://www.baidu.com/sugrec?"
-    response = get(
-        base_url + urlencode({"ie": "utf-8", "json": 1, "prod": "pc", "wd": query})
-    )
+    response = get(base_url + urlencode({"ie": "utf-8", "json": 1, "prod": "pc", "wd": query}))
     results: list[str] = []
 
     if response.ok:
@@ -65,9 +63,7 @@ def bing(query: str, _sxng_locale: str) -> list[str]:
     base_url = "https://www.bing.com/AS/Suggestions?"
     # cvid has to be a 32 character long string consisting of numbers and uppsercase characters
     cvid = "".join(random.choices(string.ascii_uppercase + string.digits, k=32))
-    response = get(
-        base_url + urlencode({"qry": query, "csr": 1, "cvid": cvid}), enable_http3=True
-    )
+    response = get(base_url + urlencode({"qry": query, "csr": 1, "cvid": cvid}), enable_http3=True)
     results: list[str] = []
 
     if response.ok:
@@ -141,9 +137,7 @@ def google_complete(query: str, sxng_locale: str) -> list[str]:
 
     data = ENGINE_TRAITS.get("google") or {}
     traits = EngineTraits(**data)
-    google_info: dict[str, t.Any] = google.get_google_info(
-        {"searxng_locale": sxng_locale}, traits
-    )
+    google_info: dict[str, t.Any] = google.get_google_info({"searxng_locale": sxng_locale}, traits)
     args = urlencode(
         {
             "q": query,
@@ -189,11 +183,7 @@ def mwmbl(query: str, _sxng_locale: str) -> list[str]:
     results: list[str] = get(url.format(query=urlencode({"q": query}))).json()[1]
 
     # results starting with `go:` are direct urls and not useful for auto completion
-    return [
-        result
-        for result in results
-        if not result.startswith("go: ") and not result.startswith("search: ")
-    ]
+    return [result for result in results if not result.startswith("go: ") and not result.startswith("search: ")]
 
 
 def naver(query: str, _sxng_locale: str) -> list[str]:
@@ -229,9 +219,7 @@ def privacywall(query: str, sxng_locale: str) -> list[str]:
 
 def qihu360search(query: str, _sxng_locale: str) -> list[str]:
     # 360Search search autocompleter
-    url = (
-        f"https://sug.so.360.cn/suggest?{urlencode({'format': 'json', 'word': query})}"
-    )
+    url = f"https://sug.so.360.cn/suggest?{urlencode({'format': 'json', 'word': query})}"
     response = get(url)
     results: list[str] = []
 
@@ -349,9 +337,7 @@ def startpage(query: str, sxng_locale: str) -> list[str]:
 def swisscows(query: str, _sxng_locale: str) -> list[str]:
     # swisscows autocompleter
     url = "https://swisscows.ch/api/suggest?{query}&itemsCount=5"
-    results: list[str] = json.loads(
-        get(url.format(query=urlencode({"query": query}))).text
-    )
+    results: list[str] = json.loads(get(url.format(query=urlencode({"query": query}))).text)
     return results
 
 
@@ -359,9 +345,7 @@ def qwant(query: str, sxng_locale: str) -> list[str]:
     """Autocomplete from Qwant. Supports Qwant's regions."""
     locale = engines["qwant"].traits.get_region(sxng_locale, "en_US")
     url = "https://api.qwant.com/v3/suggest?{query}"
-    resp = get(
-        url.format(query=urlencode({"q": query, "locale": locale, "version": "2"}))
-    )
+    resp = get(url.format(query=urlencode({"q": query, "locale": locale, "version": "2"})))
     results: list[str] = []
 
     if resp.ok:

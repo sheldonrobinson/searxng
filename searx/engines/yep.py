@@ -134,9 +134,6 @@ def fetch_traits(engine_traits: "EngineTraits"):
         conflict = engine_traits.languages.get(sxng_tag)
         if conflict:
             if conflict != sxng_tag:
-                print(
-                    "CONFLICT: babel %s --> %s, %s"
-                    % (sxng_tag, conflict, language_code)
-                )
+                print("CONFLICT: babel %s --> %s, %s" % (sxng_tag, conflict, language_code))
             continue
         engine_traits.languages[sxng_tag] = language_code

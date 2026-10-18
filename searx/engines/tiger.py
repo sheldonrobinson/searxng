@@ -117,9 +117,7 @@ def _obtain_session_code() -> str:
     if not code:
         raise SearxEngineAPIException("failed to obtain session code")
 
-    CACHE.set(
-        "session", code, expire=60 * 24 * 60 * 60
-    )  # cookie is valid for two months
+    CACHE.set("session", code, expire=60 * 24 * 60 * 60)  # cookie is valid for two months
     return code
 
 
@@ -138,22 +136,14 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     if tiger_category == "Websuche":
         for result in eval_xpath_list(doc, "//div[@id='mainContainer']//table/tr"):
-            url = extract_text(
-                eval_xpath(result, ".//a[contains(@class, 'weblink')]/@href")
-            )
+            url = extract_text(eval_xpath(result, ".//a[contains(@class, 'weblink')]/@href"))
             if not url:
                 continue
             res.add(
                 res.types.MainResult(
                     url=url,
-                    title=extract_text(
-                        eval_xpath(result, ".//a[contains(@class, 'weblink')]")
-                    )
-                    or "",
-                    content=extract_text(
-                        eval_xpath(result, ".//*[contains(@class, 'webbodynopic')]")
-                    )
-                    or "",
+                    title=extract_text(eval_xpath(result, ".//a[contains(@class, 'weblink')]")) or "",
+                    content=extract_text(eval_xpath(result, ".//*[contains(@class, 'webbodynopic')]")) or "",
                 )
             )
 
@@ -163,12 +153,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
         for result in eval_xpath_list(doc, "//div[@id='panNews']/div"):
             publishedDate = None
             try:
-                date_str = (
-                    extract_text(
-                        eval_xpath(result, ".//span[contains(@class, 'help')]/span")
-                    )
-                    or ""
-                )
+                date_str = extract_text(eval_xpath(result, ".//span[contains(@class, 'help')]/span")) or ""
                 date_str = date_str.strip().removeprefix("-").strip()
                 publishedDate = parser.parse(date_str)
             except parser.ParserError:
@@ -180,13 +165,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
             res.add(
                 res.types.MainResult(
-                    url=extract_text(
-                        eval_xpath(result, ".//a[contains(@class, 'webLink')]/@href")
-                    ),
-                    title=extract_text(
-                        eval_xpath(result, ".//a[contains(@class, 'webLink')]")
-                    )
-                    or "",
+                    url=extract_text(eval_xpath(result, ".//a[contains(@class, 'webLink')]/@href")),
+                    title=extract_text(eval_xpath(result, ".//a[contains(@class, 'webLink')]")) or "",
                     thumbnail=thumbnail or "",
                     publishedDate=publishedDate,
                 )

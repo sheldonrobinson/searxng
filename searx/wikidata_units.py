@@ -39,9 +39,7 @@ class Beaufort:
     @classmethod
     def from_si(cls, value) -> float:
         if value < 0 or value > 55.6:
-            raise ValueError(
-                f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)"
-            )
+            raise ValueError(f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)")
         bft = 0
         for bft, mps in enumerate(cls.scale):
             if mps >= value:
@@ -52,9 +50,7 @@ class Beaufort:
     def to_si(cls, value) -> float:
         idx = round(value)
         if idx < 0 or idx > 16:
-            raise ValueError(
-                f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)"
-            )
+            raise ValueError(f"invalid value {value} / the Beaufort scales from 0 to 16 (55.6 m/s)")
         return cls.scale[idx]
 
 

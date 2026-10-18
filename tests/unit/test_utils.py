@@ -68,18 +68,10 @@ class TestUtils(SearxTestCase):
             f('<span id="42">https://example.com</span>', "http://example.com/"),
             "https://example.com/",
         )
-        self.assertEqual(
-            f("https://example.com", "http://example.com/"), "https://example.com/"
-        )
-        self.assertEqual(
-            f("//example.com", "http://example.com/"), "http://example.com/"
-        )
-        self.assertEqual(
-            f("//example.com", "https://example.com/"), "https://example.com/"
-        )
-        self.assertEqual(
-            f("/path?a=1", "https://example.com"), "https://example.com/path?a=1"
-        )
+        self.assertEqual(f("https://example.com", "http://example.com/"), "https://example.com/")
+        self.assertEqual(f("//example.com", "http://example.com/"), "http://example.com/")
+        self.assertEqual(f("//example.com", "https://example.com/"), "https://example.com/")
+        self.assertEqual(f("/path?a=1", "https://example.com"), "https://example.com/path?a=1")
         with self.assertRaises(lxml.etree.ParserError):
             f("", "https://example.com")
         with self.assertRaises(Exception):
@@ -87,9 +79,7 @@ class TestUtils(SearxTestCase):
 
     def test_ecma_unscape(self):
         self.assertEqual(utils.ecma_unescape("text%20with%20space"), "text with space")
-        self.assertEqual(
-            utils.ecma_unescape("text using %xx: %F3"), "text using %xx: ó"
-        )
+        self.assertEqual(utils.ecma_unescape("text using %xx: %F3"), "text using %xx: ó")
         self.assertEqual(
             utils.ecma_unescape("text using %u: %u5409, %u4E16%u754c"),
             "text using %u: 吉, 世界",
@@ -230,13 +220,9 @@ class TestXPathUtils(SearxTestCase):  # pylint: disable=missing-class-docstring
             },
             "signature": "aecf8725f019643766920b67c7e21bc383d8ff166a8e1137c6b5f4d6d19d00c1",
         }
-        solution = utils.solve_altcha(
-            challenge["parameters"]
-        )  # pyright: ignore[reportArgumentType]
+        solution = utils.solve_altcha(challenge["parameters"])  # pyright: ignore[reportArgumentType]
         self.assertIsNotNone(solution)
 
         key, counter = solution  # pyright: ignore[reportGeneralTypeIssues]
-        self.assertEqual(
-            key, "71087e0b10d819181fc5463588a230b5744e6b9f19b86667c71ff73a9c7567aa"
-        )
+        self.assertEqual(key, "71087e0b10d819181fc5463588a230b5744e6b9f19b86667c71ff73a9c7567aa")
         self.assertEqual(counter, 260)

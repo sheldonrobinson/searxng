@@ -140,12 +140,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 "{numCitations} citations from the year {firstCitationVelocityYear} to {lastCitationVelocityYear}"
             ).format(
                 numCitations=result["citationStats"]["numCitations"],
-                firstCitationVelocityYear=result["citationStats"][
-                    "firstCitationVelocityYear"
-                ],
-                lastCitationVelocityYear=result["citationStats"][
-                    "lastCitationVelocityYear"
-                ],
+                firstCitationVelocityYear=result["citationStats"]["firstCitationVelocityYear"],
+                lastCitationVelocityYear=result["citationStats"]["lastCitationVelocityYear"],
             )
 
         res.add(
@@ -153,8 +149,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 title=result["title"]["text"],
                 url=url,
                 content=html_to_text(result["paperAbstract"]["text"]),
-                journal=result.get("venue", {}).get("text")
-                or result.get("journal", {}).get("name"),
+                journal=result.get("venue", {}).get("text") or result.get("journal", {}).get("name"),
                 doi=result.get("doiInfo", {}).get("doi"),
                 tags=result.get("fieldsOfStudy"),
                 authors=authors,

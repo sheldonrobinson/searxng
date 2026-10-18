@@ -97,9 +97,7 @@ def response(resp: "SXNG_Response") -> list[dict[str, t.Any]]:
 
     dom = resp.html()
 
-    for item in eval_xpath_list(
-        dom, '//ol[@id="b_results"]/li[contains(@class, "b_algo")]'
-    ):
+    for item in eval_xpath_list(dom, '//ol[@id="b_results"]/li[contains(@class, "b_algo")]'):
         link = eval_xpath_getindex(item, ".//h2/a", 0, None)
         if link is None:
             continue
@@ -120,9 +118,7 @@ def response(resp: "SXNG_Response") -> list[dict[str, t.Any]]:
                     encoded = u_val[2:]
                     # base64url without padding
                     encoded += "=" * (-len(encoded) % 4)
-                    href = base64.urlsafe_b64decode(encoded).decode(
-                        "utf-8", errors="replace"
-                    )
+                    href = base64.urlsafe_b64decode(encoded).decode("utf-8", errors="replace")
 
         # remove decorative icons that Bing injects into <p> elements
         # (`<span class="algoSlug_icon">`)
@@ -165,9 +161,7 @@ def fetch_traits(engine_traits: EngineTraits) -> None:
         "zh-hk": "en-hk",  # not sure why, but at Microslop this is the market code for Hongkong
     }
 
-    for href in eval_xpath(
-        dom, '//div[@id="region-section-content"]//div[@class="regionItem"]/a/@href'
-    ):
+    for href in eval_xpath(dom, '//div[@id="region-section-content"]//div[@class="regionItem"]/a/@href'):
         cc_tag = parse_qs(urlparse(href).query)["cc"][0]
         if cc_tag == "clear":
             engine_traits.all_locale = cc_tag
@@ -180,9 +174,7 @@ def fetch_traits(engine_traits: EngineTraits) -> None:
             market_code = map_market_codes.get(market_code, market_code)
 
             try:
-                sxng_tag = region_tag(
-                    babel.Locale.parse("%s_%s" % (lang_tag, cc_tag.upper()))
-                )
+                sxng_tag = region_tag(babel.Locale.parse("%s_%s" % (lang_tag, cc_tag.upper())))
             except babel.UnknownLocaleError:
                 # silently ignore unknown languages
                 continue
@@ -190,10 +182,7 @@ def fetch_traits(engine_traits: EngineTraits) -> None:
             conflict = engine_traits.regions.get(sxng_tag)
             if conflict:
                 if conflict != market_code:
-                    print(
-                        "CONFLICT: babel %s --> %s, %s"
-                        % (sxng_tag, conflict, market_code)
-                    )
+                    print("CONFLICT: babel %s --> %s, %s" % (sxng_tag, conflict, market_code))
                 continue
 
             engine_traits.regions[sxng_tag] = market_code

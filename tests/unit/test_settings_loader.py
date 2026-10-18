@@ -48,20 +48,12 @@ class TestUserSettings(SearxTestCase):
 
     def test_is_use_default_settings(self):
         self.assertFalse(settings_loader.is_use_default_settings({}))
-        self.assertTrue(
-            settings_loader.is_use_default_settings({"use_default_settings": True})
-        )
-        self.assertTrue(
-            settings_loader.is_use_default_settings({"use_default_settings": {}})
-        )
+        self.assertTrue(settings_loader.is_use_default_settings({"use_default_settings": True}))
+        self.assertTrue(settings_loader.is_use_default_settings({"use_default_settings": {}}))
         with self.assertRaises(ValueError):
-            self.assertFalse(
-                settings_loader.is_use_default_settings({"use_default_settings": 1})
-            )
+            self.assertFalse(settings_loader.is_use_default_settings({"use_default_settings": 1}))
         with self.assertRaises(ValueError):
-            self.assertFalse(
-                settings_loader.is_use_default_settings({"use_default_settings": 0})
-            )
+            self.assertFalse(settings_loader.is_use_default_settings({"use_default_settings": 0}))
 
     @parameterized.expand(
         [
@@ -75,9 +67,7 @@ class TestUserSettings(SearxTestCase):
                 _s, _m = settings_loader.load_settings()
 
     def test_user_settings(self):
-        with patch.dict(
-            os.environ, {"SEARXNG_SETTINGS_PATH": _settings("user_settings_simple.yml")}
-        ):
+        with patch.dict(os.environ, {"SEARXNG_SETTINGS_PATH": _settings("user_settings_simple.yml")}):
             settings, msg = settings_loader.load_settings()
             self.assertTrue(msg.startswith("merge the default settings"))
             self.assertEqual(settings["server"]["secret_key"], "user_secret_key")
@@ -87,9 +77,7 @@ class TestUserSettings(SearxTestCase):
             )
 
     def test_user_settings_remove(self):
-        with patch.dict(
-            os.environ, {"SEARXNG_SETTINGS_PATH": _settings("user_settings_remove.yml")}
-        ):
+        with patch.dict(os.environ, {"SEARXNG_SETTINGS_PATH": _settings("user_settings_remove.yml")}):
             settings, msg = settings_loader.load_settings()
             self.assertTrue(msg.startswith("merge the default settings"))
             self.assertEqual(settings["server"]["secret_key"], "user_secret_key")
@@ -142,21 +130,15 @@ class TestUserSettings(SearxTestCase):
             settings, msg = settings_loader.load_settings()
             self.assertTrue(msg.startswith("merge the default settings"))
             engine_names = [engine["name"] for engine in settings["engines"]]
-            self.assertEqual(
-                engine_names, ["wikibooks", "wikinews", "wikipedia", "newengine"]
-            )
+            self.assertEqual(engine_names, ["wikibooks", "wikinews", "wikipedia", "newengine"])
             # wikipedia has been removed, then added again with the "engine" section of user_settings_keep_only.yml
             self.assertEqual(len(settings["engines"][2]), 1)
 
     def test_custom_settings(self):
-        with patch.dict(
-            os.environ, {"SEARXNG_SETTINGS_PATH": _settings("user_settings.yml")}
-        ):
+        with patch.dict(os.environ, {"SEARXNG_SETTINGS_PATH": _settings("user_settings.yml")}):
             settings, msg = settings_loader.load_settings()
             self.assertTrue(msg.startswith("load the user settings from"))
             self.assertEqual(settings["server"]["port"], 9000)
             self.assertEqual(settings["server"]["secret_key"], "user_settings_secret")
             engine_names = [engine["name"] for engine in settings["engines"]]
-            self.assertEqual(
-                engine_names, ["wikidata", "wikibooks", "wikinews", "wikiquote"]
-            )
+            self.assertEqual(engine_names, ["wikidata", "wikibooks", "wikinews", "wikiquote"])

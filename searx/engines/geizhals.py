@@ -69,46 +69,26 @@ def response(resp):
     dom = resp.html()
     for result in eval_xpath_list(dom, "//article[contains(@class, 'listview__item')]"):
         content = []
-        for spec in eval_xpath_list(
-            result, ".//div[contains(@class, 'specs-grid__item')]"
-        ):
-            content.append(
-                f"{extract_text(eval_xpath(spec, './dt'))}: {extract_text(eval_xpath(spec, './dd'))}"
-            )
+        for spec in eval_xpath_list(result, ".//div[contains(@class, 'specs-grid__item')]"):
+            content.append(f"{extract_text(eval_xpath(spec, './dt'))}: {extract_text(eval_xpath(spec, './dd'))}")
 
         metadata = [
-            extract_text(
-                eval_xpath(result, ".//div[contains(@class, 'stars-rating-label')]")
-            ),
-            extract_text(
-                eval_xpath(result, ".//div[contains(@class, 'listview__offercount')]")
-            ),
+            extract_text(eval_xpath(result, ".//div[contains(@class, 'stars-rating-label')]")),
+            extract_text(eval_xpath(result, ".//div[contains(@class, 'listview__offercount')]")),
         ]
 
         item = {
             "template": "products.html",
             "url": (
-                base_url
-                + "/"
-                + extract_text(
-                    eval_xpath(
-                        result, ".//a[contains(@class, 'listview__name-link')]/@href"
-                    )
-                )
+                base_url + "/" + extract_text(eval_xpath(result, ".//a[contains(@class, 'listview__name-link')]/@href"))
             ),
-            "title": extract_text(
-                eval_xpath(result, ".//h3[contains(@class, 'listview__name')]")
-            ),
+            "title": extract_text(eval_xpath(result, ".//h3[contains(@class, 'listview__name')]")),
             "content": " | ".join(content),
-            "thumbnail": extract_text(
-                eval_xpath(result, ".//img[contains(@class, 'listview__image')]/@src")
-            ),
+            "thumbnail": extract_text(eval_xpath(result, ".//img[contains(@class, 'listview__image')]/@src")),
             "metadata": ", ".join(item for item in metadata if item),
         }
 
-        best_price = extract_text(
-            eval_xpath(result, ".//a[contains(@class, 'listview__price-link')]")
-        ).split(" ")
+        best_price = extract_text(eval_xpath(result, ".//a[contains(@class, 'listview__price-link')]")).split(" ")
         if len(best_price) > 1:
             item["price"] = f"Bestes Angebot: {best_price[1]}€"
         results.append(item)

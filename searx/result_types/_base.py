@@ -117,12 +117,8 @@ def _normalize_text_fields(result: "MainResult | LegacyResult"):
     # implemented correctly. Historically, however, we have always had a type
     # check here.
 
-    result.title = _normalize_text_field(
-        result.title, "title", MAXIMUM_TITLE_LENGTH_CHARS
-    )
-    result.content = _normalize_text_field(
-        result.content, "content", MAXIMUM_CONTENT_LENGTH_CHARS
-    )
+    result.title = _normalize_text_field(result.title, "title", MAXIMUM_TITLE_LENGTH_CHARS)
+    result.content = _normalize_text_field(result.content, "content", MAXIMUM_CONTENT_LENGTH_CHARS)
 
     if result.content == result.title:
         # avoid duplicate content between the content and title fields
@@ -274,9 +270,7 @@ def _filter_urls(
 
 def _normalize_date_fields(result: "MainResult | LegacyResult"):
 
-    if (
-        result.publishedDate
-    ):  # do not try to get a date from an empty string or a None type
+    if result.publishedDate:  # do not try to get a date from an empty string or a None type
         try:  # test if publishedDate >= 1900 (datetime module bug)
             result.pubdate = result.publishedDate.strftime("%Y-%m-%d %H:%M:%S%z")
         except ValueError:
@@ -316,9 +310,7 @@ class Result(msgspec.Struct, kw_only=True):
     def __post_init__(self):
         pass
 
-    def filter_urls(
-        self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"
-    ):
+    def filter_urls(self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"):
         """A filter function is passed in the ``filter_func`` argument to
         filter and/or modify the URLs.
 
@@ -450,9 +442,7 @@ class MainResult(Result):  # pylint: disable=missing-class-docstring
     metadata: str = ""
     """Miscellaneous metadata."""
 
-    PriorityType = t.Literal[
-        "", "high", "low"
-    ]  # pyright: ignore[reportUnannotatedClassAttribute]
+    PriorityType = t.Literal["", "high", "low"]  # pyright: ignore[reportUnannotatedClassAttribute]
     priority: "MainResult.PriorityType" = ""
     """The priority can be set via :ref:`hostnames plugin`, for example."""
 
@@ -597,10 +587,7 @@ class LegacyResult(dict[str, t.Any]):
             # the img_src are equal.
             return hash(f"{self.template}|{self.url}|{self.img_src}")
 
-        if not any(
-            cls in self
-            for cls in ["suggestion", "correction", "infobox", "engine_data"]
-        ):
+        if not any(cls in self for cls in ["suggestion", "correction", "infobox", "engine_data"]):
             # Ordinary url-results are equal if their values for template,
             # parsed_url (without schema) and img_src` are equal.
 
@@ -640,8 +627,6 @@ class LegacyResult(dict[str, t.Any]):
             if self_val is UNSET and other_val not in ("", UNSET):
                 self[field_name] = other_val
 
-    def filter_urls(
-        self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"
-    ):
+    def filter_urls(self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool]"):
         """See :py:obj:`Result.filter_urls`"""
         _filter_urls(self, filter_func=filter_func)

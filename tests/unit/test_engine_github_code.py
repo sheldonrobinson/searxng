@@ -102,9 +102,7 @@ class GithubCodeTests(SearxTestCase):
             ],
         ]
     )
-    def test_code_extraction(
-        self, code_matches, expected_code, expected_highlighted_lines
-    ):
+    def test_code_extraction(self, code_matches, expected_code, expected_highlighted_lines):
         code, highlights = self.ghc.extract_code(code_matches=code_matches)
         self.assertEqual(code, expected_code)
         self.assertEqual(highlights, expected_highlighted_lines)

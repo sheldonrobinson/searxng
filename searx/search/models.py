@@ -46,9 +46,7 @@ class SearchQuery:
         self.lang = lang
         self.safesearch: typing.Literal[0, 1, 2] = safesearch
         self.pageno = pageno
-        self.time_range: typing.Literal["day", "week", "month", "year"] | None = (
-            time_range
-        )
+        self.time_range: typing.Literal["day", "week", "month", "year"] | None = time_range
         self.timeout_limit = timeout_limit
         self.external_bang = external_bang
         self.engine_data = engine_data or {}
@@ -66,18 +64,16 @@ class SearchQuery:
         return list(set(map(lambda engineref: engineref.category, self.engineref_list)))
 
     def __repr__(self):
-        return (
-            "SearchQuery({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})".format(
-                self.query,
-                self.engineref_list,
-                self.lang,
-                self.safesearch,
-                self.pageno,
-                self.time_range,
-                self.timeout_limit,
-                self.external_bang,
-                self.redirect_to_first_result,
-            )
+        return "SearchQuery({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})".format(
+            self.query,
+            self.engineref_list,
+            self.lang,
+            self.safesearch,
+            self.pageno,
+            self.time_range,
+            self.timeout_limit,
+            self.external_bang,
+            self.redirect_to_first_result,
         )
 
     def __eq__(self, other):

@@ -126,9 +126,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
         image = urljoin("https://duckduckgo.com", image)
 
     # Official website, Wikipedia page
-    _result_list: list[dict[str, str]] = search_res.get(
-        "Results", []
-    )  # pyright: ignore[reportAssignmentType]
+    _result_list: list[dict[str, str]] = search_res.get("Results", [])  # pyright: ignore[reportAssignmentType]
 
     for ddg_result in _result_list:
         firstURL = ddg_result.get("FirstURL")
@@ -138,9 +136,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
             results.add(results.types.LegacyResult({"title": heading, "url": firstURL}))
 
     # related topics
-    _result_list = search_res.get(
-        "RelatedTopics", []
-    )  # pyright: ignore[reportAssignmentType]
+    _result_list = search_res.get("RelatedTopics", [])  # pyright: ignore[reportAssignmentType]
     for ddg_result in _result_list:
         if "FirstURL" in ddg_result:
             firstURL = ddg_result.get("FirstURL")
@@ -151,16 +147,10 @@ def response(resp: "SXNG_Response") -> EngineResults:
                     results.add(results.types.LegacyResult({"suggestion": suggestion}))
         elif "Topics" in ddg_result:
             suggestions: list[str] = []
-            relatedTopics.append(
-                {"name": ddg_result.get("Name", ""), "suggestions": suggestions}
-            )
-            _topic_results: list[dict[str, str]] = ddg_result.get(
-                "Topics", []
-            )  # pyright: ignore[reportAssignmentType]
+            relatedTopics.append({"name": ddg_result.get("Name", ""), "suggestions": suggestions})
+            _topic_results: list[dict[str, str]] = ddg_result.get("Topics", [])  # pyright: ignore[reportAssignmentType]
             for topic_result in _topic_results:
-                suggestion = result_to_text(
-                    topic_result.get("Text", ""), topic_result.get("Result", "")
-                )
+                suggestion = result_to_text(topic_result.get("Text", ""), topic_result.get("Result", ""))
                 if suggestion != heading and suggestion is not None:
                     suggestions.append(suggestion)
 
@@ -183,9 +173,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
     if definitionURL != "":
         # add as result ? as answer ? problem always in english
         infobox_id = definitionURL
-        urls.append(
-            {"title": search_res.get("DefinitionSource", ""), "url": definitionURL}
-        )
+        urls.append({"title": search_res.get("DefinitionSource", ""), "url": definitionURL})
 
     # to merge with wikidata's infobox
     if infobox_id:
@@ -194,9 +182,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
     # attributes
     # some will be converted to urls
     if "Infobox" in search_res:
-        infobox: dict[str, t.Any] = search_res.get(
-            "Infobox", {}
-        )  # pyright: ignore[reportAssignmentType]
+        infobox: dict[str, t.Any] = search_res.get("Infobox", {})  # pyright: ignore[reportAssignmentType]
         if "content" in infobox:
             osm_zoom = 17
             coordinates = None
@@ -244,9 +230,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
                         coordinates = info
                     else:
                         # coordinate NOT on Earth
-                        attributes.append(
-                            {"label": data_label, "value": data_value, "entity": "P625"}
-                        )
+                        attributes.append({"label": data_label, "value": data_value, "entity": "P625"})
                 elif data_type == "string":
                     attributes.append({"label": data_label, "value": data_value})
 
@@ -260,18 +244,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     if len(heading) > 0:
         # TODO get infobox.meta.value where .label="article_title"    # pylint: disable=fixme
-        if (
-            image is None
-            and len(attributes) == 0
-            and len(urls) == 1
-            and len(relatedTopics) == 0
-            and len(content) == 0
-        ):
-            results.add(
-                results.types.LegacyResult(
-                    {"url": urls[0]["url"], "title": heading, "content": content}
-                )
-            )
+        if image is None and len(attributes) == 0 and len(urls) == 1 and len(relatedTopics) == 0 and len(content) == 0:
+            results.add(results.types.LegacyResult({"url": urls[0]["url"], "title": heading, "content": content}))
         else:
             results.add(
                 results.types.LegacyResult(

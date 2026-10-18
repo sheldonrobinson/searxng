@@ -72,25 +72,17 @@ def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
     doc = resp.html()
 
-    for item in eval_xpath_list(
-        doc, "(//div[@class='event-list'])[1]/div[contains(@class, 'event')]"
-    ):
+    for item in eval_xpath_list(doc, "(//div[@class='event-list'])[1]/div[contains(@class, 'event')]"):
         res.add(
             res.types.LegacyResult(
                 template="packages.html",
-                url=base_url
-                + (extract_text(eval_xpath(item, "./h4/a[2]/@href")) or ""),
+                url=base_url + (extract_text(eval_xpath(item, "./h4/a[2]/@href")) or ""),
                 title=extract_text(eval_xpath(item, "./h4")),
                 package_name=extract_text(eval_xpath(item, "./h4/a[2]")),
                 content=extract_text(eval_xpath(item, "./p")),
-                maintainer=(
-                    extract_text(eval_xpath(item, "./h4/a[1]")) or ""
-                ).removeprefix("~"),
+                maintainer=(extract_text(eval_xpath(item, "./h4/a[1]")) or "").removeprefix("~"),
                 tags=[
-                    tag.removeprefix("#")
-                    for tag in eval_xpath_list(
-                        item, "./div[contains(@class, 'tags')]/a/text()"
-                    )
+                    tag.removeprefix("#") for tag in eval_xpath_list(item, "./div[contains(@class, 'tags')]/a/text()")
                 ],
             )
         )

@@ -65,10 +65,7 @@ class DBSession:
 
     @property
     def conn(self) -> sqlite3.Connection:
-        msg = (
-            f"[{threading.current_thread().ident}] DBSession: "
-            f"{self.app.__class__.__name__}({self.app.db_url})"
-        )
+        msg = f"[{threading.current_thread().ident}] DBSession: " f"{self.app.__class__.__name__}({self.app.db_url})"
         if self._conn is None:
             self._conn = self.app.connect()
             logger.debug("%s --> created new connection", msg)
@@ -252,9 +249,7 @@ class SQLiteAppl(abc.ABC):
         """
         if sys.version_info < (3, 12):
             # Prior Python 3.12 there is no "autocommit" option
-            self.SQLITE_CONNECT_ARGS.pop(
-                "autocommit", None
-            )  # pyright: ignore[reportUnreachable]
+            self.SQLITE_CONNECT_ARGS.pop("autocommit", None)  # pyright: ignore[reportUnreachable]
 
         msg = (
             f"[{threading.current_thread().ident}] {self.__class__.__name__}({self.db_url})"
@@ -354,9 +349,7 @@ class SQLiteAppl(abc.ABC):
         else:
             ver = int(ver)
             if ver != self.DB_SCHEMA:
-                raise sqlite3.DatabaseError(
-                    "Expected DB schema v%s, DB schema is v%s" % (self.DB_SCHEMA, ver)
-                )
+                raise sqlite3.DatabaseError("Expected DB schema v%s, DB schema is v%s" % (self.DB_SCHEMA, ver))
             logger.debug("DB_SCHEMA = %s", ver)
 
         return True
@@ -409,9 +402,7 @@ CREATE TABLE IF NOT EXISTS properties (
         "SELECT name FROM sqlite_master"
         " WHERE type='table' AND name='properties'"
     )  # fmt:skip
-    SQLITE_CONNECT_ARGS: dict[str, str | int | bool | None] = dict(
-        SQLiteAppl.SQLITE_CONNECT_ARGS
-    )
+    SQLITE_CONNECT_ARGS: dict[str, str | int | bool | None] = dict(SQLiteAppl.SQLITE_CONNECT_ARGS)
 
     # pylint: disable=super-init-not-called
     def __init__(self, db_url: str):  # pyright: ignore[reportMissingSuperCall]
@@ -482,8 +473,6 @@ CREATE TABLE IF NOT EXISTS properties (
         lines: list[str] = []
         for row in self.DB.execute("SELECT name, value, m_time FROM properties"):
             name, value, m_time = row
-            m_time = datetime.datetime.fromtimestamp(m_time).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
+            m_time = datetime.datetime.fromtimestamp(m_time).strftime("%Y-%m-%d %H:%M:%S")
             lines.append(f"[last modified: {m_time}] {name:20s}: {value}")
         return "\n".join(lines)

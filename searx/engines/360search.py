@@ -59,9 +59,7 @@ def get_cookie(url: str) -> str:
     resp: SXNG_Response = http_get(url, timeout=10, allow_redirects=False)
     headers = resp.headers
     cookie = headers["set-cookie"].split(";")[0]
-    CACHE.set(
-        key=COOKIE_CACHE_KEY, value=cookie, expire=COOKIE_CACHE_EXPIRATION_SECONDS
-    )
+    CACHE.set(key=COOKIE_CACHE_KEY, value=cookie, expire=COOKIE_CACHE_EXPIRATION_SECONDS)
 
     return cookie
 
@@ -95,13 +93,9 @@ def response(resp):
     for item in dom.xpath('//li[contains(@class, "res-list")]'):
         title = extract_text(item.xpath('.//h3[contains(@class, "res-title")]/a'))
 
-        url = extract_text(
-            item.xpath('.//h3[contains(@class, "res-title")]/a/@data-mdurl')
-        )
+        url = extract_text(item.xpath('.//h3[contains(@class, "res-title")]/a/@data-mdurl'))
         if not url:
-            url = extract_text(
-                item.xpath('.//h3[contains(@class, "res-title")]/a/@href')
-            )
+            url = extract_text(item.xpath('.//h3[contains(@class, "res-title")]/a/@href'))
 
         content = extract_text(item.xpath('.//p[@class="res-desc"]'))
         if not content:

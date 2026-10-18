@@ -24,13 +24,9 @@ class PluginIPSelfInfo(SearxTestCase):
         engines = {}
 
         self.storage = searx.plugins.PluginStorage()
-        self.storage.load_settings(
-            {"searx.plugins.self_info.SXNGPlugin": {"active": True}}
-        )
+        self.storage.load_settings({"searx.plugins.self_info.SXNGPlugin": {"active": True}})
         self.storage.init(self.app)
-        self.pref = searx.preferences.Preferences(
-            ["simple"], ["general"], engines, self.storage
-        )
+        self.pref = searx.preferences.Preferences(["simple"], ["general"], engines, self.storage)
         self.pref.parse_dict({"locale": "en"})
 
         cfg = searx.limiter.get_cfg()
@@ -45,9 +41,7 @@ class PluginIPSelfInfo(SearxTestCase):
 
         result = self.client.post("/search", data={"q": "ip"}, headers=headers)
         self.assertIn(answer, str(result.data))
-        result = self.client.post(
-            "/search", data={"q": "ip", "pageno": "2"}, headers=headers
-        )
+        result = self.client.post("/search", data={"q": "ip", "pageno": "2"}, headers=headers)
         self.assertNotIn(answer, str(result.data))
 
     def test_IPv6_X_Forwarded_For(self):

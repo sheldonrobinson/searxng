@@ -126,9 +126,7 @@ class EngineProcessor(ABC):
         self.logger: logging.Logger = engines[engine.name].logger
         key = get_network(self.engine.name)
         key = id(key) if key else self.engine.name
-        self.suspended_status: SuspendedStatus = SUSPENDED_STATUS.setdefault(
-            key, SuspendedStatus()
-        )
+        self.suspended_status: SuspendedStatus = SUSPENDED_STATUS.setdefault(key, SuspendedStatus())
 
     def initialize(self, callback: t.Callable[["EngineProcessor", bool], bool]):
         """Initialization of *this* :py:obj:`EngineProcessor`.
@@ -219,9 +217,7 @@ class EngineProcessor(ABC):
             suspended_time = None
             if isinstance(exception_or_message, SearxEngineAccessDeniedException):
                 suspended_time = exception_or_message.suspended_time
-            self.suspended_status.suspend(
-                suspended_time, error_message
-            )  # pylint: disable=no-member
+            self.suspended_status.suspend(suspended_time, error_message)  # pylint: disable=no-member
 
     def _extend_container_basic(
         self,
@@ -238,9 +234,7 @@ class EngineProcessor(ABC):
         counter_inc("engine", self.engine.name, "search", "count", "successful")
         histogram_observe(engine_time, "engine", self.engine.name, "time", "total")
         if page_load_time is not None:
-            histogram_observe(
-                page_load_time, "engine", self.engine.name, "time", "http"
-            )
+            histogram_observe(page_load_time, "engine", self.engine.name, "time", "http")
 
     def extend_container(
         self,
@@ -254,14 +248,10 @@ class EngineProcessor(ABC):
         else:
             # check if the engine accepted the request
             if search_results is not None:
-                self._extend_container_basic(
-                    result_container, start_time, search_results
-                )
+                self._extend_container_basic(result_container, start_time, search_results)
             self.suspended_status.resume()
 
-    def extend_container_if_suspended(
-        self, result_container: "ResultContainer"
-    ) -> bool:
+    def extend_container_if_suspended(self, result_container: "ResultContainer") -> bool:
         if self.suspended_status.is_suspended:
             result_container.add_unresponsive_engine(
                 self.engine.name, self.suspended_status.suspend_reason, suspended=True
@@ -269,9 +259,7 @@ class EngineProcessor(ABC):
             return True
         return False
 
-    def get_params(
-        self, search_query: "SearchQuery", engine_category: str
-    ) -> RequestParams | None:
+    def get_params(self, search_query: "SearchQuery", engine_category: str) -> RequestParams | None:
         """Returns a dictionary with the :ref:`request parameters <engine
         request arguments>` (:py:obj:`RequestParams`), if the search condition
         is not supported by the engine, ``None`` is returned:
@@ -313,13 +301,9 @@ class EngineProcessor(ABC):
         # the engine request.
 
         if hasattr(self.engine, "language") and self.engine.language:
-            params["language"] = (
-                self.engine.language
-            )  # pyright: ignore[reportGeneralTypeIssues]
+            params["language"] = self.engine.language  # pyright: ignore[reportGeneralTypeIssues]
         else:
-            params["language"] = (
-                search_query.lang
-            )  # pyright: ignore[reportGeneralTypeIssues]
+            params["language"] = search_query.lang  # pyright: ignore[reportGeneralTypeIssues]
 
         return params
 

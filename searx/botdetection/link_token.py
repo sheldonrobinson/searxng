@@ -70,9 +70,7 @@ TOKEN_KEY = "SearXNG_limiter.token"
 logger = logger.getChild("botdetection.link_token")
 
 
-def is_suspicious(
-    network: IPv4Network | IPv6Network, request: flask.Request, renew: bool = False
-):
+def is_suspicious(network: IPv4Network | IPv6Network, request: flask.Request, renew: bool = False):
     """Checks whether a valid ping is exists for this (client) network, if not
     this request is rated as *suspicious*.  If a valid ping exists and argument
     ``renew`` is ``True`` the expire time of this ping is reset to
@@ -88,9 +86,7 @@ def is_suspicious(
     if renew:
         valkey_client.set(ping_key, 1, ex=PING_LIVE_TIME)
 
-    logger.debug(
-        "found ping for (client) network %s -> %s", network.compressed, ping_key
-    )
+    logger.debug("found ping for (client) network %s -> %s", network.compressed, ping_key)
     return False
 
 
@@ -126,9 +122,7 @@ def get_ping_key(network: IPv4Network | IPv6Network, request: flask.Request) -> 
         PING_KEY
         + "["
         + secret_hash(
-            network.compressed
-            + request.headers.get("Accept-Language", "")
-            + request.headers.get("User-Agent", "")
+            network.compressed + request.headers.get("Accept-Language", "") + request.headers.get("User-Agent", "")
         )
         + "]"
     )

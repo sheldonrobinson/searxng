@@ -105,9 +105,7 @@ def filter_request(
         return None
 
     if request.args.get("format", "html") != "html":
-        c = incr_sliding_window(
-            valkey_client, "ip_limit.API_WINDOW:" + network.compressed, API_WINDOW
-        )
+        c = incr_sliding_window(valkey_client, "ip_limit.API_WINDOW:" + network.compressed, API_WINDOW)
         if c > API_MAX:
             return too_many_requests(network, "too many request in API_WINDOW")
 
@@ -117,9 +115,7 @@ def filter_request(
 
         if not suspicious:
             # this IP is no longer suspicious: release ip again / delete the counter of this IP
-            drop_counter(
-                valkey_client, "ip_limit.SUSPICIOUS_IP_WINDOW" + network.compressed
-            )
+            drop_counter(valkey_client, "ip_limit.SUSPICIOUS_IP_WINDOW" + network.compressed)
             return None
 
         # this IP is suspicious: count requests from this IP
@@ -137,36 +133,22 @@ def filter_request(
             response.headers["Cache-Control"] = "no-store, max-age=0"
             return response
 
-        c = incr_sliding_window(
-            valkey_client, "ip_limit.BURST_WINDOW" + network.compressed, BURST_WINDOW
-        )
+        c = incr_sliding_window(valkey_client, "ip_limit.BURST_WINDOW" + network.compressed, BURST_WINDOW)
         if c > BURST_MAX_SUSPICIOUS:
-            return too_many_requests(
-                network, "too many request in BURST_WINDOW (BURST_MAX_SUSPICIOUS)"
-            )
+            return too_many_requests(network, "too many request in BURST_WINDOW (BURST_MAX_SUSPICIOUS)")
 
-        c = incr_sliding_window(
-            valkey_client, "ip_limit.LONG_WINDOW" + network.compressed, LONG_WINDOW
-        )
+        c = incr_sliding_window(valkey_client, "ip_limit.LONG_WINDOW" + network.compressed, LONG_WINDOW)
         if c > LONG_MAX_SUSPICIOUS:
-            return too_many_requests(
-                network, "too many request in LONG_WINDOW (LONG_MAX_SUSPICIOUS)"
-            )
+            return too_many_requests(network, "too many request in LONG_WINDOW (LONG_MAX_SUSPICIOUS)")
 
         return None
 
     # vanilla limiter without extensions counts BURST_MAX and LONG_MAX
-    c = incr_sliding_window(
-        valkey_client, "ip_limit.BURST_WINDOW" + network.compressed, BURST_WINDOW
-    )
+    c = incr_sliding_window(valkey_client, "ip_limit.BURST_WINDOW" + network.compressed, BURST_WINDOW)
     if c > BURST_MAX:
-        return too_many_requests(
-            network, "too many request in BURST_WINDOW (BURST_MAX)"
-        )
+        return too_many_requests(network, "too many request in BURST_WINDOW (BURST_MAX)")
 
-    c = incr_sliding_window(
-        valkey_client, "ip_limit.LONG_WINDOW" + network.compressed, LONG_WINDOW
-    )
+    c = incr_sliding_window(valkey_client, "ip_limit.LONG_WINDOW" + network.compressed, LONG_WINDOW)
     if c > LONG_MAX:
         return too_many_requests(network, "too many request in LONG_WINDOW (LONG_MAX)")
 

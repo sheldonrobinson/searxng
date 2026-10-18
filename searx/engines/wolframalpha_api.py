@@ -40,9 +40,7 @@ image_pods = {"VisualRepresentation", "Illustration"}
 
 # do search-request
 def request(query, params):
-    params["url"] = search_url.format(
-        query=urlencode({"input": query}), api_key=api_key
-    )
+    params["url"] = search_url.format(query=urlencode({"input": query}), api_key=api_key)
     params["headers"]["Referer"] = site_url.format(query=urlencode({"i": query}))
 
     return params
@@ -134,9 +132,7 @@ def response(resp):
         {
             "infobox": infobox_title,
             "attributes": result_chunks,
-            "urls": [
-                {"title": "Wolfram|Alpha", "url": resp.request.headers["Referer"]}
-            ],
+            "urls": [{"title": "Wolfram|Alpha", "url": resp.request.headers["Referer"]}],
         }
     )
 

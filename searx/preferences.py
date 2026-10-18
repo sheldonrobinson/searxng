@@ -84,9 +84,7 @@ class EnumStringSetting(Setting):
 
     value: str
 
-    def __init__(
-        self, default_value: str, choices: Iterable[str], locked: bool = False
-    ):
+    def __init__(self, default_value: str, choices: Iterable[str], locked: bool = False):
         super().__init__(default_value, locked)
         self.choices: Iterable[str] = choices
         self._validate_selection(self.value)
@@ -104,9 +102,7 @@ class EnumStringSetting(Setting):
 class MultipleChoiceSetting(Setting):
     """Setting of values which can only come from the given choices"""
 
-    def __init__(
-        self, default_value: list[str], choices: Iterable[str], locked: bool = False
-    ):
+    def __init__(self, default_value: list[str], choices: Iterable[str], locked: bool = False):
         super().__init__(default_value, locked)
         self.choices: Iterable[str] = choices
         self._validate_selections(self.value)
@@ -179,11 +175,7 @@ class SearchLanguageSetting(EnumStringSetting):
     value: str
 
     def _validate_selection(self, selection: str):
-        if (
-            selection != ""
-            and selection != "auto"
-            and not VALID_LANGUAGE_CODE.match(selection)
-        ):
+        if selection != "" and selection != "auto" and not VALID_LANGUAGE_CODE.match(selection):
             raise ValidationException('Invalid language code: "{0}"'.format(selection))
 
     def parse(self, data: str):
@@ -242,16 +234,12 @@ class BooleanSetting(Setting):
         for v_str, v_obj in MAP_STR2BOOL.items():
             if val == v_obj:
                 return v_str
-        raise ValueError(
-            "Invalid value: %s (%s) is not a boolean!" % (repr(val), type(val))
-        )
+        raise ValueError("Invalid value: %s (%s) is not a boolean!" % (repr(val), type(val)))
 
     def parse(self, data: str):
         """Parse and validate ``data`` and store the result at ``self.value``"""
         self.value = MAP_STR2BOOL[data]
-        self.key = self.normalized_str(
-            self.value
-        )  # pylint: disable=attribute-defined-outside-init
+        self.key = self.normalized_str(self.value)  # pylint: disable=attribute-defined-outside-init
 
     def save(self, name: str, resp: flask.Response):
         """Save cookie ``name`` in the HTTP response object"""
@@ -328,18 +316,13 @@ class EnginesSetting(BooleanChoices):
         choices = {}
         for engine in engines:
             for category in engine.categories:
-                if not category in list(settings["categories_as_tabs"].keys()) + [
-                    DEFAULT_CATEGORY
-                ]:
+                if not category in list(settings["categories_as_tabs"].keys()) + [DEFAULT_CATEGORY]:
                     continue
                 choices["{}__{}".format(engine.name, category)] = not engine.disabled
         super().__init__(default_value, choices)
 
     def transform_form_items(self, items):
-        return [
-            item[len("engine_") :].replace("_", " ").replace("  ", "__")
-            for item in items
-        ]
+        return [item[len("engine_") :].replace("_", " ").replace("  ", "__") for item in items]
 
     def transform_values(self, values):
         if len(values) == 1 and next(iter(values)) == "":
@@ -355,9 +338,7 @@ class PluginsSetting(BooleanChoices):
     """Plugin settings"""
 
     def __init__(self, default_value, plugins: Iterable[searx.plugins.Plugin]):
-        super().__init__(
-            default_value, {plugin.id: plugin.active for plugin in plugins}
-        )
+        super().__init__(default_value, {plugin.id: plugin.active for plugin in plugins})
 
     def transform_form_items(self, items):
         return [item[len("plugin_") :] for item in items]
@@ -570,9 +551,7 @@ class Preferences:
             elif user_setting_name == "tokens":
                 self.tokens.parse(user_setting)
         if "oa_doi_rewrite" in self.plugins.choices:
-            self.plugins.choices["oa_doi_rewrite"] = bool(
-                self.get_value("doi_resolver")
-            )
+            self.plugins.choices["oa_doi_rewrite"] = bool(self.get_value("doi_resolver"))
 
     def parse_form(self, input_data: dict[str, str]):
         """Parse formular (``<input>``) data from a ``flask.request.form``"""
@@ -602,9 +581,7 @@ class Preferences:
         self.engines.parse_form(disabled_engines)
         self.plugins.parse_form(disabled_plugins)
         if "oa_doi_rewrite" in self.plugins.choices:
-            self.plugins.choices["oa_doi_rewrite"] = bool(
-                self.get_value("doi_resolver")
-            )
+            self.plugins.choices["oa_doi_rewrite"] = bool(self.get_value("doi_resolver"))
 
     # cannot be used in case of engines or plugins
     def get_value(self, user_setting_name: str) -> t.Any:

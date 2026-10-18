@@ -47,9 +47,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     results = EngineResults()
     data: dict[str, t.Any] = resp.json()
-    params: "OnlineDictParams" = (
-        resp.search_params
-    )  # pyright: ignore[reportAssignmentType]
+    params: "OnlineDictParams" = resp.search_params  # pyright: ignore[reportAssignmentType]
 
     args = {
         "q": params["query"],

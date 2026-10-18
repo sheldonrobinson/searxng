@@ -39,9 +39,7 @@ def response(resp):
 
     for page in search_results.get("data", []):
         # Entries that are purely from Wikipedia are excluded.
-        parts_of_speech = page.get("senses") and page["senses"][0].get(
-            "parts_of_speech"
-        )
+        parts_of_speech = page.get("senses") and page["senses"][0].get("parts_of_speech")
         if parts_of_speech and parts_of_speech[0] == "Wikipedia definition":
             pass
 
@@ -95,9 +93,7 @@ def get_definitions(page):
             # inconsistent
             extra.append(", ".join(defn_raw["info"]).capitalize() + ". ")
         if defn_raw.get("restrictions"):
-            extra.append(
-                "Only applies to: " + ", ".join(defn_raw["restrictions"]) + ". "
-            )
+            extra.append("Only applies to: " + ", ".join(defn_raw["restrictions"]) + ". ")
         definitions.append(
             (
                 ", ".join(defn_raw["parts_of_speech"]),
@@ -116,14 +112,12 @@ def get_infobox(alt_forms, result_url, definitions):
         infobox_content.append(f'<p><i>Other forms:</i> {", ".join(alt_forms[1:])}</p>')
 
     # definitions
-    infobox_content.append(
-        """
+    infobox_content.append("""
         <small><a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project">JMdict</a>
         and <a href="https://www.edrdg.org/enamdict/enamdict_doc.html">JMnedict</a>
         by <a href="https://www.edrdg.org/edrdg/licence.html">EDRDG</a>, CC BY-SA 3.0.</small>
         <ul>
-    """
-    )
+    """)
     for pos, engdef, extra in definitions:
         if pos == "Wikipedia definition":
             infobox_content.append("</ul><small>Wikipedia, CC BY-SA 3.0.</small><ul>")

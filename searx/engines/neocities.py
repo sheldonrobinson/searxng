@@ -57,8 +57,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 url=extract_text(eval_xpath(result, url_xpath)),
                 title=extract_text(eval_xpath(result, title_xpath)) or "",
                 content=extract_text(eval_xpath(result, content_xpath)) or "",
-                thumbnail=base_url
-                + (extract_text(eval_xpath(result, screenshot_xpath)) or ""),
+                thumbnail=base_url + (extract_text(eval_xpath(result, screenshot_xpath)) or ""),
             )
         )
 

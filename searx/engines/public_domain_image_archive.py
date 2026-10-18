@@ -79,13 +79,9 @@ def _get_algolia_api_url():
     # fake request to extract api url
     resp = get(f"{pdia_base_url}/search/?q=", timeout=3)
     if resp.status_code != 200:
-        raise LookupError(
-            "Failed to fetch config location (and as such the API url) for PDImageArchive"
-        )
+        raise LookupError("Failed to fetch config location (and as such the API url) for PDImageArchive")
     pdia_config_filepart = extr(resp.text, pdia_config_start, pdia_config_end)
-    pdia_config_url = (
-        pdia_base_url + pdia_config_start + pdia_config_filepart + pdia_config_end
-    )
+    pdia_config_url = pdia_base_url + pdia_config_start + pdia_config_filepart + pdia_config_end
 
     resp = get(pdia_config_url)
     if resp.status_code != 200:

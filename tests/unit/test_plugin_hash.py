@@ -45,13 +45,9 @@ class PluginHashTest(SearxTestCase):
         engines = {}
 
         self.storage = searx.plugins.PluginStorage()
-        self.storage.load_settings(
-            {"searx.plugins.hash_plugin.SXNGPlugin": {"active": True}}
-        )
+        self.storage.load_settings({"searx.plugins.hash_plugin.SXNGPlugin": {"active": True}})
         self.storage.init(self.app)
-        self.pref = searx.preferences.Preferences(
-            ["simple"], ["general"], engines, self.storage
-        )
+        self.pref = searx.preferences.Preferences(["simple"], ["general"], engines, self.storage)
         self.pref.parse_dict({"locale": "en"})
 
     def test_plugin_store_init(self):

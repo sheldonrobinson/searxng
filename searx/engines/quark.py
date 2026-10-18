@@ -30,9 +30,7 @@ quark_category = "general"
 time_range_support = True
 time_range_dict = {"day": "4", "week": "3", "month": "2", "year": "1"}
 
-CAPTCHA_PATTERN = (
-    r'\{[^{]*?"action"\s*:\s*"captcha"\s*,\s*"url"\s*:\s*"([^"]+)"[^{]*?\}'
-)
+CAPTCHA_PATTERN = r'\{[^{]*?"action"\s*:\s*"captcha"\s*,\s*"url"\s*:\s*"([^"]+)"[^{]*?\}'
 
 
 def is_alibaba_captcha(html):
@@ -95,9 +93,7 @@ def response(resp):
 
     if quark_category == "images":
         data = json.loads(text)
-        for item in (
-            data.get("data", {}).get("hit", {}).get("imgInfo", {}).get("item", [])
-        ):
+        for item in data.get("data", {}).get("hit", {}).get("imgInfo", {}).get("item", []):
             try:
                 published_date = datetime.fromtimestamp(int(item.get("publish_time")))
             except (ValueError, TypeError):
@@ -183,9 +179,7 @@ def parse_ai_page(data):
         )
 
         try:
-            published_date = datetime.fromtimestamp(
-                int(item.get("source", {}).get("time"))
-            )
+            published_date = datetime.fromtimestamp(int(item.get("source", {}).get("time")))
         except (ValueError, TypeError):
             published_date = None
 
@@ -274,9 +268,7 @@ def parse_med_struct(data):
         "title": html_to_text(data.get("title")),
         "url": data.get("message", {}).get("statistics", {}).get("nu"),
         "content": html_to_text(data.get("message", {}).get("content_text")),
-        "thumbnail": data.get("message", {})
-        .get("video_img")
-        .replace("http://", "https://"),
+        "thumbnail": data.get("message", {}).get("video_img").replace("http://", "https://"),
     }
 
 
@@ -335,9 +327,7 @@ def parse_ss_doc(data):
         pass
 
     try:
-        thumbnail = (
-            data.get("picListProps", [])[0].get("src").replace("http://", "https://")
-        )
+        thumbnail = data.get("picListProps", [])[0].get("src").replace("http://", "https://")
     except (ValueError, TypeError, IndexError):
         thumbnail = None
 

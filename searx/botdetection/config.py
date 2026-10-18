@@ -131,9 +131,7 @@ class Config:
         """Returns default value of field ``name`` in ``self.cfg_schema``."""
         return value(name, self.cfg_schema)
 
-    def get(
-        self, name: str, default: typing.Any = UNSET, replace: bool = True
-    ) -> typing.Any:
+    def get(self, name: str, default: typing.Any = UNSET, replace: bool = True) -> typing.Any:
         """Returns the value to which ``name`` points in the configuration.
 
         If there is no such ``name`` in the config and the ``default`` is
@@ -272,13 +270,9 @@ def validate(
     if not isinstance(schema_dict, dict):
         raise SchemaIssue("invalid", "schema_dict is not a dict type")
     if not isinstance(data_dict, dict):
-        raise SchemaIssue(
-            "invalid", f"data_dict issue{'.'.join(names)} is not a dict type"
-        )
+        raise SchemaIssue("invalid", f"data_dict issue{'.'.join(names)} is not a dict type")
 
-    is_valid, issue_list = _validate(
-        names, issue_list, schema_dict, data_dict, deprecated
-    )
+    is_valid, issue_list = _validate(names, issue_list, schema_dict, data_dict, deprecated)
     return is_valid, issue_list
 
 
@@ -301,41 +295,26 @@ def _validate(
         deprecated_msg = deprecated.get(name)
         # print("XXX %s: key %s //   data_value: %s" % (name, key, data_value))
         if deprecated_msg:
-            issue_list.append(
-                SchemaIssue(
-                    "warn", f"data_dict '{name}': deprecated - {deprecated_msg}"
-                )
-            )
+            issue_list.append(SchemaIssue("warn", f"data_dict '{name}': deprecated - {deprecated_msg}"))
 
         schema_value = value(name, schema_dict)
         # print("YYY %s: key %s // schema_value: %s" % (name, key, schema_value))
         if schema_value is UNSET:
             if not deprecated_msg:
-                issue_list.append(
-                    SchemaIssue(
-                        "invalid", f"data_dict '{name}': key unknown in schema_dict"
-                    )
-                )
+                issue_list.append(SchemaIssue("invalid", f"data_dict '{name}': key unknown in schema_dict"))
                 is_valid = False
 
-        elif type(schema_value) != type(
-            data_value
-        ):  # pylint: disable=unidiomatic-typecheck
+        elif type(schema_value) != type(data_value):  # pylint: disable=unidiomatic-typecheck
             issue_list.append(
                 SchemaIssue(
                     "invalid",
-                    (
-                        f"data_dict: type mismatch '{name}':"
-                        f" expected {type(schema_value)}, is: {type(data_value)}"
-                    ),
+                    (f"data_dict: type mismatch '{name}':" f" expected {type(schema_value)}, is: {type(data_value)}"),
                 )
             )
             is_valid = False
 
         elif isinstance(data_value, dict):
-            _valid, _ = _validate(
-                names, issue_list, schema_dict, data_value, deprecated
-            )
+            _valid, _ = _validate(names, issue_list, schema_dict, data_value, deprecated)
             is_valid = is_valid and _valid
         names.pop()
 
@@ -382,9 +361,7 @@ def dict_deepupdate(
             if upd_key in base_dict:
                 # if base_dict[upd_key] exists, recursively deep-update it
                 if not isinstance(base_dict[upd_key], dict):
-                    raise TypeError(
-                        f"type mismatch {'.'.join(names)}: is not a dict type in base_dict"
-                    )
+                    raise TypeError(f"type mismatch {'.'.join(names)}: is not a dict type in base_dict")
                 dict_deepupdate(
                     base_dict[upd_key],
                     upd_val,  # pyright: ignore[reportUnknownArgumentType]
@@ -396,9 +373,7 @@ def dict_deepupdate(
 
             else:
                 # if base_dict[upd_key] not exist, set base_dict[upd_key] from deepcopy of upd_val
-                base_dict[upd_key] = copy.deepcopy(
-                    upd_val
-                )  # pyright: ignore[reportUnknownArgumentType]
+                base_dict[upd_key] = copy.deepcopy(upd_val)  # pyright: ignore[reportUnknownArgumentType]
 
         elif isinstance(upd_val, list):
 
@@ -406,26 +381,20 @@ def dict_deepupdate(
                 # if base_dict[upd_key] exists, base_dict[up_key] is extended by
                 # the list from upd_val
                 if not isinstance(base_dict[upd_key], list):
-                    raise TypeError(
-                        f"type mismatch {'.'.join(names)}: is not a list type in base_dict"
-                    )
+                    raise TypeError(f"type mismatch {'.'.join(names)}: is not a list type in base_dict")
                 base_dict[upd_key].extend(upd_val)
 
             else:
                 # if base_dict[upd_key] doesn't exists, set base_dict[key] from a deepcopy of the
                 # list in upd_val.
-                base_dict[upd_key] = copy.deepcopy(
-                    upd_val
-                )  # pyright: ignore[reportUnknownArgumentType]
+                base_dict[upd_key] = copy.deepcopy(upd_val)  # pyright: ignore[reportUnknownArgumentType]
 
         elif isinstance(upd_val, set):
 
             if upd_key in base_dict:
                 # if base_dict[upd_key] exists, base_dict[up_key] is updated by the set in upd_val
                 if not isinstance(base_dict[upd_key], set):
-                    raise TypeError(
-                        f"type mismatch {'.'.join(names)}: is not a set type in base_dict"
-                    )
+                    raise TypeError(f"type mismatch {'.'.join(names)}: is not a set type in base_dict")
                 base_dict[upd_key].update(upd_val.copy())
 
             else:

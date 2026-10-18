@@ -36,9 +36,7 @@ def response(resp):
 
     for item in search_res:
         img = "https://s3.thehackerblog.com/findthatmeme/" + item["image_path"]
-        thumb = "https://s3.thehackerblog.com/findthatmeme/thumb/" + item.get(
-            "thumbnail", ""
-        )
+        thumb = "https://s3.thehackerblog.com/findthatmeme/thumb/" + item.get("thumbnail", "")
         date = datetime.fromisoformat(item["updated_at"].split("T")[0])
         formatted_date = datetime.fromtimestamp(date.timestamp())
 

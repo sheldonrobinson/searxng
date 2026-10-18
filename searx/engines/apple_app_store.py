@@ -29,9 +29,7 @@ def request(query, params):
     if params["safesearch"] > 0:
         explicit = "No"
 
-    params["url"] = search_url.format(
-        query=urlencode({"term": query, "media": "software", "explicit": explicit})
-    )
+    params["url"] = search_url.format(query=urlencode({"term": query, "media": "software", "explicit": explicit}))
 
     return params
 

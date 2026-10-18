@@ -30,9 +30,7 @@ def request(query, params):
 
     params["query"] = query
 
-    params["url"] = (
-        f"https://gateway.ai.cloudflare.com/v1/{cf_account_id}/{cf_ai_gateway}/workers-ai/{cf_ai_model}"
-    )
+    params["url"] = f"https://gateway.ai.cloudflare.com/v1/{cf_account_id}/{cf_ai_gateway}/workers-ai/{cf_ai_model}"
 
     params["method"] = "POST"
 

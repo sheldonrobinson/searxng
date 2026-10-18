@@ -26,10 +26,10 @@ results_xpath = '/html/body/main/div[contains(@class,"SearchResults")]/div[not(@
 url_xpath = './div[@class="SearchSnippet-headerContainer"]/h2/a/@href'
 title_xpath = './div[@class="SearchSnippet-headerContainer"]/h2/a/text()'
 package_name_xpath = './div[@class="SearchSnippet-headerContainer"]/h2/a/span/text()'
-version_xpath = (
-    './div[contains(@class, "SearchSnippet-infoLabel")]/span/strong[1]/text()'
+version_xpath = './div[contains(@class, "SearchSnippet-infoLabel")]/span/strong[1]/text()'
+updated_xpath = (
+    './div[contains(@class, "SearchSnippet-infoLabel")]/span/span[@data-test-id="snippet-published"]/strong/text()'
 )
-updated_xpath = './div[contains(@class, "SearchSnippet-infoLabel")]/span/span[@data-test-id="snippet-published"]/strong/text()'
 content_xpath = './p[@class="SearchSnippet-synopsis"]'
 popularity_xpath = './div[contains(@class, "SearchSnippet-infoLabel")]/a/strong/text()'
 license_name_xpath = './div[contains(@class, "SearchSnippet-infoLabel")]/span[@data-test-id="snippet-license"]/a/text()'
@@ -71,14 +71,11 @@ def response(resp):
                 "url": base_url + extract_text(eval_xpath(result, url_xpath)),
                 "title": extract_text(eval_xpath(result, title_xpath)),
                 "content": extract_text(eval_xpath(result, content_xpath)),
-                "package_name": re.sub(
-                    r"\(|\)", "", extract_text(eval_xpath(result, package_name_xpath))
-                ),
+                "package_name": re.sub(r"\(|\)", "", extract_text(eval_xpath(result, package_name_xpath))),
                 "version": extract_text(eval_xpath(result, version_xpath)),
                 "popularity": popularity,
                 "license_name": extract_text(eval_xpath(result, license_name_xpath)),
-                "license_url": base_url
-                + extract_text(eval_xpath(result, license_url_xpath)),
+                "license_url": base_url + extract_text(eval_xpath(result, license_url_xpath)),
                 "publishedDate": publishedDate,
             }
         )

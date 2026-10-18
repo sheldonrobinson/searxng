@@ -44,17 +44,13 @@ class SXNGPlugin(Plugin):
         TRACKER_PATTERNS.init()
         return True
 
-    def on_result(
-        self, request: "SXNG_Request", search: "SearchWithPlugins", result: "Result"
-    ) -> bool:
+    def on_result(self, request: "SXNG_Request", search: "SearchWithPlugins", result: "Result") -> bool:
 
         result.filter_urls(self.filter_url_field)
         return True
 
     @classmethod
-    def filter_url_field(
-        cls, result: "Result|LegacyResult", field_name: str, url_src: str
-    ) -> bool | str:
+    def filter_url_field(cls, result: "Result|LegacyResult", field_name: str, url_src: str) -> bool | str:
         """Returns bool ``True`` to use URL unchanged (``False`` to ignore URL).
         If URL should be modified, the returned string is the new URL to use."""
 

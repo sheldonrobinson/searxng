@@ -49,12 +49,8 @@ def response(resp):
                 ),
                 "title": episode,
                 "content": "",
-                "thumbnail_src": THUMB_URL.format(
-                    base=BASE, episode=episode, timestamp=timestamp
-                ),
-                "img_src": IMAGE_URL.format(
-                    base=BASE, episode=episode, timestamp=timestamp
-                ),
+                "thumbnail_src": THUMB_URL.format(base=BASE, episode=episode, timestamp=timestamp),
+                "img_src": IMAGE_URL.format(base=BASE, episode=episode, timestamp=timestamp),
             }
         )
 

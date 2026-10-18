@@ -44,9 +44,7 @@ def response(resp):
         app_content = (
             extract_text(app.xpath('./div/div/span[@class="package-summary"]')).strip()
             + " - "
-            + extract_text(
-                app.xpath('./div/div/span[@class="package-license"]')
-            ).strip()
+            + extract_text(app.xpath('./div/div/span[@class="package-license"]')).strip()
         )
         thumbnail = app.xpath('./img[@class="package-icon"]/@src')[0]
 

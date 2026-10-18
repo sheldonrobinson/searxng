@@ -28,9 +28,7 @@ class SearxRobotLayer:
         exe = "python"
 
         # set robot settings path
-        os.environ["SEARXNG_SETTINGS_PATH"] = str(
-            tests_path / "robot" / "settings_robot.yml"
-        )
+        os.environ["SEARXNG_SETTINGS_PATH"] = str(tests_path / "robot" / "settings_robot.yml")
 
         # run the server
         self.server = subprocess.Popen(  # pylint: disable=consider-using-with
@@ -63,9 +61,7 @@ def main():
     test_layer = SearxRobotLayer()
     try:
         test_layer.setUp()
-        run_robot_tests(
-            [getattr(test_webapp, x) for x in dir(test_webapp) if x.startswith("test_")]
-        )
+        run_robot_tests([getattr(test_webapp, x) for x in dir(test_webapp) if x.startswith("test_")])
     except Exception:  # pylint: disable=broad-except
         print("Error occurred: {0}".format(traceback.format_exc()))
         sys.exit(1)

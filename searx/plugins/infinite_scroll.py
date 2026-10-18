@@ -23,8 +23,6 @@ class SXNGPlugin(Plugin):
         self.info = PluginInfo(
             id=self.id,
             name=gettext("Infinite scroll"),
-            description=gettext(
-                "Automatically loads the next page when scrolling to bottom of the current page"
-            ),
+            description=gettext("Automatically loads the next page when scrolling to bottom of the current page"),
             preference_section="ui",
         )

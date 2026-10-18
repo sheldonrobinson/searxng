@@ -29,9 +29,7 @@ def obtain_token():
     update_time = time() - (time() % 1800)
     try:
         # use duckduckgo's mapkit token
-        token_response = http_get(
-            "https://duckduckgo.com/local.js?get_mk_token=1", timeout=2.0
-        )
+        token_response = http_get("https://duckduckgo.com/local.js?get_mk_token=1", timeout=2.0)
         actual_token = http_get(
             "https://cdn.apple-mapkit.com/ma/bootstrap?apiVersion=2&mkjsVersion=5.72.53&poi=1",
             timeout=2.0,
@@ -48,9 +46,7 @@ def request(query, params):
     if time() - (token["last_updated"] or 0) > 1800:
         obtain_token()
 
-    params["url"] = search_url.format(
-        query=urlencode({"q": query, "lang": params["language"]})
-    )
+    params["url"] = search_url.format(query=urlencode({"q": query, "lang": params["language"]}))
 
     params["headers"] = {"Authorization": "Bearer " + token["value"]}
 

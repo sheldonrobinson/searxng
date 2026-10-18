@@ -33,9 +33,7 @@ def response(resp):
 
     dom = resp.html()
 
-    for result in eval_xpath_list(
-        dom, "//div[contains(@class, 'gallery')]/div[contains(@class, 'artwork')]"
-    ):
+    for result in eval_xpath_list(dom, "//div[contains(@class, 'gallery')]/div[contains(@class, 'artwork')]"):
         results.append(
             {
                 "template": "images.html",

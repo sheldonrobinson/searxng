@@ -98,9 +98,7 @@ class Image(MainResult, kw_only=True):
                 else:
                     self.img_format = subtype.upper()
 
-    def filter_urls(
-        self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool ]"
-    ):
+    def filter_urls(self, filter_func: "Callable[[Result | LegacyResult, str, str], str | bool ]"):
 
         for _ref in self.formats[:]:
             _name = f"Image.formats:{_ref.label}"

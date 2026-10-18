@@ -124,27 +124,14 @@ def _extract_url_from_redirect(url: str):
 
 
 def _general_results(doc: ElementType, res: EngineResults):
-    for result in eval_xpath_list(
-        doc, "//div[@id='mainResults']/div[contains(@class, 'resultsContainer')]"
-    ):
+    for result in eval_xpath_list(doc, "//div[@id='mainResults']/div[contains(@class, 'resultsContainer')]"):
         res.add(
             res.types.MainResult(
                 url=_extract_url_from_redirect(
-                    extract_text(
-                        eval_xpath(
-                            result, "./div[contains(@class, 'urlAddressLink')]/a/@href"
-                        )
-                    )
-                    or ""
+                    extract_text(eval_xpath(result, "./div[contains(@class, 'urlAddressLink')]/a/@href")) or ""
                 ),
-                title=extract_text(
-                    eval_xpath(result, "./div[contains(@class, 'urlname')]")
-                )
-                or "",
-                content=extract_text(
-                    eval_xpath(result, "./div[contains(@class, 'urlSnippet')]")
-                )
-                or "",
+                title=extract_text(eval_xpath(result, "./div[contains(@class, 'urlname')]")) or "",
+                content=extract_text(eval_xpath(result, "./div[contains(@class, 'urlSnippet')]")) or "",
             )
         )
 
@@ -165,12 +152,7 @@ def _news_results(doc: ElementType, res: EngineResults):
                     )
                     or ""
                 ),
-                title=extract_text(
-                    eval_xpath(
-                        result, ".//div[contains(@class, 'mediaResultNewsPageTitle')]/a"
-                    )
-                )
-                or "",
+                title=extract_text(eval_xpath(result, ".//div[contains(@class, 'mediaResultNewsPageTitle')]/a")) or "",
                 content=extract_text(
                     eval_xpath(
                         result,
@@ -190,70 +172,31 @@ def _news_results(doc: ElementType, res: EngineResults):
 
 
 def _video_results(doc: ElementType, res: EngineResults):
-    for result in eval_xpath_list(
-        doc, "//div[@id='mainResults']/div[contains(@class, 'mediaResult')]"
-    ):
+    for result in eval_xpath_list(doc, "//div[@id='mainResults']/div[contains(@class, 'mediaResult')]"):
         res.add(
             res.types.Video(
                 url=extract_text(eval_xpath(result, "./@data-url")) or "",
-                title=extract_text(
-                    eval_xpath(
-                        result, ".//div[contains(@class, 'mediaResultTitleVideo')]/a"
-                    )
-                )
-                or "",
-                content=extract_text(
-                    eval_xpath(
-                        result, ".//div[contains(@class, 'mediaResultDescription')]"
-                    )
-                )
-                or "",
-                thumbnail=extract_text(
-                    eval_xpath(
-                        result, ".//img[contains(@class, 'videoThumbnail')]/@src"
-                    )
-                )
-                or "",
-                author=extract_text(
-                    eval_xpath(result, ".//div[contains(@class, 'videoCreator')]")
-                )
-                or "",
+                title=extract_text(eval_xpath(result, ".//div[contains(@class, 'mediaResultTitleVideo')]/a")) or "",
+                content=extract_text(eval_xpath(result, ".//div[contains(@class, 'mediaResultDescription')]")) or "",
+                thumbnail=extract_text(eval_xpath(result, ".//img[contains(@class, 'videoThumbnail')]/@src")) or "",
+                author=extract_text(eval_xpath(result, ".//div[contains(@class, 'videoCreator')]")) or "",
                 length=parse_duration_string(
-                    extract_text(
-                        eval_xpath(
-                            result, ".//span[contains(@class, 'mediaResultDuration')]"
-                        )
-                    )
-                    or ""
+                    extract_text(eval_xpath(result, ".//span[contains(@class, 'mediaResultDuration')]")) or ""
                 ),
             )
         )
 
 
 def _image_results(doc: ElementType, res: EngineResults):
-    for result in eval_xpath_list(
-        doc, "//div[contains(@class, 'imageResultsWrapper')]/div"
-    ):
+    for result in eval_xpath_list(doc, "//div[contains(@class, 'imageResultsWrapper')]/div"):
         res.add(
             res.types.Image(
                 url=_extract_url_from_redirect(
-                    extract_text(
-                        eval_xpath(
-                            result, ".//a[contains(@class, 'imageResultSource')]/@href"
-                        )
-                    )
-                    or ""
+                    extract_text(eval_xpath(result, ".//a[contains(@class, 'imageResultSource')]/@href")) or ""
                 ),
-                title=extract_text(
-                    eval_xpath(result, ".//a[contains(@class, 'imageResultTitle')]")
-                )
-                or "",
-                source=extract_text(
-                    eval_xpath(result, ".//div[contains(@class, 'imageResultSource')]")
-                )
-                or "",
-                thumbnail_src=extract_text(eval_xpath(result, "./@data-thumbnail-src"))
-                or "",
+                title=extract_text(eval_xpath(result, ".//a[contains(@class, 'imageResultTitle')]")) or "",
+                source=extract_text(eval_xpath(result, ".//div[contains(@class, 'imageResultSource')]")) or "",
+                thumbnail_src=extract_text(eval_xpath(result, "./@data-thumbnail-src")) or "",
                 img_src=extract_text(eval_xpath(result, "./@data-image-src")) or "",
             )
         )

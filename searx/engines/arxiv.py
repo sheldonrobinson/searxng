@@ -87,9 +87,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
         url: str = eval_xpath_getindex(entry, xpath_id, 0).text
         abstract: str = eval_xpath_getindex(entry, xpath_summary, 0).text
 
-        authors: list[str] = [
-            author.text for author in eval_xpath_list(entry, xpath_author_name)
-        ]
+        authors: list[str] = [author.text for author in eval_xpath_list(entry, xpath_author_name)]
 
         #  doi
         doi_element = eval_xpath_getindex(entry, xpath_doi, 0, default=None)
@@ -111,9 +109,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
         comments_elements = eval_xpath_getindex(entry, xpath_comment, 0, default=None)
         comments: str = "" if comments_elements is None else comments_elements.text
 
-        publishedDate = datetime.fromisoformat(
-            eval_xpath_getindex(entry, xpath_published, 0).text.rstrip("Z")
-        )
+        publishedDate = datetime.fromisoformat(eval_xpath_getindex(entry, xpath_published, 0).text.rstrip("Z"))
 
         res.add(
             res.types.Paper(

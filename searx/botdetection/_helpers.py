@@ -48,9 +48,7 @@ def dump_request(request: flask.Request):
     )
 
 
-def too_many_requests(
-    network: IPv4Network | IPv6Network, log_msg: str
-) -> werkzeug.Response | None:
+def too_many_requests(network: IPv4Network | IPv6Network, log_msg: str) -> werkzeug.Response | None:
     """Returns a HTTP 429 response object and writes a ERROR message to the
     'botdetection' logger.  This function is used in part by the filter methods
     to return the default ``Too Many Requests`` response.
@@ -61,9 +59,7 @@ def too_many_requests(
     return flask.make_response(("Too Many Requests", 429))
 
 
-def get_network(
-    real_ip: IPv4Address | IPv6Address, cfg: "config.Config"
-) -> IPv4Network | IPv6Network:
+def get_network(real_ip: IPv4Address | IPv6Address, cfg: "config.Config") -> IPv4Network | IPv6Network:
     """Returns the (client) network of whether the ``real_ip`` is part of.
 
     The ``ipv4_prefix`` and ``ipv6_prefix`` define the number of leading bits in

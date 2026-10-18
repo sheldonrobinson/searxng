@@ -27,9 +27,7 @@ import yaml
 
 from searx.exceptions import SearxSettingsException
 
-JSONType: t.TypeAlias = (
-    dict[str, "JSONType"] | list["JSONType"] | str | int | float | bool | None
-)
+JSONType: t.TypeAlias = dict[str, "JSONType"] | list["JSONType"] | str | int | float | bool | None
 SettingsType: t.TypeAlias = dict[str, JSONType]
 
 searx_dir = os.path.abspath(os.path.dirname(__file__))
@@ -120,9 +118,7 @@ def get_user_cfg_folder() -> Path | None:
     return folder
 
 
-def update_dict(
-    default_dict: MutableMapping[str, t.Any], user_dict: MutableMapping[str, t.Any]
-):
+def update_dict(default_dict: MutableMapping[str, t.Any], user_dict: MutableMapping[str, t.Any]):
     for k, v in user_dict.items():
         if isinstance(v, MutableMapping):
             default_dict[k] = update_dict(default_dict.get(k, {}), v)  # type: ignore
@@ -156,46 +152,28 @@ def update_settings(
     # parse the engines
     remove_engines: None | list[str] = None
     keep_only_engines: list[str] | None = None
-    use_default_settings: dict[str, t.Any] | None = user_settings.get(
-        "use_default_settings"
-    )
+    use_default_settings: dict[str, t.Any] | None = user_settings.get("use_default_settings")
     if isinstance(use_default_settings, dict):
         remove_engines = use_default_settings.get("engines", {}).get("remove")
         keep_only_engines = use_default_settings.get("engines", {}).get("keep_only")
 
-    if (
-        "engines" in user_settings
-        or remove_engines is not None
-        or keep_only_engines is not None
-    ):
+    if "engines" in user_settings or remove_engines is not None or keep_only_engines is not None:
         engines: list[dict[str, t.Any]] = default_settings["engines"]
 
         # parse "use_default_settings.engines.remove"
         if remove_engines is not None:
-            engines = list(
-                filterfalse(
-                    lambda engine: (engine.get("name")) in remove_engines, engines
-                )
-            )
+            engines = list(filterfalse(lambda engine: (engine.get("name")) in remove_engines, engines))
 
         # parse "use_default_settings.engines.keep_only"
         if keep_only_engines is not None:
-            engines = list(
-                filter(
-                    lambda engine: (engine.get("name")) in keep_only_engines, engines
-                )
-            )
+            engines = list(filter(lambda engine: (engine.get("name")) in keep_only_engines, engines))
 
         # parse "engines"
         user_engines = user_settings.get("engines")
         if user_engines:
-            engines_dict = dict(
-                (definition["name"], definition) for definition in engines
-            )
+            engines_dict = dict((definition["name"], definition) for definition in engines)
             for user_engine in user_engines:
-                default_engine: dict[str, t.Any] | None = engines_dict.get(
-                    user_engine["name"]
-                )
+                default_engine: dict[str, t.Any] | None = engines_dict.get(user_engine["name"])
                 if default_engine:
                     update_dict(default_engine, user_engine)
                 else:

@@ -32,7 +32,5 @@ def filter_request(
 ) -> werkzeug.Response | None:
 
     if "text/html" not in request.accept_mimetypes:
-        return too_many_requests(
-            network, "HTTP header Accept did not contain text/html"
-        )
+        return too_many_requests(network, "HTTP header Accept did not contain text/html")
     return None

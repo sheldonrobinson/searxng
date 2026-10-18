@@ -158,9 +158,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
         title: str = item.get("title", "")
         content: str = _reconstruct_abstract(item.get("abstract_inverted_index")) or ""
         authors = _extract_authors(item)
-        journal, publisher, pages, volume, number, published_date = _extract_biblio(
-            item
-        )
+        journal, publisher, pages, volume, number, published_date = _extract_biblio(item)
         doi = _doi_to_plain(item.get("doi"))
         tags = _extract_tags(item)
         comments = _extract_comments(item)

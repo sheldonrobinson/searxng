@@ -56,10 +56,7 @@ time_range_support = True
 
 # search-url
 url = "https://bt4gprx.com"
-search_url = (
-    url
-    + "/search?q={search_term}&orderby={order_by}&category={category}&p={pageno}&page=rss"
-)
+search_url = url + "/search?q={search_term}&orderby={order_by}&category={category}&p={pageno}&page=rss"
 bt4g_order_by = "relevance"
 """Result list can be ordered by ``relevance`` (default), ``size``, ``seeders``
 or ``time``.

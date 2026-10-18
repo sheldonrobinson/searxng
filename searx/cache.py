@@ -76,11 +76,7 @@ class ExpireCacheCfg(msgspec.Struct):  # pylint: disable=too-few-public-methods
     def __post_init__(self):
         # if db_url is unset, use a default DB in /tmp/sxng_cache_{name}.db
         if not self.db_url:
-            self.db_url = (
-                tempfile.gettempdir()
-                + os.sep
-                + f"sxng_cache_{ExpireCache.normalize_name(self.name)}.db"
-            )
+            self.db_url = tempfile.gettempdir() + os.sep + f"sxng_cache_{ExpireCache.normalize_name(self.name)}.db"
 
 
 @dataclasses.dataclass
@@ -116,9 +112,7 @@ class ExpireCacheStats:
             for key, value, expire in kv_list:
                 valid_until = ""
                 if expire:
-                    valid_until = datetime.datetime.fromtimestamp(expire).strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
+                    valid_until = datetime.datetime.fromtimestamp(expire).strftime("%Y-%m-%d %H:%M:%S")
                 c_kv += 1
                 value_str = str(value)
                 if len(value_str) > 120:
@@ -142,9 +136,7 @@ class ExpireCache(abc.ABC):
     hash_token: str = "hash_token"
 
     @abc.abstractmethod
-    def set(
-        self, key: str, value: typing.Any, expire: int | None, ctx: str | None = None
-    ) -> bool:
+    def set(self, key: str, value: typing.Any, expire: int | None, ctx: str | None = None) -> bool:
         """Set *key* to *value*.  To set a timeout on key use argument
         ``expire`` (in sec.).  If expire is unset the default is taken from
         :py:obj:`ExpireCacheCfg.MAXHOLD_TIME`.  After the timeout has expired,
@@ -164,9 +156,7 @@ class ExpireCache(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get(
-        self, key: str, default: typing.Any = None, ctx: str | None = None
-    ) -> typing.Any:
+    def get(self, key: str, default: typing.Any = None, ctx: str | None = None) -> typing.Any:
         """Return *value* of *key*.  If key is unset, ``None`` is returned."""
 
     @abc.abstractmethod
@@ -265,9 +255,7 @@ class ExpireCacheSQLite(sqlitedb.SQLiteAppl, ExpireCache):
         old = self.properties(self.hash_token)
         if old != new:
             if old is not None:
-                log.warning(
-                    "[%s] hash token changed: truncate all cache tables", self.cfg.name
-                )
+                log.warning("[%s] hash token changed: truncate all cache tables", self.cfg.name)
             self.maintenance(force=True, truncate=True)
             self.properties.set(self.hash_token, new)
 
@@ -281,9 +269,7 @@ class ExpireCacheSQLite(sqlitedb.SQLiteAppl, ExpireCache):
 
         # Prevent parallel DB maintenance cycles from other DB connections
         # (e.g. in multi thread or process environments).
-        self.properties.set(
-            "LAST_MAINTENANCE", ""
-        )  # hint: this (also) sets the m_time of the property!
+        self.properties.set("LAST_MAINTENANCE", "")  # hint: this (also) sets the m_time of the property!
 
         if truncate:
             self.truncate_tables(self.table_names)
@@ -327,9 +313,7 @@ class ExpireCacheSQLite(sqlitedb.SQLiteAppl, ExpireCache):
                 "PRIMARY KEY (key))",
             ]
         )
-        sql_index = (
-            f"CREATE INDEX IF NOT EXISTS index_expire_{table} ON {table}(expire);"
-        )
+        sql_index = f"CREATE INDEX IF NOT EXISTS index_expire_{table} ON {table}(expire);"
         with self.connect() as conn:
             conn.execute(sql_table)
             conn.execute(sql_index)
@@ -357,15 +341,11 @@ class ExpireCacheSQLite(sqlitedb.SQLiteAppl, ExpireCache):
     def next_maintenance_time(self) -> int:
         """Returns (unix epoch) time of the next maintenance."""
 
-        return self.cfg.MAINTENANCE_PERIOD + self.properties.m_time(
-            "LAST_MAINTENANCE", int(time.time())
-        )
+        return self.cfg.MAINTENANCE_PERIOD + self.properties.m_time("LAST_MAINTENANCE", int(time.time()))
 
     # implement ABC methods of ExpireCache
 
-    def set(
-        self, key: str, value: typing.Any, expire: int | None, ctx: str | None = None
-    ) -> bool:
+    def set(self, key: str, value: typing.Any, expire: int | None, ctx: str | None = None) -> bool:
         """Set key/value in DB table given by argument ``ctx``.  If expire is
         unset the default is taken from :py:obj:`ExpireCacheCfg.MAXHOLD_TIME`.
         If ``ctx`` argument is ``None`` (the default), a table name is
@@ -447,9 +427,7 @@ class ExpireCacheSQLite(sqlitedb.SQLiteAppl, ExpireCache):
 
             value: bytes = self.serialize(value=_val)
             if len(value) > self.cfg.MAX_VALUE_LEN:
-                err_msg_list.append(
-                    f"{table}.key='{key}' - serialized value too big to cache (len: {len(value)}) "
-                )
+                err_msg_list.append(f"{table}.key='{key}' - serialized value too big to cache (len: {len(value)}) ")
                 continue
 
             if not expire:
@@ -473,9 +451,7 @@ class ExpireCacheSQLite(sqlitedb.SQLiteAppl, ExpireCache):
 
         return len(sql_rows), err_msg_list
 
-    def get(
-        self, key: str, default: typing.Any = None, ctx: str | None = None
-    ) -> typing.Any:
+    def get(self, key: str, default: typing.Any = None, ctx: str | None = None) -> typing.Any:
         """Get value of ``key`` from table given by argument ``ctx``.  If
         ``ctx`` argument is ``None`` (the default), a table name is generated
         from the :py:obj:`ExpireCacheCfg.name`.  If ``key`` not exists in

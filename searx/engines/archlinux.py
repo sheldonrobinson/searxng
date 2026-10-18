@@ -77,9 +77,7 @@ def response(resp):
     base_url = "https://" + netloc + "/index.php?"
 
     for result in eval_xpath_list(dom, '//ul[@class="mw-search-results"]/li'):
-        link = eval_xpath_getindex(
-            result, './/div[@class="mw-search-result-heading"]/a', 0
-        )
+        link = eval_xpath_getindex(result, './/div[@class="mw-search-result-heading"]/a', 0)
         content = extract_text(result.xpath('.//div[@class="searchresult"]'))
         results.append(
             {

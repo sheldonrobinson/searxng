@@ -25,10 +25,7 @@ page_size = 12
 
 # search-url
 base_url = "https://www.ina.fr"
-search_url = (
-    base_url
-    + "/ajax/recherche?{query}&espace=1&sort=pertinence&order=desc&offset={start}&modified=size"
-)
+search_url = base_url + "/ajax/recherche?{query}&espace=1&sort=pertinence&order=desc&offset={start}&modified=size"
 
 # specific xpath variables
 results_xpath = '//div[@id="searchHits"]/div'
@@ -41,9 +38,7 @@ publishedDate_xpath = './/div[contains(@class,"dateAgenda")]'
 
 # do search-request
 def request(query, params):
-    params["url"] = search_url.format(
-        start=params["pageno"] * page_size, query=urlencode({"q": query})
-    )
+    params["url"] = search_url.format(start=params["pageno"] * page_size, query=urlencode({"q": query}))
     return params
 
 

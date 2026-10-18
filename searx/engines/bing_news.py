@@ -87,14 +87,10 @@ def response(resp):
         content = extract_text(eval_xpath(newsitem, './/div[@class="snippet"]'))
 
         metadata = []
-        source = eval_xpath_getindex(
-            newsitem, './/div[contains(@class, "source")]', 0, None
-        )
+        source = eval_xpath_getindex(newsitem, './/div[contains(@class, "source")]', 0, None)
         if source is not None:
             for item in (
-                eval_xpath_getindex(
-                    source, ".//span[@aria-label]/@aria-label", 0, None
-                ),
+                eval_xpath_getindex(source, ".//span[@aria-label]/@aria-label", 0, None),
                 # eval_xpath_getindex(source, './/a', 0, None),
                 # eval_xpath_getindex(source, './div/span', 3, None),
                 link.attrib.get("data-author"),
@@ -106,9 +102,7 @@ def response(resp):
         metadata = " | ".join(metadata)
 
         thumbnail = None
-        imagelink = eval_xpath_getindex(
-            newsitem, './/a[@class="imagelink"]//img', 0, None
-        )
+        imagelink = eval_xpath_getindex(newsitem, './/a[@class="imagelink"]//img', 0, None)
         if imagelink is not None:
             thumbnail = imagelink.attrib.get("src")
             if not thumbnail.startswith("https://www.bing.com"):

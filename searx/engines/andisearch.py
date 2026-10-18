@@ -86,9 +86,7 @@ def request(query: str, params: "OnlineParams"):
 def response(resp: "SXNG_Response") -> EngineResults:
     res = EngineResults()
 
-    results_json = resp.json()["sessionState"]["sessionAttributes"][
-        "currentSearchResult"
-    ]
+    results_json = resp.json()["sessionState"]["sessionAttributes"]["currentSearchResult"]
     parsed = json.loads(results_json)
 
     if answer := parsed.get("answer"):

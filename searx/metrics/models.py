@@ -97,9 +97,7 @@ class Histogram:  # pylint: disable=missing-class-docstring
         return None
 
     def __repr__(self):
-        return (
-            "Histogram<avg: " + str(self.average) + ", count: " + str(self._count) + ">"
-        )
+        return "Histogram<avg: " + str(self.average) + ", count: " + str(self._count) + ">"
 
 
 class HistogramStorage:  # pylint: disable=missing-class-docstring
@@ -153,9 +151,7 @@ class CounterStorage:  # pylint: disable=missing-class-docstring
 
     def dump(self):
         with self.lock:
-            ks = sorted(
-                self.counters.keys(), key="/".join
-            )  # pylint: disable=invalid-name
+            ks = sorted(self.counters.keys(), key="/".join)  # pylint: disable=invalid-name
         logger.debug("Counters:")
         for k in ks:
             logger.debug("- %-60s %s", "|".join(k), self.counters[k])

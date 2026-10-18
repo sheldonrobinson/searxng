@@ -102,9 +102,7 @@ def response(resp: "SXNG_Response"):
                     title=html_to_text(html.unescape(result["title"])),
                     content=html_to_text(html.unescape(result["description"])),
                     thumbnail=result["thumbnailUrl"],
-                    publishedDate=datetime.fromtimestamp(
-                        result["date"], tz=timezone.utc
-                    ),
+                    publishedDate=datetime.fromtimestamp(result["date"], tz=timezone.utc),
                 )
             )
         elif dogpile_categ == "videos":

@@ -54,9 +54,7 @@ exception_classname_to_text = {
     "curl_cffi.requests.exceptions.ProxyError": gettext("proxy error"),
     "curl_cffi.requests.exceptions.RequestException": network_error_text,
     "searx.exceptions.SearxEngineCaptchaException": gettext("CAPTCHA"),
-    "searx.exceptions.SearxEngineTooManyRequestsException": gettext(
-        "too many requests"
-    ),
+    "searx.exceptions.SearxEngineTooManyRequestsException": gettext("too many requests"),
     "searx.exceptions.SearxEngineAccessDeniedException": gettext("access denied"),
     "searx.exceptions.SearxEngineAPIException": gettext("server API error"),
     "searx.exceptions.SearxEngineXPathException": parsing_error_text,
@@ -72,9 +70,7 @@ def get_translated_errors(unresponsive_engines: "Iterable[UnresponsiveEngine]"):
     translated_errors = []
 
     for unresponsive_engine in unresponsive_engines:
-        error_user_text = exception_classname_to_text.get(
-            unresponsive_engine.error_type
-        )
+        error_user_text = exception_classname_to_text.get(unresponsive_engine.error_type)
         if not error_user_text:
             error_user_text = exception_classname_to_text[None]
         error_msg = gettext(error_user_text)
@@ -113,9 +109,7 @@ class CSVWriter:
             self.writerow(row)
 
 
-def write_csv_response(
-    csv: CSVWriter, rc: "ResultContainer"
-) -> None:  # pylint: disable=redefined-outer-name
+def write_csv_response(csv: CSVWriter, rc: "ResultContainer") -> None:  # pylint: disable=redefined-outer-name
     """Write rows of the results to a query (``application/csv``) into a CSV
     table (:py:obj:`CSVWriter`).  First line in the table contain the column
     names.  The column "type" specifies the type, the following types are
@@ -219,9 +213,7 @@ def new_hmac(secret_key, url):
 
 def is_hmac_of(secret_key, value, hmac_to_check):
     hmac_of_value = new_hmac(secret_key, value)
-    return len(hmac_of_value) == len(hmac_to_check) and hmac.compare_digest(
-        hmac_of_value, hmac_to_check
-    )
+    return len(hmac_of_value) == len(hmac_to_check) and hmac.compare_digest(hmac_of_value, hmac_to_check)
 
 
 def prettify_url(url, max_length=74):
@@ -287,15 +279,11 @@ def highlight_content(content, query):
     for qs in querysplit:
         qs = qs.replace("'", "").replace('"', "").replace(" ", "")
         if len(qs) > 0:
-            queries.extend(
-                re.findall(regex_highlight_cjk(qs), content, flags=re.I | re.U)
-            )
+            queries.extend(re.findall(regex_highlight_cjk(qs), content, flags=re.I | re.U))
     if len(queries) > 0:
         regex = re.compile("|".join(map(regex_highlight_cjk, queries)))
         return regex.sub(
-            lambda match: f'<span class="highlight">{match.group(0)}</span>'.replace(
-                "\\", r"\\"
-            ),
+            lambda match: f'<span class="highlight">{match.group(0)}</span>'.replace("\\", r"\\"),
             content,
         )
     return content
@@ -319,9 +307,7 @@ def searxng_l10n_timespan(dt: datetime) -> str:  # pylint: disable=invalid-name
         hours = int(timedifference.seconds / 60 / 60)
         if hours == 0:
             return gettext("{minutes} minute(s) ago").format(minutes=minutes)
-        return gettext("{hours} hour(s), {minutes} minute(s) ago").format(
-            hours=hours, minutes=minutes
-        )
+        return gettext("{hours} hour(s), {minutes} minute(s) ago").format(hours=hours, minutes=minutes)
     return format_date(dt)
 
 
@@ -334,9 +320,7 @@ def group_engines_in_tab(
     """Groups an Iterable of engines by their first non tab category (first subgroup)"""
 
     def get_subgroup(eng):
-        non_tab_categories = [
-            c for c in eng.categories if c not in tabs + [DEFAULT_CATEGORY]
-        ]
+        non_tab_categories = [c for c in eng.categories if c not in tabs + [DEFAULT_CATEGORY]]
         return non_tab_categories[0] if len(non_tab_categories) > 0 else NO_SUBGROUPING
 
     def group_sort_key(group):
@@ -347,15 +331,11 @@ def group_engines_in_tab(
 
     tabs = list(get_setting("categories_as_tabs").keys())
     subgroups = itertools.groupby(sorted(engines, key=get_subgroup), get_subgroup)
-    sorted_groups = sorted(
-        ((name, list(engines)) for name, engines in subgroups), key=group_sort_key
-    )
+    sorted_groups = sorted(((name, list(engines)) for name, engines in subgroups), key=group_sort_key)
 
     ret_val = []
     for groupname, _engines in sorted_groups:
-        group_bang = (
-            "!" + groupname.replace(" ", "_") if groupname != NO_SUBGROUPING else ""
-        )
+        group_bang = "!" + groupname.replace(" ", "_") if groupname != NO_SUBGROUPING else ""
         ret_val.append((groupname, group_bang, sorted(_engines, key=engine_sort_key)))
 
     return ret_val

@@ -47,9 +47,7 @@ class SXNGPlugin(Plugin):
             preference_section="query",
         )
 
-    def post_search(
-        self, request: "SXNG_Request", search: "SearchWithPlugins"
-    ) -> EngineResults:
+    def post_search(self, request: "SXNG_Request", search: "SearchWithPlugins") -> EngineResults:
         results = EngineResults()
 
         if search.search_query.pageno > 1:
@@ -71,15 +69,11 @@ class SXNGPlugin(Plugin):
             real_ip = ip_address(address=str(request.remote_addr)).compressed
 
             if real_ip in node_list:
-                msg = gettext(
-                    "You are using Tor and it looks like you have the external IP address"
-                )
+                msg = gettext("You are using Tor and it looks like you have the external IP address")
                 results.add(results.types.Answer(answer=f"{msg} {real_ip}"))
 
             else:
-                msg = gettext(
-                    "You are not using Tor and you have the external IP address"
-                )
+                msg = gettext("You are not using Tor and you have the external IP address")
                 results.add(results.types.Answer(answer=f"{msg} {real_ip}"))
 
         return results

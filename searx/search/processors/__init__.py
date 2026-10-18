@@ -37,9 +37,7 @@ ProcessorType = t.Literal[
     "online_url_search",
 ]
 
-OnlineParamTypes: t.TypeAlias = (
-    OnlineParams | OnlineDictParams | OnlineCurrenciesParams | OnlineUrlSearchParams
-)
+OnlineParamTypes: t.TypeAlias = OnlineParams | OnlineDictParams | OnlineCurrenciesParams | OnlineUrlSearchParams
 OfflineParamTypes: t.TypeAlias = RequestParams
 ParamTypes: t.TypeAlias = OfflineParamTypes | OnlineParamTypes
 

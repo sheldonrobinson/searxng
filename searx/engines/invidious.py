@@ -54,14 +54,10 @@ def request(query, params):
         params["base_url"] = base_url
 
     search_url = params["base_url"] + "/api/v1/search?q={query}"
-    params["url"] = search_url.format(
-        query=quote_plus(query)
-    ) + "&page={pageno}".format(pageno=params["pageno"])
+    params["url"] = search_url.format(query=quote_plus(query)) + "&page={pageno}".format(pageno=params["pageno"])
 
     if params["time_range"] in time_range_dict:
-        params["url"] += "&date={timerange}".format(
-            timerange=time_range_dict[params["time_range"]]
-        )
+        params["url"] += "&date={timerange}".format(timerange=time_range_dict[params["time_range"]])
 
     if params["language"] != "all":
         lang = params["language"].split("-")

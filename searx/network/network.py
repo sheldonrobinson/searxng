@@ -162,10 +162,7 @@ class Network:
             proxy_settings[pattern] = cycle(proxy_urls)
         while True:
             # pylint: disable=stop-iteration-return
-            yield tuple(
-                (pattern, next(proxy_url_cycle))
-                for pattern, proxy_url_cycle in proxy_settings.items()
-            )
+            yield tuple((pattern, next(proxy_url_cycle)) for pattern, proxy_url_cycle in proxy_settings.items())
 
     _HTTP_VERSION = {
         int(CurlHttpVersion.V1_0): "HTTP/1.0",
@@ -179,18 +176,14 @@ class Network:
 
     async def log_response(self, response: SXNG_Response):
         request = response.request
-        http_version = self._HTTP_VERSION.get(
-            response.http_version, str(response.http_version)
-        )
+        http_version = self._HTTP_VERSION.get(response.http_version, str(response.http_version))
         status = f"{response.status_code} {response.reason}"
         response_line = f"{http_version} {status}"
         content_type = response.headers.get("Content-Type")
         content_type = f" ({content_type})" if content_type else ""
         method = request.method if request else "?"
         url = request.url if request else response.url
-        self._logger.debug(
-            f'HTTP Request: {method} {url} "{response_line}"{content_type}'
-        )
+        self._logger.debug(f'HTTP Request: {method} {url} "{response_line}"{content_type}')
 
     @staticmethod
     async def check_tor_proxy(client: AsyncClient, proxies) -> bool:
@@ -273,9 +266,7 @@ class Network:
             del kwargs["raise_for_httperror"]
         return do_raise_for_httperror
 
-    def patch_response(
-        self, response: SXNG_Response, do_raise_for_httperror: bool
-    ) -> SXNG_Response:
+    def patch_response(self, response: SXNG_Response, do_raise_for_httperror: bool) -> SXNG_Response:
         if do_raise_for_httperror:
             try:
                 raise_for_httperror(response)
@@ -290,21 +281,13 @@ class Network:
         # pylint: disable=too-many-boolean-expressions
         if (
             (self.retry_on_http_error is True and 400 <= response.status_code <= 599)
-            or (
-                isinstance(self.retry_on_http_error, list)
-                and response.status_code in self.retry_on_http_error
-            )
-            or (
-                isinstance(self.retry_on_http_error, int)
-                and response.status_code == self.retry_on_http_error
-            )
+            or (isinstance(self.retry_on_http_error, list) and response.status_code in self.retry_on_http_error)
+            or (isinstance(self.retry_on_http_error, int) and response.status_code == self.retry_on_http_error)
         ):
             return False
         return True
 
-    async def call_client(
-        self, stream: bool, method: str, url: str, **kwargs: t.Any
-    ) -> SXNG_Response:
+    async def call_client(self, stream: bool, method: str, url: str, **kwargs: t.Any) -> SXNG_Response:
         retries = self.retries
         was_disconnected = False
         do_raise_for_httperror = Network.extract_do_raise_for_httperror(kwargs)
@@ -328,9 +311,7 @@ class Network:
                     # try again without decreasing the retries variable & with a new HTTP client
                     was_disconnected = True
                     await client.aclose()
-                    self._logger.warning(
-                        "ConnectionError: the server has disconnected, retrying"
-                    )
+                    self._logger.warning("ConnectionError: the server has disconnected, retrying")
                     continue
                 if retries <= 0:
                     raise e
@@ -365,9 +346,7 @@ def check_network_configuration():
                 try:
                     await network.get_client()
                 except Exception:  # pylint: disable=broad-except
-                    network._logger.exception(
-                        "Error"
-                    )  # pylint: disable=protected-access
+                    network._logger.exception("Error")  # pylint: disable=protected-access
                     exception_count += 1
         return exception_count
 
@@ -378,9 +357,7 @@ def check_network_configuration():
 
 
 def initialize(
-    settings_engines: list[
-        dict[str, t.Any]
-    ] = None,  # pyright: ignore[reportArgumentType]
+    settings_engines: list[dict[str, t.Any]] = None,  # pyright: ignore[reportArgumentType]
     settings_outgoing: dict[str, t.Any] = None,  # pyright: ignore[reportArgumentType]
 ) -> None:
     # pylint: disable=import-outside-toplevel)

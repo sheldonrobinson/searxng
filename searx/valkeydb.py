@@ -46,9 +46,7 @@ def client() -> valkey.Valkey | None:
 def initialize():
     global _CLIENT  # pylint: disable=global-statement
     if get_setting("redis.url"):
-        warnings.warn(
-            "setting redis.url is deprecated, use valkey.url", DeprecationWarning
-        )
+        warnings.warn("setting redis.url is deprecated, use valkey.url", DeprecationWarning)
     valkey_url = get_setting("valkey.url") or get_setting("redis.url")
     if not valkey_url:
         return False
@@ -75,9 +73,7 @@ def initialize():
             logger.exception("[%s] can't connect valkey DB ...", _user)
         elif pwd:
             _pw = pwd.getpwuid(os.getuid())
-            logger.exception(
-                "[%s (%s)] can't connect valkey DB ...", _pw.pw_name, _pw.pw_uid
-            )
+            logger.exception("[%s (%s)] can't connect valkey DB ...", _pw.pw_name, _pw.pw_uid)
         else:
             logger.exception("Can't connect valkey DB ...")
     return False

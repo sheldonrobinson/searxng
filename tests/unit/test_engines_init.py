@@ -73,9 +73,7 @@ class TestEnginesInit(SearxTestCase):
         engine_list = [
             {"engine": "dummy", "shortcut": "e1", "categories": "general"},
         ]
-        with self.assertLogs(
-            "searx.engines", level="ERROR"
-        ) as cm:  # pylint: disable=invalid-name
+        with self.assertLogs("searx.engines", level="ERROR") as cm:  # pylint: disable=invalid-name
             engines.load_engines(engine_list)
             self.assertEqual(len(engines.engines), 0)
             self.assertEqual(
@@ -88,9 +86,7 @@ class TestEnginesInit(SearxTestCase):
         engine_list = [
             {"name": "engine2", "shortcut": "e2", "categories": "onions"},
         ]
-        with self.assertLogs(
-            "searx.engines", level="ERROR"
-        ) as cm:  # pylint: disable=invalid-name
+        with self.assertLogs("searx.engines", level="ERROR") as cm:  # pylint: disable=invalid-name
             engines.load_engines(engine_list)
             self.assertEqual(len(engines.engines), 0)
             self.assertEqual(

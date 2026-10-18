@@ -178,9 +178,7 @@ def _map_result_url(guid: str | None, comments: str | None) -> str | None:
     return None
 
 
-def _map_leechers(
-    leechers: str | None, seeders: str | None, peers: str | None
-) -> str | None:
+def _map_leechers(leechers: str | None, seeders: str | None, peers: str | None) -> str | None:
     if leechers:
         return leechers
     if seeders and peers:
@@ -233,9 +231,7 @@ def get_attribute(item: etree.Element, property_name: str) -> str | None:
 def get_torznab_attribute(item: etree.Element, attribute_name: str) -> str | None:
     """Get torznab special attribute from item."""
     element: etree.Element | None = item.find(
-        './/torznab:attr[@name="{attribute_name}"]'.format(
-            attribute_name=attribute_name
-        ),
+        './/torznab:attr[@name="{attribute_name}"]'.format(attribute_name=attribute_name),
         {"torznab": "http://torznab.com/schemas/2015/feed"},
     )
     if element is not None:

@@ -51,11 +51,7 @@ def response(resp):
             pull_count = rate_plan.get("repositories", [{}])[0].get("pull_count")
             if pull_count:
                 popularity_infos.insert(0, f"{pull_count} pulls")
-            architectures.extend(
-                arch["name"]
-                for arch in rate_plan.get("architectures", [])
-                if arch["name"]
-            )
+            architectures.extend(arch["name"] for arch in rate_plan.get("architectures", []) if arch["name"])
 
         result = {
             "template": "packages.html",
@@ -65,9 +61,7 @@ def response(resp):
             "thumbnail": item["logo_url"].get("large") or item["logo_url"].get("small"),
             "package_name": item.get("name"),
             "maintainer": item["publisher"].get("name"),
-            "publishedDate": parser.parse(
-                item.get("updated_at") or item.get("created_at")
-            ),
+            "publishedDate": parser.parse(item.get("updated_at") or item.get("created_at")),
             "popularity": ", ".join(popularity_infos),
             "tags": architectures,
         }

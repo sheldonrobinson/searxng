@@ -59,7 +59,5 @@ def filter_request(
 
     user_agent = request.headers.get("User-Agent", "unknown")
     if regexp_user_agent().match(user_agent):
-        return too_many_requests(
-            network, f"bot detected, HTTP header User-Agent: {user_agent}"
-        )
+        return too_many_requests(network, f"bot detected, HTTP header User-Agent: {user_agent}")
     return None

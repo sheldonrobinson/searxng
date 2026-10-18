@@ -15,9 +15,7 @@ from . import Answerer, AnswererInfo
 
 
 def random_characters():
-    random_string_letters = (
-        string.ascii_lowercase + string.digits + string.ascii_uppercase
-    )
+    random_string_letters = string.ascii_lowercase + string.digits + string.ascii_uppercase
     return random.choices(random_string_letters, k=random.randint(8, 32))
 
 

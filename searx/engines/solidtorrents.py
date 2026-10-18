@@ -44,22 +44,14 @@ def response(resp):
     dom = resp.html()
 
     for result in eval_xpath(dom, '//li[contains(@class, "search-result")]'):
-        torrentfile = eval_xpath_getindex(
-            result, './/a[contains(@class, "dl-torrent")]/@href', 0, None
-        )
-        magnet = eval_xpath_getindex(
-            result, './/a[contains(@class, "dl-magnet")]/@href', 0, None
-        )
+        torrentfile = eval_xpath_getindex(result, './/a[contains(@class, "dl-torrent")]/@href', 0, None)
+        magnet = eval_xpath_getindex(result, './/a[contains(@class, "dl-magnet")]/@href', 0, None)
         if torrentfile is None or magnet is None:
             continue  # ignore anime results that which aren't actually torrents
         title = eval_xpath_getindex(result, './/h5[contains(@class, "title")]', 0, None)
-        url = eval_xpath_getindex(
-            result, './/h5[contains(@class, "title")]/a/@href', 0, None
-        )
+        url = eval_xpath_getindex(result, './/h5[contains(@class, "title")]/a/@href', 0, None)
         categ = eval_xpath(result, './/a[contains(@class, "category")]')
-        stats = eval_xpath_list(
-            result, './/div[contains(@class, "stats")]/div', min_len=5
-        )
+        stats = eval_xpath_list(result, './/div[contains(@class, "stats")]/div', min_len=5)
 
         params = {
             "seed": extract_text(stats[3]),
@@ -74,9 +66,7 @@ def response(resp):
         }
 
         try:
-            params["publishedDate"] = datetime.strptime(
-                extract_text(stats[4]), "%b %d, %Y"
-            )
+            params["publishedDate"] = datetime.strptime(extract_text(stats[4]), "%b %d, %Y")
         except ValueError:
             pass
 

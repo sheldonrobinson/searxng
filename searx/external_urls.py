@@ -28,9 +28,7 @@ def get_wikimedia_image_id(url: str):
     return url
 
 
-def get_external_url(
-    url_id: str, item_id: str | None, alternative: str = "default"
-) -> str | None:
+def get_external_url(url_id: str, item_id: str | None, alternative: str = "default") -> str | None:
     """Return an external URL or None if url_id is not found.
 
     url_id can take value from data/external_urls.json

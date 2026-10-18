@@ -68,9 +68,7 @@ def get_image_cookies(headers: dict[str, str]) -> dict[str, str]:
 
     warmup = http_get(image_base_url, headers=headers, timeout=10)
     cookies = dict(warmup.cookies.items())
-    CACHE.set(
-        key=COOKIE_CACHE_KEY, value=cookies, expire=COOKIE_CACHE_EXPIRATION_SECONDS
-    )
+    CACHE.set(key=COOKIE_CACHE_KEY, value=cookies, expire=COOKIE_CACHE_EXPIRATION_SECONDS)
     return cookies
 
 
@@ -140,9 +138,7 @@ def response(resp):
         text = text.replace(r"\/", "/").replace(r"\'", "'")
     data = json.loads(text, strict=False)
     if data.get("antiFlag") == 1:
-        raise SearxEngineAccessDeniedException(
-            data.get("message", "Forbid spider access")
-        )
+        raise SearxEngineAccessDeniedException(data.get("message", "Forbid spider access"))
     parsers = {"general": parse_general, "images": parse_images, "it": parse_it}
 
     return parsers[baidu_category](data)

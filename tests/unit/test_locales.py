@@ -45,9 +45,7 @@ class TestLocales(SearxTestCase):
     )
     def test_match_region(self, locale: str, expected_locale: str):
         # Test SearXNG search regions
-        self.assertEqual(
-            locales.match_locale(locale, self.locale_tag_list), expected_locale
-        )
+        self.assertEqual(locales.match_locale(locale, self.locale_tag_list), expected_locale)
 
     @parameterized.expand(
         [
@@ -59,25 +57,17 @@ class TestLocales(SearxTestCase):
     )
     def test_match_lang_script_code(self, locale: str, expected_locale: str):
         # Test language script code
-        self.assertEqual(
-            locales.match_locale(locale, self.locale_tag_list), expected_locale
-        )
+        self.assertEqual(locales.match_locale(locale, self.locale_tag_list), expected_locale)
 
     def test_locale_de(self):
         self.assertEqual(locales.match_locale("de", ["de-CH", "de-DE"]), "de-DE")
         self.assertEqual(locales.match_locale("de", ["de-CH", "de-DE"]), "de-DE")
 
     def test_locale_es(self):
-        self.assertEqual(
-            locales.match_locale("es", [], fallback="fallback"), "fallback"
-        )
+        self.assertEqual(locales.match_locale("es", [], fallback="fallback"), "fallback")
         self.assertEqual(locales.match_locale("es", ["ES"]), "ES")
-        self.assertEqual(
-            locales.match_locale("es", ["es-AR", "es-ES", "es-MX"]), "es-ES"
-        )
-        self.assertEqual(
-            locales.match_locale("es-AR", ["es-AR", "es-ES", "es-MX"]), "es-AR"
-        )
+        self.assertEqual(locales.match_locale("es", ["es-AR", "es-ES", "es-MX"]), "es-ES")
+        self.assertEqual(locales.match_locale("es-AR", ["es-AR", "es-ES", "es-MX"]), "es-AR")
         self.assertEqual(locales.match_locale("es-CO", ["es-AR", "es-ES"]), "es-ES")
         self.assertEqual(locales.match_locale("es-CO", ["es-AR"]), "es-AR")
 
@@ -113,9 +103,7 @@ class TestLocales(SearxTestCase):
             ),  # the engine supports fr_FR and fr_CA since no territory is given, fr_FR takes priority
         ]
     )
-    def test_locale_optimized_selected(
-        self, locale: str, locale_list: list[str], expected_locale: str
-    ):
+    def test_locale_optimized_selected(self, locale: str, locale_list: list[str], expected_locale: str):
         """
         Tests from the commit message of 9ae409a05a
 
@@ -140,9 +128,7 @@ class TestLocales(SearxTestCase):
             ("fr", ["fr-BE", "fr-IT"], "fr-BE"),
         ]
     )
-    def test_locale_optimized_territory(
-        self, locale: str, locale_list: list[str], expected_locale: str
-    ):
+    def test_locale_optimized_territory(self, locale: str, locale_list: list[str], expected_locale: str):
         """
         Tests from the commit message of 9ae409a05a
 

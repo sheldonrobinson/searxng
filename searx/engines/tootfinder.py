@@ -37,11 +37,7 @@ def response(resp):
         thumbnail = None
 
         attachments = result.get("media_attachments", [])
-        images = [
-            attachment["preview_url"]
-            for attachment in attachments
-            if attachment["type"] == "image"
-        ]
+        images = [attachment["preview_url"] for attachment in attachments if attachment["type"] == "image"]
         if len(images) > 0:
             thumbnail = images[0]
 

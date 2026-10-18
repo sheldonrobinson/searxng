@@ -159,9 +159,7 @@ def get_tags():
         label = tag["itemLabel"]["value"].lower()
         lang = tag["itemLabel"]["xml:lang"]
         if lang in LANGUAGES:
-            results.setdefault(tag_category, {}).setdefault(tag_type, {}).setdefault(
-                lang, label
-            )
+            results.setdefault(tag_category, {}).setdefault(tag_type, {}).setdefault(lang, label)
     return results
 
 

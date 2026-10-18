@@ -65,9 +65,7 @@ huggingface_endpoint = "models"
 
 def setup(_: dict[str, t.Any]) -> bool | None:
     if huggingface_endpoint not in ("datasets", "models", "spaces"):
-        raise SearxEngineAPIException(
-            f"Unsupported Hugging Face endpoint: {huggingface_endpoint}"
-        )
+        raise SearxEngineAPIException(f"Unsupported Hugging Face endpoint: {huggingface_endpoint}")
 
 
 def request(query, params):

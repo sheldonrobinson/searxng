@@ -125,6 +125,4 @@ class TestNewHmac(SearxTestCase):
     def test_bytes(self):
         data = b"http://example.com"
         res = webutils.new_hmac("secret", data)
-        self.assertEqual(
-            res, "23e2baa2404012a5cc8e4a18b4aabf0dde4cb9b56f679ddc0fd6d7c24339d819"
-        )
+        self.assertEqual(res, "23e2baa2404012a5cc8e4a18b4aabf0dde4cb9b56f679ddc0fd6d7c24339d819")

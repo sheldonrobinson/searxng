@@ -37,9 +37,7 @@ iframe_src = "https://bandcamp.com/EmbeddedPlayer/{type}={result_id}/size=large/
 
 def request(query, params):
 
-    search_path = search_string.format(
-        query=urlencode({"q": query}), page=params["pageno"]
-    )
+    search_path = search_string.format(query=urlencode({"q": query}), page=params["pageno"])
     params["url"] = base_url + search_path
     return params
 
@@ -51,9 +49,7 @@ def response(resp):
 
     for result in eval_xpath_list(dom, '//li[contains(@class, "searchresult")]'):
 
-        link = eval_xpath_getindex(
-            result, './/div[@class="itemurl"]/a', 0, default=None
-        )
+        link = eval_xpath_getindex(result, './/div[@class="itemurl"]/a', 0, default=None)
         if link is None:
             continue
 
@@ -65,9 +61,7 @@ def response(resp):
             "content": extract_text(content),
         }
 
-        date = eval_xpath_getindex(
-            result, '//div[@class="released"]/text()', 0, default=None
-        )
+        date = eval_xpath_getindex(result, '//div[@class="released"]/text()', 0, default=None)
         if date:
             new_result["publishedDate"] = dateparse(date.replace("released ", ""))
 
@@ -78,13 +72,9 @@ def response(resp):
         result_id = parse_qs(urlparse(link.get("href")).query)["search_item_id"][0]
         itemtype = extract_text(result.xpath('.//div[@class="itemtype"]')).lower()
         if "album" == itemtype:
-            new_result["iframe_src"] = iframe_src.format(
-                type="album", result_id=result_id
-            )
+            new_result["iframe_src"] = iframe_src.format(type="album", result_id=result_id)
         elif "track" == itemtype:
-            new_result["iframe_src"] = iframe_src.format(
-                type="track", result_id=result_id
-            )
+            new_result["iframe_src"] = iframe_src.format(type="track", result_id=result_id)
 
         results.append(new_result)
     return results

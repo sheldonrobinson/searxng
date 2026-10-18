@@ -77,9 +77,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 latest_version = repo["version"]
                 break
         else:
-            latest_version = _get_most_common(
-                [repo.get("version") for repo in repositories]
-            )
+            latest_version = _get_most_common([repo.get("version") for repo in repositories])
 
         res.add(
             res.types.LegacyResult(
@@ -87,16 +85,10 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 url=f"{base_url}/project/{pkgname}/versions",
                 title=pkgname,
                 content=_get_most_common([pkg.get("summary") for pkg in repositories]),
-                package_name=_get_most_common(
-                    [pkg.get("visiblename") for pkg in repositories]
-                ),
+                package_name=_get_most_common([pkg.get("visiblename") for pkg in repositories]),
                 version=latest_version,
-                license_name=_get_most_common(
-                    _flatten([pkg.get("licenses", []) for pkg in repositories])
-                ),
-                tags=list(
-                    {pkg.get("repo") for pkg in repositories}
-                ),  # ensure that tags are unique
+                license_name=_get_most_common(_flatten([pkg.get("licenses", []) for pkg in repositories])),
+                tags=list({pkg.get("repo") for pkg in repositories}),  # ensure that tags are unique
             )
         )
 

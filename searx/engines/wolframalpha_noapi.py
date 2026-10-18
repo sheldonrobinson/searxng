@@ -104,9 +104,7 @@ def response(resp):
             if subpod["plaintext"] != "" and pod_id not in image_pods:
                 # append unless it's not an actual answer
                 if subpod["plaintext"] != "(requires interactivity)":
-                    result_chunks.append(
-                        {"label": pod_title, "value": subpod["plaintext"]}
-                    )
+                    result_chunks.append({"label": pod_title, "value": subpod["plaintext"]})
 
                 if pod_is_result or not result_content:
                     if pod_id != "Input":
@@ -122,9 +120,7 @@ def response(resp):
         {
             "infobox": infobox_title,
             "attributes": result_chunks,
-            "urls": [
-                {"title": "Wolfram|Alpha", "url": resp.request.headers["Referer"]}
-            ],
+            "urls": [{"title": "Wolfram|Alpha", "url": resp.request.headers["Referer"]}],
         }
     )
 

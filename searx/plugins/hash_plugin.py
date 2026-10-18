@@ -38,9 +38,7 @@ class SXNGPlugin(Plugin):
             preference_section="query",
         )
 
-    def post_search(
-        self, request: "SXNG_Request", search: "SearchWithPlugins"
-    ) -> EngineResults:
+    def post_search(self, request: "SXNG_Request", search: "SearchWithPlugins") -> EngineResults:
         """Returns a result list only for the first page."""
         results = EngineResults()
 

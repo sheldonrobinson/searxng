@@ -61,9 +61,7 @@ yandex_supported_langs = [
 
 results_xpath = '//li[contains(@class, "serp-item")]'
 url_xpath = './/a[@class="b-serp-item__title-link"]/@href'
-title_xpath = (
-    './/h3[@class="b-serp-item__title"]/a[@class="b-serp-item__title-link"]/span'
-)
+title_xpath = './/h3[@class="b-serp-item__title"]/a[@class="b-serp-item__title-link"]/span'
 content_xpath = './/div[@class="b-serp-item__content"]//div[@class="b-serp-item__text"]'
 date_xpath = ".//span[@data-mtime]/@data-mtime"
 
@@ -168,16 +166,12 @@ def response(resp: "SXNG_Response") -> EngineResults:
             json_resp = _parse_json_results(dom)
 
             # build results from loaded json values
-            for item_data in json_resp["initialState"]["serpList"]["items"][
-                "entities"
-            ].values():
+            for item_data in json_resp["initialState"]["serpList"]["items"]["entities"].values():
                 viewerData: dict[str, t.Any] = item_data["viewerData"]
                 snippet: dict[str, str] = viewerData.get("snippet", {})
 
                 # return the image with largest dimensions
-                image_sources = viewerData.get("dups", []) + viewerData.get(
-                    "preview", []
-                )
+                image_sources = viewerData.get("dups", []) + viewerData.get("preview", [])
                 image_source = max(image_sources, key=lambda x: x["h"] * x["w"])
 
                 humanized_filesize = None

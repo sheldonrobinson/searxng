@@ -76,18 +76,11 @@ def response(resp):
         object_id = hit["objectID"]
         points = hit.get("points") or 0
         num_comments = hit.get("num_comments") or 0
-        content = (
-            hit.get("url")
-            or html_to_text(hit.get("comment_text"))
-            or html_to_text(hit.get("story_text"))
-        )
+        content = hit.get("url") or html_to_text(hit.get("comment_text")) or html_to_text(hit.get("story_text"))
 
         metadata = ""
         if points != 0 or num_comments != 0:
-            metadata = (
-                f"{gettext('points')}: {points}"
-                f" | {gettext('comments')}: {num_comments}"
-            )
+            metadata = f"{gettext('points')}: {points}" f" | {gettext('comments')}: {num_comments}"
         results.append(
             {
                 "title": hit.get("title") or f"{gettext('author')}: {hit['author']}",

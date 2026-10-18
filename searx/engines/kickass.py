@@ -30,9 +30,7 @@ base_url = "https://kickasstorrents.to"
 
 
 def request(query, params):
-    params["base_url"] = (
-        random.choice(base_url) if isinstance(base_url, list) else base_url
-    )
+    params["base_url"] = random.choice(base_url) if isinstance(base_url, list) else base_url
     params["url"] = params["base_url"] + f'/usearch/{quote(query)}/{params["pageno"]}/'
 
     return params
@@ -42,33 +40,19 @@ def response(resp):
     results = []
     dom = resp.html()
 
-    search_res = eval_xpath_list(
-        dom, '//table[contains(@class, "data")]//tr[descendant::a]', None
-    )
+    search_res = eval_xpath_list(dom, '//table[contains(@class, "data")]//tr[descendant::a]', None)
     if search_res is None:
         return []
 
     for tag in search_res[1:]:
         result = {"template": "torrent.html"}
-        url = eval_xpath_getindex(
-            tag, './/a[contains(@class, "cellMainLink")]/@href', 0, None
-        )
+        url = eval_xpath_getindex(tag, './/a[contains(@class, "cellMainLink")]/@href', 0, None)
         result["url"] = resp.search_params["base_url"] + url
-        result["title"] = extract_text(
-            eval_xpath(tag, './/a[contains(@class, "cellMainLink")]')
-        )
-        result["content"] = extract_text(
-            eval_xpath(tag, './/span[@class="font11px lightgrey block"]')
-        )
-        result["seed"] = int_or_zero(
-            extract_text(eval_xpath(tag, './/td[contains(@class, "green")]'))
-        )
-        result["leech"] = int_or_zero(
-            extract_text(eval_xpath(tag, './/td[contains(@class, "red")]'))
-        )
-        result["filesize"] = extract_text(
-            eval_xpath(tag, './/td[contains(@class, "nobr")]')
-        )
+        result["title"] = extract_text(eval_xpath(tag, './/a[contains(@class, "cellMainLink")]'))
+        result["content"] = extract_text(eval_xpath(tag, './/span[@class="font11px lightgrey block"]'))
+        result["seed"] = int_or_zero(extract_text(eval_xpath(tag, './/td[contains(@class, "green")]')))
+        result["leech"] = int_or_zero(extract_text(eval_xpath(tag, './/td[contains(@class, "red")]')))
+        result["filesize"] = extract_text(eval_xpath(tag, './/td[contains(@class, "nobr")]'))
 
         results.append(result)
 

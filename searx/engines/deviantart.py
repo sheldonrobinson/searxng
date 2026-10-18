@@ -78,9 +78,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
         )
 
     nextpage_url = extract_text(eval_xpath(dom, cursor_xpath))
-    cursor = urllib.parse.parse_qs(urllib.parse.urlparse(nextpage_url or "").query).get(
-        "cursor", [None]
-    )[0]
+    cursor = urllib.parse.parse_qs(urllib.parse.urlparse(nextpage_url or "").query).get("cursor", [None])[0]
     if cursor:
         res.add(
             res.types.LegacyResult(

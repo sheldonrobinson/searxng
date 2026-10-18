@@ -53,9 +53,7 @@ def response(resp) -> EngineResults:
     if not text:
         return results
 
-    item = results.types.Translations.Item(
-        text=text, examples=json_resp.get("alternatives", [])
-    )
+    item = results.types.Translations.Item(text=text, examples=json_resp.get("alternatives", []))
     results.add(results.types.Translations(translations=[item]))
 
     return results

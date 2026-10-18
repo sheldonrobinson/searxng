@@ -59,11 +59,7 @@ class ReverseProxyPathFix:
             if path_info.startswith(script_name):
                 environ["PATH_INFO"] = path_info[len(script_name) :]
 
-        scheme = (
-            self.scheme
-            or environ.get("HTTP_X_SCHEME")
-            or environ.get("HTTP_X_FORWARDED_PROTO")
-        )
+        scheme = self.scheme or environ.get("HTTP_X_SCHEME") or environ.get("HTTP_X_FORWARDED_PROTO")
         if scheme:
             environ["wsgi.url_scheme"] = scheme
 
@@ -75,8 +71,6 @@ class ReverseProxyPathFix:
 
 def patch_application(app):
     # serve pages with HTTP/1.1
-    WSGIRequestHandler.protocol_version = "HTTP/{}".format(
-        settings["server"]["http_protocol_version"]
-    )
+    WSGIRequestHandler.protocol_version = "HTTP/{}".format(settings["server"]["http_protocol_version"])
     # patch app to handle non root url-s behind proxy
     app.wsgi_app = ReverseProxyPathFix(app.wsgi_app)

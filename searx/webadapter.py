@@ -52,9 +52,7 @@ def parse_pageno(form: Dict[str, str]) -> int:
     return int(pageno_param)
 
 
-def parse_lang(
-    preferences: Preferences, form: Dict[str, str], raw_text_query: RawTextQuery
-) -> str:
+def parse_lang(preferences: Preferences, form: Dict[str, str], raw_text_query: RawTextQuery) -> str:
     if "language" in preferences.cfg.lock:
         return preferences.get_value("language")
     # get language
@@ -103,9 +101,7 @@ def parse_time_range(form: Dict[str, str]) -> Optional[str]:
     return query_time_range
 
 
-def parse_timeout(
-    form: Dict[str, str], raw_text_query: RawTextQuery
-) -> Optional[float]:
+def parse_timeout(form: Dict[str, str], raw_text_query: RawTextQuery) -> Optional[float]:
     timeout_limit = raw_text_query.timeout_limit
     if timeout_limit is None:
         timeout_limit = form.get("timeout_limit")
@@ -120,9 +116,7 @@ def parse_timeout(
 
 def parse_category_form(query_categories: List[str], name: str, value: str) -> None:
     if name == "categories":
-        query_categories.extend(
-            categ for categ in map(str.strip, value.split(",")) if categ in categories
-        )
+        query_categories.extend(categ for categ in map(str.strip, value.split(",")) if categ in categories)
     elif name.startswith("category_"):
         category = name[9:]
 
@@ -138,9 +132,7 @@ def parse_category_form(query_categories: List[str], name: str, value: str) -> N
             query_categories.remove(category)
 
 
-def get_selected_categories(
-    preferences: Preferences, form: Optional[Dict[str, str]]
-) -> List[str]:
+def get_selected_categories(preferences: Preferences, form: Optional[Dict[str, str]]) -> List[str]:
     selected_categories = []
 
     if not "categories" in preferences.cfg.lock and form is not None:
@@ -177,9 +169,7 @@ def get_engineref_from_category_list(  # pylint: disable=invalid-name
     return result
 
 
-def parse_generic(
-    preferences: Preferences, form: Dict[str, str], disabled_engines: List[str]
-) -> List[EngineRef]:
+def parse_generic(preferences: Preferences, form: Dict[str, str], disabled_engines: List[str]) -> List[EngineRef]:
     query_engineref_list = []
     query_categories = []
 
@@ -204,9 +194,7 @@ def parse_generic(
         # explicit list of engines with the "engines" parameter in the form
         if query_categories:
             # add engines from referenced by the "categories" parameter and the "category_*"" parameters
-            query_engineref_list.extend(
-                get_engineref_from_category_list(query_categories, disabled_engines)
-            )
+            query_engineref_list.extend(get_engineref_from_category_list(query_categories, disabled_engines))
     else:
         # no "engines" parameters in the form
         if not query_categories:
@@ -216,9 +204,7 @@ def parse_generic(
 
         # using all engines for that search, which are
         # declared under the specific categories
-        query_engineref_list.extend(
-            get_engineref_from_category_list(query_categories, disabled_engines)
-        )
+        query_engineref_list.extend(get_engineref_from_category_list(query_categories, disabled_engines))
 
     return query_engineref_list
 
@@ -290,8 +276,8 @@ def get_search_query_from_webapp(
         query_engineref_list = parse_generic(preferences, form, disabled_engines)
 
     query_engineref_list = deduplicate_engineref_list(query_engineref_list)
-    query_engineref_list, query_engineref_list_unknown, query_engineref_list_notoken = (
-        validate_engineref_list(query_engineref_list, preferences)
+    query_engineref_list, query_engineref_list_unknown, query_engineref_list_notoken = validate_engineref_list(
+        query_engineref_list, preferences
     )
 
     return (

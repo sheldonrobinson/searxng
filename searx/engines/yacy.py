@@ -110,9 +110,7 @@ def setup(_: dict[str, t.Any]) -> bool | None:
         # 'app', 'audio', 'video',
     ]
     if search_type not in valid_types:
-        raise ValueError(
-            'search_type "%s" is  not one of %s' % (search_type, valid_types)
-        )
+        raise ValueError('search_type "%s" is  not one of %s' % (search_type, valid_types))
 
 
 def _base_url() -> str:

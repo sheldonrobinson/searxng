@@ -84,9 +84,7 @@ class EngineTraits:
     """A place to store engine's custom traits, not related to the SearXNG core.
     """
 
-    def get_language(
-        self, searxng_locale: str, default: str | None = None
-    ) -> str | None:
+    def get_language(self, searxng_locale: str, default: str | None = None) -> str | None:
         """Return engine's language string that *best fits* to SearXNG's locale.
 
         :param searxng_locale: SearXNG's internal representation of locale
@@ -100,9 +98,7 @@ class EngineTraits:
         """
         if searxng_locale == "all" and self.all_locale is not None:
             return self.all_locale
-        return locales.get_engine_locale(
-            searxng_locale, self.languages, default=default
-        )
+        return locales.get_engine_locale(searxng_locale, self.languages, default=default)
 
     def get_region(self, searxng_locale: str, default: str | None = None) -> str | None:
         """Return engine's region string that best fits to SearXNG's locale.
@@ -224,26 +220,14 @@ class EngineTraitsMap(dict[str, EngineTraits]):
                 log("ERROR: while fetch_traits %s: %s" % (engine_name, exc))
                 v = ENGINE_TRAITS.get(engine_name)
                 if v:
-                    log(
-                        "WARNING: re-use old values from fetch_traits - ENGINE_TRAITS[%s]"
-                        % engine_name
-                    )
+                    log("WARNING: re-use old values from fetch_traits - ENGINE_TRAITS[%s]" % engine_name)
                     traits = EngineTraits(**v)
                 else:
-                    log(
-                        "WARNING: no old values available for ENGINE_TRAITS[%s], skipping"
-                        % engine_name
-                    )
+                    log("WARNING: no old values available for ENGINE_TRAITS[%s], skipping" % engine_name)
 
             if traits is not None:
-                log(
-                    "%-20s: SearXNG languages --> %s "
-                    % (engine_name, len(traits.languages))
-                )
-                log(
-                    "%-20s: SearXNG regions   --> %s"
-                    % (engine_name, len(traits.regions))
-                )
+                log("%-20s: SearXNG languages --> %s " % (engine_name, len(traits.languages)))
+                log("%-20s: SearXNG regions   --> %s" % (engine_name, len(traits.regions)))
                 obj[engine_name] = traits
 
         return obj

@@ -167,9 +167,7 @@ class EngineCache:
         self.expire: int = expire or ENGINES_CACHE.cfg.MAXHOLD_TIME
         _valid = "-_." + string.ascii_letters + string.digits
         # engine_name is a table and SQL table names must start with a letter
-        self.table_name: str = "eng_" + "".join(
-            [c if c in _valid else "_" for c in engine_name]
-        )
+        self.table_name: str = "eng_" + "".join([c if c in _valid else "_" for c in engine_name])
 
     def set(self, key: str, value: t.Any, expire: int | None = None) -> bool:
         return ENGINES_CACHE.set(
@@ -370,9 +368,7 @@ class Engine(abc.ABC):  # pylint: disable=too-few-public-methods
          https: socks5://proxy:port
     """
 
-    def setup(
-        self, engine_settings: dict[str, t.Any]
-    ) -> bool | None:  # pylint: disable=unused-argument
+    def setup(self, engine_settings: dict[str, t.Any]) -> bool | None:  # pylint: disable=unused-argument
         """Dynamic setup of the engine settings.
 
         With this method, the engine's setup is carried out.  For example, to
@@ -397,9 +393,7 @@ class Engine(abc.ABC):  # pylint: disable=too-few-public-methods
         """
         return True
 
-    def init(
-        self, engine_settings: dict[str, t.Any]
-    ) -> bool | None:  # pylint: disable=unused-argument
+    def init(self, engine_settings: dict[str, t.Any]) -> bool | None:  # pylint: disable=unused-argument
         """Initialization of the engine.
 
         The method is optional and called **asynchronous** (in a thread).  The

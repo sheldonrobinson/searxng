@@ -68,9 +68,7 @@ def response(resp):
     dom = resp.html()
 
     # parse results
-    for result in eval_xpath_list(
-        dom, '//ol[contains(@class,"searchCenterMiddle")]//li'
-    ):
+    for result in eval_xpath_list(dom, '//ol[contains(@class,"searchCenterMiddle")]//li'):
 
         url = eval_xpath_getindex(result, ".//h4/a/@href", 0, None)
         if url is None:

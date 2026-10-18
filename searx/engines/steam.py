@@ -35,13 +35,7 @@ def response(resp) -> EngineResults:
         currency = item.get("price", {}).get("currency", "USD")
         price = item.get("price", {}).get("final", 0) / 100
 
-        platforms = ", ".join(
-            [
-                platform
-                for platform, supported in item.get("platforms", {}).items()
-                if supported
-            ]
-        )
+        platforms = ", ".join([platform for platform, supported in item.get("platforms", {}).items() if supported])
 
         content = [f"Price: {price:.2f} {currency}", f"Platforms: {platforms}"]
 

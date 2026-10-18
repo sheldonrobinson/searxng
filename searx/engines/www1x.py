@@ -44,9 +44,7 @@ def response(resp):
         title = extract_text(link)
         thumbnail_src = urljoin(
             gallery_url,
-            (eval_xpath_getindex(link, ".//img", 0).attrib["src"]).replace(
-                base_url, ""
-            ),
+            (eval_xpath_getindex(link, ".//img", 0).attrib["src"]).replace(base_url, ""),
         )
         # append result
         results.append(

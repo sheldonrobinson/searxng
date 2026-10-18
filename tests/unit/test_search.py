@@ -16,28 +16,20 @@ PUBLIC_ENGINE_NAME = "dummy engine"  # from the ./settings/test_settings.yml
 class SearchQueryTestCase(SearxTestCase):
 
     def test_repr(self):
-        s = SearchQuery(
-            "test", [EngineRef("bing", "general")], "all", 0, 1, "1", 5.0, "g"
-        )
+        s = SearchQuery("test", [EngineRef("bing", "general")], "all", 0, 1, "1", 5.0, "g")
         self.assertEqual(
             repr(s),
             "SearchQuery('test', [EngineRef('bing', 'general')], 'all', 0, 1, '1', 5.0, 'g', None)",
         )  # noqa
 
     def test_eq(self):
-        s = SearchQuery(
-            "test", [EngineRef("bing", "general")], "all", 0, 1, None, None, None
-        )
-        t = SearchQuery(
-            "test", [EngineRef("google", "general")], "all", 0, 1, None, None, None
-        )
+        s = SearchQuery("test", [EngineRef("bing", "general")], "all", 0, 1, None, None, None)
+        t = SearchQuery("test", [EngineRef("google", "general")], "all", 0, 1, None, None, None)
         self.assertEqual(s, s)
         self.assertNotEqual(s, t)
 
     def test_copy(self):
-        s = SearchQuery(
-            "test", [EngineRef("bing", "general")], "all", 0, 1, None, None, None
-        )
+        s = SearchQuery("test", [EngineRef("bing", "general")], "all", 0, 1, None, None, None)
         t = copy(s)
         self.assertEqual(s, t)
 

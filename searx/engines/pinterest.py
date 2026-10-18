@@ -74,8 +74,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
             res.types.Image(
                 url=result.get("link") or f"{base_url}/pin/{result['id']}/",
                 title=title,
-                content=(result.get("rich_summary") or {}).get("display_description")
-                or "",
+                content=(result.get("rich_summary") or {}).get("display_description") or "",
                 img_src=main_image["url"],
                 thumbnail_src=result["images"]["236x"]["url"],
                 source=(result.get("rich_summary") or {}).get("site_name") or "",

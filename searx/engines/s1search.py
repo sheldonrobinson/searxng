@@ -68,9 +68,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     doc = resp.html()
 
-    for suggestion in eval_xpath_list(
-        doc, "//div[@class='aylf-yahoo-bottom' or @class='aylf-yahoo-sidebar']/div"
-    ):
+    for suggestion in eval_xpath_list(doc, "//div[@class='aylf-yahoo-bottom' or @class='aylf-yahoo-sidebar']/div"):
         res.add(res.types.LegacyResult({"suggestion": extract_text(suggestion)}))
 
     for result in eval_xpath_list(
@@ -79,12 +77,8 @@ def response(resp: "SXNG_Response") -> EngineResults:
     ):
         res.add(
             res.types.MainResult(
-                url=extract_text(
-                    eval_xpath(result, ".//a[contains(@class, 'title')]/@href")
-                ),
-                title=extract_text(
-                    eval_xpath(result, ".//a[contains(@class, 'title')]")
-                ),
+                url=extract_text(eval_xpath(result, ".//a[contains(@class, 'title')]/@href")),
+                title=extract_text(eval_xpath(result, ".//a[contains(@class, 'title')]")),
                 content=extract_text(
                     eval_xpath(
                         result,

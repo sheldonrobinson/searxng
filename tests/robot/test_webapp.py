@@ -40,9 +40,7 @@ def test_preferences_engine_select(browser):
     assert browser.is_element_present_by_xpath('//label[@for="tab-engines"]')
     browser.find_by_xpath('//label[@for="tab-engines"]').first.click()
 
-    assert not browser.find_by_xpath(
-        '//input[@id="engine_general_dummy__general"]'
-    ).first.checked
+    assert not browser.find_by_xpath('//input[@id="engine_general_dummy__general"]').first.checked
     browser.find_by_xpath('//label[@for="engine_general_dummy__general"]').first.check()
     browser.find_by_xpath('//input[@type="submit"]').first.click()
 
@@ -53,9 +51,7 @@ def test_preferences_engine_select(browser):
     browser.links.find_by_href("/preferences").click()
     browser.find_by_xpath('//label[@for="tab-engines"]').first.click()
 
-    assert browser.find_by_xpath(
-        '//input[@id="engine_general_dummy__general"]'
-    ).first.checked
+    assert browser.find_by_xpath('//input[@id="engine_general_dummy__general"]').first.checked
 
 
 def test_preferences_locale(browser):

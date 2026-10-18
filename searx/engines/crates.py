@@ -61,9 +61,7 @@ def response(resp):
                 "package_name": package["name"],
                 "tags": package["keywords"],
                 "content": package["description"],
-                "version": package["newest_version"]
-                or package["max_version"]
-                or package["max_stable_version"],
+                "version": package["newest_version"] or package["max_version"] or package["max_stable_version"],
                 "publishedDate": published_date,
                 "links": links,
             }

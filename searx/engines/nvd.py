@@ -47,12 +47,7 @@ def response(resp) -> EngineResults:
         date = datetime.fromisoformat(item["cve"]["published"])
 
         # Extract severity (Low, Medium, High, or Critical) and CVSS score, if available
-        info = (
-            item["cve"]
-            .get("metrics", {})
-            .get("cvssMetricV31", [{}])[0]
-            .get("cvssData", {})
-        )
+        info = item["cve"].get("metrics", {}).get("cvssMetricV31", [{}])[0].get("cvssData", {})
         severity = info.get("baseSeverity")
         cvss_score = info.get("baseScore")
 

@@ -31,9 +31,7 @@ logger = logger.getChild("search")
 
 
 def initialize(
-    settings_engines: list[
-        dict[str, t.Any]
-    ] = None,  # pyright: ignore[reportArgumentType]
+    settings_engines: list[dict[str, t.Any]] = None,  # pyright: ignore[reportArgumentType]
     check_network: bool = False,
     enable_metrics: bool = True,
 ):
@@ -73,9 +71,7 @@ class Search:
     def search_answerers(self):
 
         results = searx.answerers.STORAGE.ask(self.search_query.query)
-        self.result_container.extend(
-            None, results
-        )  # pyright: ignore[reportArgumentType]
+        self.result_container.extend(None, results)  # pyright: ignore[reportArgumentType]
         return bool(results)
 
     # do search-request
@@ -162,15 +158,11 @@ class Search:
 
         for th in threading.enumerate():  # pylint: disable=invalid-name
             if th.name == search_id:
-                remaining_time = max(
-                    0.0, self.actual_timeout - (default_timer() - self.start_time)
-                )
+                remaining_time = max(0.0, self.actual_timeout - (default_timer() - self.start_time))
                 th.join(remaining_time)
                 if th.is_alive():
                     th._timeout = True
-                    self.result_container.add_unresponsive_engine(
-                        th._engine_name, "timeout"
-                    )
+                    self.result_container.add_unresponsive_engine(th._engine_name, "timeout")
                     PROCESSORS[th._engine_name].logger.error("engine timeout")
 
     def search_standard(self):

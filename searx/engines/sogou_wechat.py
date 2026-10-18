@@ -55,9 +55,7 @@ def response(resp):
             thumbnail = f"https:{thumbnail}"
 
         published_date = None
-        timestamp = extract_text(
-            item.xpath('.//script[contains(text(), "timeConvert")]')
-        )
+        timestamp = extract_text(item.xpath('.//script[contains(text(), "timeConvert")]'))
         if timestamp:
             match = re.search(r"timeConvert\('(\d+)'\)", timestamp)
             if match:

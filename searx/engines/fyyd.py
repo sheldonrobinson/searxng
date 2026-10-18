@@ -38,9 +38,7 @@ def request(query: str, params: "OnlineParams") -> None:
 def response(resp: "SXNG_Response"):
     res = EngineResults()
 
-    json_results: list[dict[str, str]] = resp.json()[
-        "data"
-    ]  # pyright: ignore[reportAny]
+    json_results: list[dict[str, str]] = resp.json()["data"]  # pyright: ignore[reportAny]
 
     for result in json_results:
         res.add(

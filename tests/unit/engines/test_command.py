@@ -123,9 +123,7 @@ INFO:werkzeug: * Debugger PIN: 299-578-362"""
             results = echo_engine.search("", {"pageno": i + 1})
             page = expected_results_by_page[i]
             for i, expected in enumerate(page):
-                self.assertEqual(
-                    expected.kvmap["message"], str(results[i].kvmap["message"])
-                )
+                self.assertEqual(expected.kvmap["message"], str(results[i].kvmap["message"]))
 
     def test_regex_parsing(self):
         txt = """commit 35f9a8c81d162a361b826bbcd4a1081a4fbe76a7
@@ -187,9 +185,7 @@ commit """
         expected_results = [KeyValue(kvmap=kvmap) for kvmap in expected_results]
         results = git_log_engine.search("", {"pageno": 1})
         for i, expected in enumerate(expected_results):
-            self.assertEqual(
-                expected.kvmap["message"], str(results[i].kvmap["message"])
-            )
+            self.assertEqual(expected.kvmap["message"], str(results[i].kvmap["message"]))
 
     def test_working_dir_path_query(self):
         ls_engine = command_engine
@@ -209,9 +205,7 @@ commit """
             "/var",
         ]
         for forbidden_path in forbidden_paths:
-            self.assertRaises(
-                ValueError, ls_engine.search, forbidden_path, {"pageno": 1}
-            )
+            self.assertRaises(ValueError, ls_engine.search, forbidden_path, {"pageno": 1})
 
     def test_enum_queries(self):
         echo_engine = command_engine

@@ -30,9 +30,7 @@ paging = True
 
 
 def request(query: str, params: "OnlineParams") -> None:
-    params["url"] = (
-        f"{base_url}/api/search-photos/{query}/relevance/desc/{params['pageno']}"
-    )
+    params["url"] = f"{base_url}/api/search-photos/{query}/relevance/desc/{params['pageno']}"
 
 
 def response(resp: "SXNG_Response"):

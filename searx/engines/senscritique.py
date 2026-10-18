@@ -86,9 +86,7 @@ def response(resp) -> EngineResults:
     res = EngineResults()
     response_data = loads(resp.text)
 
-    items = (
-        response_data.get("data", {}).get("searchProductExplorer", {}).get("items", [])
-    )
+    items = response_data.get("data", {}).get("searchProductExplorer", {}).get("items", [])
     if not items:
         return res
 
@@ -124,9 +122,7 @@ def parse_item(item: dict[str, t.Any]) -> MainResult | None:
     )
 
 
-def build_content_parts(
-    item: dict[str, t.Any], title: str, original_title: str | None
-) -> list[str]:
+def build_content_parts(item: dict[str, t.Any], title: str, original_title: str | None) -> list[str]:
     """Build the content parts for an item"""
     content_parts = []
 
@@ -154,8 +150,6 @@ def build_content_parts(
             content_parts.append(f"Duration: {minutes} min")
 
     if item.get("rating") and item.get("stats", {}).get("ratingCount"):
-        content_parts.append(
-            f"Rating: {item['rating']}/10 ({item['stats']['ratingCount']} votes)"
-        )
+        content_parts.append(f"Rating: {item['rating']}/10 ({item['stats']['ratingCount']} votes)")
 
     return content_parts

@@ -96,26 +96,18 @@ def response(resp: "SXNG_Response") -> EngineResults:
             res.add(
                 res.types.Video(
                     url=video_src,
-                    title=extract_text(
-                        eval_xpath(result, ".//div[contains(@class, 'caption')]/span")
-                    )
-                    or "",
+                    title=extract_text(eval_xpath(result, ".//div[contains(@class, 'caption')]/span")) or "",
                     iframe_src=video_src or "",
                 )
             )
     else:
-        for result in eval_xpath_list(
-            dom, "//ol/li[contains(@class, 'result-item')]/article"
-        ):
+        for result in eval_xpath_list(dom, "//ol/li[contains(@class, 'result-item')]/article"):
             filename = basename(extract_text(eval_xpath(result, ".//h3")) or "")
             res.add(
                 res.types.File(
                     url=extract_text(eval_xpath(result, ".//h3/a/@href")) or "",
                     title=filename,
-                    content=" ".join(
-                        extract_text(el) or ""
-                        for el in eval_xpath_list(result, "./div/span")
-                    ),
+                    content=" ".join(extract_text(el) or "" for el in eval_xpath_list(result, "./div/span")),
                     filename=filename,
                     size=extract_text(eval_xpath(result, "(.//span[@id])[1]")) or "",
                     embedded=extract_text(eval_xpath(result, ".//audio/@src")) or "",

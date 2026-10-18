@@ -48,9 +48,7 @@ class TinEyeTests(SearxTestCase):
 
         with self.assertLogs(self.tineye.logger) as assert_logs_context:
             self.tineye.response(response)
-            self.assertIn(
-                self.tineye.FORMAT_NOT_SUPPORTED, ",".join(assert_logs_context.output)
-            )
+            self.assertIn(self.tineye.FORMAT_NOT_SUPPORTED, ",".join(assert_logs_context.output))
 
     def test_logs_signature_for_422(self):
         response = Mock()
@@ -60,9 +58,7 @@ class TinEyeTests(SearxTestCase):
 
         with self.assertLogs(self.tineye.logger) as assert_logs_context:
             self.tineye.response(response)
-            self.assertIn(
-                self.tineye.NO_SIGNATURE_ERROR, ",".join(assert_logs_context.output)
-            )
+            self.assertIn(self.tineye.NO_SIGNATURE_ERROR, ",".join(assert_logs_context.output))
 
     def test_logs_download_for_422(self):
         response = Mock()
@@ -72,16 +68,12 @@ class TinEyeTests(SearxTestCase):
 
         with self.assertLogs(self.tineye.logger) as assert_logs_context:
             self.tineye.response(response)
-            self.assertIn(
-                self.tineye.DOWNLOAD_ERROR, ",".join(assert_logs_context.output)
-            )
+            self.assertIn(self.tineye.DOWNLOAD_ERROR, ",".join(assert_logs_context.output))
 
     def test_logs_description_for_400(self):
         description = "There was a problem with that request. Error ID: ad5fc955-a934-43c1-8187-f9a61d301645"
         response = Mock()
-        response.json.return_value = {
-            "suggestions": {"description": [description], "title": "Oops! We're sorry!"}
-        }
+        response.json.return_value = {"suggestions": {"description": [description], "title": "Oops! We're sorry!"}}
         response.status_code = 400
         response.raise_for_status.side_effect = HTTPError()
 

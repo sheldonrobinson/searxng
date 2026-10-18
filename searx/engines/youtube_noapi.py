@@ -39,21 +39,15 @@ base_youtube_url = "https://www.youtube.com/watch?v="
 def request(query, params):
     params["cookies"]["CONSENT"] = "YES+"
     if not params["engine_data"].get("next_page_token"):
-        params["url"] = search_url.format(
-            query=quote_plus(query), page=params["pageno"]
-        )
+        params["url"] = search_url.format(query=quote_plus(query), page=params["pageno"])
         if params["time_range"] in time_range_dict:
-            params["url"] += time_range_url.format(
-                time_range=time_range_dict[params["time_range"]]
-            )
+            params["url"] += time_range_url.format(time_range=time_range_dict[params["time_range"]])
     else:
         params["url"] = next_page_url
         params["method"] = "POST"
         params["data"] = dumps(
             {
-                "context": {
-                    "client": {"clientName": "WEB", "clientVersion": "2.20210310.12.01"}
-                },
+                "context": {"client": {"clientName": "WEB", "clientVersion": "2.20210310.12.01"}},
                 "continuation": params["engine_data"]["next_page_token"],
             }
         )
@@ -91,8 +85,7 @@ def parse_next_page_response(response_text):
                 "author": section["ownerText"]["runs"][0]["text"],
                 "length": section["lengthText"]["simpleText"],
                 "template": "videos.html",
-                "iframe_src": "https://www.youtube-nocookie.com/embed/"
-                + section["videoId"],
+                "iframe_src": "https://www.youtube-nocookie.com/embed/" + section["videoId"],
                 "thumbnail": section["thumbnail"]["thumbnails"][-1]["url"],
             }
         )
@@ -143,9 +136,7 @@ def parse_first_page_response(response_text):
                         "key": "next_page_token",
                     }
                 )
-        for video_container in section.get("itemSectionRenderer", {}).get(
-            "contents", []
-        ):
+        for video_container in section.get("itemSectionRenderer", {}).get("contents", []):
             video = video_container.get("videoRenderer", {})
             videoid = video.get("videoId")
             if videoid is not None:
@@ -165,8 +156,7 @@ def parse_first_page_response(response_text):
                         "author": author,
                         "length": length,
                         "template": "videos.html",
-                        "iframe_src": "https://www.youtube-nocookie.com/embed/"
-                        + videoid,
+                        "iframe_src": "https://www.youtube-nocookie.com/embed/" + videoid,
                         "thumbnail": thumbnail,
                     }
                 )

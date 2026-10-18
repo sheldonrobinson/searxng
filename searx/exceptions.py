@@ -64,9 +64,7 @@ class SearxEngineAccessDeniedException(SearxEngineResponseException):
     """This settings contains the default suspended time (default 86400 sec / 1
     day)."""
 
-    def __init__(
-        self, suspended_time: int | None = None, message: str = "Access denied"
-    ):
+    def __init__(self, suspended_time: int | None = None, message: str = "Access denied"):
         """Generic exception to raise when an engine denies access to the results.
 
         :param suspended_time: How long the engine is going to be suspended in
@@ -108,9 +106,7 @@ class SearxEngineTooManyRequestsException(SearxEngineAccessDeniedException):
     """This settings contains the default suspended time (default 3660 sec / 1
     hour)."""
 
-    def __init__(
-        self, suspended_time: int | None = None, message: str = "Too many request"
-    ):
+    def __init__(self, suspended_time: int | None = None, message: str = "Too many request"):
         super().__init__(message=message, suspended_time=suspended_time)
 
 

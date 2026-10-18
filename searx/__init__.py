@@ -140,9 +140,7 @@ def _logging_config_debug():
             fmt=LOG_FORMAT_DEBUG,
         )
     else:
-        logging.basicConfig(
-            level=getattr(logging, log_level, "ERROR"), format=LOG_FORMAT_DEBUG
-        )
+        logging.basicConfig(level=getattr(logging, log_level, "ERROR"), format=LOG_FORMAT_DEBUG)
 
 
 init_settings()

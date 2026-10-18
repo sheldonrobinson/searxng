@@ -81,9 +81,7 @@ def request(query: str, params: "OnlineParams"):
         "session_id": session_id,
     }
     if params["time_range"]:
-        args["period"] = safe_search_map[
-            params["time_range"]
-        ]  # pyright: ignore[reportArgumentType]
+        args["period"] = safe_search_map[params["time_range"]]  # pyright: ignore[reportArgumentType]
 
     params["url"] = f"{base_url}/return.php?{urlencode(args)}"
     return params
@@ -107,9 +105,7 @@ def response(resp: "SXNG_Response") -> EngineResults:
                 content=_remove_keyword_marker(result["Text"]),
                 url=result["Url"],
                 publishedDate=datetime.fromisoformat(result["Published"]),
-                metadata=gettext.gettext("Posted by {author}").format(
-                    author=result["Author"]
-                ),
+                metadata=gettext.gettext("Posted by {author}").format(author=result["Author"]),
             )
         )
 

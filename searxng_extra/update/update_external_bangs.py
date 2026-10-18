@@ -111,10 +111,7 @@ def parse_ddg_bangs(ddg_bangs):
             bang_url = bang_url[len(HTTPS_COLON) :]
 
         #
-        if (
-            bang_url.startswith(HTTP_COLON + "//")
-            and bang_url[len(HTTP_COLON) :] in bang_urls
-        ):
+        if bang_url.startswith(HTTP_COLON + "//") and bang_url[len(HTTP_COLON) :] in bang_urls:
             # if the bang_url uses the http:// protocol, and the same URL exists in https://
             # then reuse the https:// bang definition. (written //example.com)
             bang_def_output = bang_urls[bang_url[len(HTTP_COLON) :]]

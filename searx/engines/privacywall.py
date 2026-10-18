@@ -93,28 +93,13 @@ def request(query: str, params: "OnlineParams") -> None:
 
 def _general_results(doc: "ElementBase") -> EngineResults:
     res = EngineResults()
-    for result in eval_xpath_list(
-        doc, "//div[@id='pw-results-main']/div[contains(@class, 'result-card')]"
-    ):
+    for result in eval_xpath_list(doc, "//div[@id='pw-results-main']/div[contains(@class, 'result-card')]"):
         (
             res.add(
                 res.types.MainResult(
-                    url=extract_text(
-                        eval_xpath(
-                            result, ".//a[contains(@class, 'result-url-anchor')]/@href"
-                        )
-                    )
-                    or "",
-                    title=extract_text(
-                        eval_xpath(result, ".//div[contains(@class, 'result_title')]")
-                    )
-                    or "",
-                    content=extract_text(
-                        eval_xpath(
-                            result, ".//div[contains(@class, 'result-description')]"
-                        )
-                    )
-                    or "",
+                    url=extract_text(eval_xpath(result, ".//a[contains(@class, 'result-url-anchor')]/@href")) or "",
+                    title=extract_text(eval_xpath(result, ".//div[contains(@class, 'result_title')]")) or "",
+                    content=extract_text(eval_xpath(result, ".//div[contains(@class, 'result-description')]")) or "",
                 ),
             )
         )
@@ -132,23 +117,14 @@ def _extract_thumbnail_url(url: str) -> str:
 
 def _image_results(doc: "ElementBase") -> EngineResults:
     res = EngineResults()
-    for result in eval_xpath_list(
-        doc, "//div[@id='container']/div[contains(@class, 'imgcontainer')]"
-    ):
+    for result in eval_xpath_list(doc, "//div[@id='container']/div[contains(@class, 'imgcontainer')]"):
         (
             res.add(
                 res.types.Image(
                     url=extract_text(eval_xpath(result, "./a/@href")) or "",
                     content=extract_text(eval_xpath(result, "./a/@alt")) or "",
-                    thumbnail_src=_extract_thumbnail_url(
-                        extract_text(eval_xpath(result, ".//img/@src")) or ""
-                    ),
-                    source=extract_text(
-                        eval_xpath(
-                            result, ".//div[contains(@class, 'image-source-badge')]"
-                        )
-                    )
-                    or "",
+                    thumbnail_src=_extract_thumbnail_url(extract_text(eval_xpath(result, ".//img/@src")) or ""),
+                    source=extract_text(eval_xpath(result, ".//div[contains(@class, 'image-source-badge')]")) or "",
                 ),
             )
         )
@@ -167,19 +143,14 @@ def _video_results(doc: "ElementBase") -> EngineResults:
 
         thumbnail = None
         # looks like <div style="background-image:url(/videos/video.php?id=<urlencoded-urlhere>);position:relative">
-        thumbnail_style = extract_text(
-            eval_xpath(result, ".//div[contains(@class, 'video-img')]/@style")
-        )
+        thumbnail_style = extract_text(eval_xpath(result, ".//div[contains(@class, 'video-img')]/@style"))
         if thumbnail_style:
             thumbnail = _extract_thumbnail_url(extr(thumbnail_style, ":url(", ")"))
 
         res.add(
             res.types.Video(
                 url=url,
-                title=extract_text(
-                    eval_xpath(result, ".//h2[contains(@class, 'video-card-title')]")
-                )
-                or "",
+                title=extract_text(eval_xpath(result, ".//h2[contains(@class, 'video-card-title')]")) or "",
                 content=extract_text(eval_xpath(result, ".//p")) or "",
                 thumbnail=thumbnail or "",
             )
@@ -229,13 +200,9 @@ def fetch_traits(engine_traits: EngineTraits) -> None:
         # the locale tag is only a country tag, so we get languages the from the list of official languages
         # of the country
         lang_tag: str
-        for lang_tag in babel.languages.get_official_languages(
-            country_tag, de_facto=True
-        ):  # pyright: ignore
+        for lang_tag in babel.languages.get_official_languages(country_tag, de_facto=True):  # pyright: ignore
             try:
-                sxng_tag = region_tag(
-                    babel.Locale.parse(f"{lang_tag}_{country_tag.upper()}")
-                )
+                sxng_tag = region_tag(babel.Locale.parse(f"{lang_tag}_{country_tag.upper()}"))
             except babel.UnknownLocaleError:
                 # silently ignore unknown languages
                 continue

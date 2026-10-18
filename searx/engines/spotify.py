@@ -39,9 +39,7 @@ def request(query, params):
         data={"grant_type": "client_credentials"},
         headers={
             "Authorization": "Basic "
-            + base64.b64encode(
-                "{}:{}".format(api_client_id, api_client_secret).encode()
-            ).decode()
+            + base64.b64encode("{}:{}".format(api_client_id, api_client_secret).encode()).decode()
         },
     )
     j = loads(r.text)
@@ -61,17 +59,14 @@ def response(resp):
         if result["type"] == "track":
             title = result["name"]
             link = result["external_urls"]["spotify"]
-            content = "{} - {} - {}".format(
-                result["artists"][0]["name"], result["album"]["name"], result["name"]
-            )
+            content = "{} - {} - {}".format(result["artists"][0]["name"], result["album"]["name"], result["name"])
 
             # append result
             results.append(
                 {
                     "url": link,
                     "title": title,
-                    "iframe_src": "https://embed.spotify.com/?uri=spotify:track:"
-                    + result["id"],
+                    "iframe_src": "https://embed.spotify.com/?uri=spotify:track:" + result["id"],
                     "content": content,
                 }
             )

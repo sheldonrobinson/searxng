@@ -55,25 +55,17 @@ def response(resp: "SXNG_Response") -> EngineResults:
 
     for result in eval_xpath_list(wml_dom(resp), '//div[contains(@class, "zMzFAb")]'):
         title = extract_text(
-            eval_xpath_getindex(
-                result, './/span[contains(@class, "CVA68e")]', 0, default=None
-            ),
+            eval_xpath_getindex(result, './/span[contains(@class, "CVA68e")]', 0, default=None),
             allow_none=True,
         )
-        raw_url = eval_xpath_getindex(
-            result, './/a[contains(@class, "fuLhoc")]/@href', 0, default=None
-        )
+        raw_url = eval_xpath_getindex(result, './/a[contains(@class, "fuLhoc")]/@href', 0, default=None)
         if not title or not raw_url:
             continue
 
         url = unwrap_google_url(raw_url)
-        thumbnail = eval_xpath_getindex(
-            result, './/img[contains(@class, "SygO9d")]/@src', 0, default=""
-        )
+        thumbnail = eval_xpath_getindex(result, './/img[contains(@class, "SygO9d")]/@src', 0, default="")
         if "/default.jpg" in thumbnail:
-            thumbnail = thumbnail.split("?")[0].replace(
-                "/default.jpg", "/hqdefault.jpg"
-            )
+            thumbnail = thumbnail.split("?")[0].replace("/default.jpg", "/hqdefault.jpg")
         length = None
         for span in eval_xpath_list(result, './/span[contains(@class, "YVIcad")]'):
             length = parse_duration_string(extract_text(span) or "")
