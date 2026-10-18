@@ -47,7 +47,7 @@ requirements = _read_lines("requirements.txt")
 dev_requirements = _read_lines("requirements-dev.txt")
 
 setup(
-    name="searxng",
+    name="searxng-engine",
     description="SearXNG is a metasearch engine. Users are neither tracked nor profiled.",
     long_description=long_description,
     license="AGPL-3.0-or-later",
