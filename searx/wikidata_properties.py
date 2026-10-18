@@ -562,9 +562,8 @@ def get_attributes(language: str):
 
 def get_label_for_entity(entity_id: str, language: str) -> str:
     # only import properties locally to prevent cyclic import when initializing WIKIDATA_PROPERTIES
-    from searx.data import (
-        WIKIDATA_PROPERTIES,
-    )  # pylint: disable=import-outside-toplevel
+    # pylint: disable=import-outside-toplevel
+    from searx.data import WIKIDATA_PROPERTIES
 
     property_name = WIKIDATA_PROPERTIES.get(entity_id)
     if property_name is None:
