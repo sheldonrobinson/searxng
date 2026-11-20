@@ -347,28 +347,6 @@ engines:
     disabled: true
     shortcut: alp
 
-  - name: andisearch
-    engine: andisearch
-    shortcut: andi
-    disabled: true
-    timeout: 10
-
-  - name: andisearch news
-    engine: andisearch
-    andisearch_categ: news
-    categories: news
-    shortcut: andin
-    disabled: true
-    timeout: 10
-
-  - name: andisearch images
-    engine: andisearch
-    andisearch_categ: images
-    categories: images
-    shortcut: andii
-    disabled: true
-    timeout: 10
-
   - name: annas archive
     engine: annas_archive
     base_url:
@@ -481,21 +459,10 @@ engines:
       results: JSON
 
   - name: ayo
-    engine: xpath
-    categories: general
+    engine: ayo
     shortcut: ayo
-    search_url: https://search.ayo.de/search?q={query}
-    results_xpath: //div[contains(@class, 'search-result')]/div
-    url_xpath: .//a/@href
-    title_xpath: .//h3
-    content_xpath: .//p
-    suggestion_xpath: .//a[starts-with(@href, "https://search.ayo.de")]
-    disabled: true
-    about:
-      website: https://search.ayo.de
-      use_official_api: false
-      require_api_key: false
-      results: HTML
+    # behind Anubis CAPTCHA
+    inactive: true
 
   - name: azure
     engine: azure
@@ -1789,6 +1756,11 @@ engines:
     timeout: 5.0
     disabled: true
 
+  - name: nuget
+    engine: nuget
+    shortcut: nuget
+    disabled: true
+
   - name: nyaa
     engine: nyaa
     shortcut: nt
@@ -2168,6 +2140,11 @@ engines:
       use_official_api: false
       require_api_key: false
       results: JSON
+
+  - name: readerfunded
+    engine: readerfunded
+    shortcut: rfd
+    inactive: true
 
   - name: reuters
     engine: reuters
@@ -3307,6 +3284,7 @@ engines:
     categories: [general, web]
     brave_category: search
     # brave_spellcheck: true
+    disabled: true
 
   - name: brave.images
     engine: brave
