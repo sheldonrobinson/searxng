@@ -35,21 +35,12 @@ jobs:
           name: searxng-wheel-${{ matrix.os }}
           path: ./wheelhouse/*.whl
           
-      - name: pypi-publish
+      - name: Publish to PyPI
         if: matrix.os == 'ubuntu-latest'
-        # You may pin to the exact commit or the version.
-        uses: pypa/gh-action-pypi-publish@v1.14.3
-        with:
-          # PyPI user (__token__ for API token authentication)
-          user: __token__
-          # Password for your PyPI user or an access token
-          password: ${{ secrets.PYPI_TOKEN }}
-          # The repository URL to use
-          repository-url: https://upload.pypi.org/legacy/
-          # The target directory for distribution
-          packages-dir: ./wheelhouse
-          # Check metadata before uploading
-          verify-metadata: true
-          # Do not fail if a Python package distribution already exists
-          skip-existing: true
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python -m pip install twine
+          python -m twine upload --repository-url https://upload.pypi.org/legacy/ --skip-existing ./wheelhouse/*.whl
           
