@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/upload-artifact@v6
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
       - name: pypi-publish
         # You may pin to the exact commit or the version.
