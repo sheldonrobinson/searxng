@@ -38,17 +38,20 @@ jobs:
           path: ./wheelhouse/*.whl
           
       - name: pypi-publish
+        if: matrix.os == 'ubuntu-latest'
         # You may pin to the exact commit or the version.
         uses: pypa/gh-action-pypi-publish@v1.14.3
         with:
-          # PyPI user
-          user: ${{ secrets.PYPI_USER }}
+          # PyPI user (__token__ for API token authentication)
+          user: __token__
           # Password for your PyPI user or an access token
-          password: ${{ secrets.PYPI_TOKEN }} # optional
+          password: ${{ secrets.PYPI_TOKEN }}
           # The repository URL to use
-          repository-url: https://pypi.org/p/searxng-server
-          # The target for distribution
+          repository-url: https://upload.pypi.org/legacy/
+          # The target directory for distribution
           packages-dir: ./wheelhouse
           # Check metadata before uploading
           verify-metadata: true
+          # Do not fail if a Python package distribution already exists
+          skip-existing: true
           
