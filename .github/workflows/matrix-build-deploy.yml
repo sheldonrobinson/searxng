@@ -38,7 +38,7 @@ jobs:
           path: ./wheelhouse/*.whl
           
       - name: pypi-publish
-        if: matrix.os == 'ubuntu-latest'
+        if: startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
         # You may pin to the exact commit or the version.
         uses: pypa/gh-action-pypi-publish@v1.14.3
         with:

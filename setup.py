@@ -34,7 +34,9 @@ def _read_brand_setting(key: str) -> str:
 version_ns: dict = {}
 with open('searx/version.py', encoding='utf-8') as f:
     exec(f.read(), version_ns)
-VERSION_TAG: str = version_ns['VERSION_TAG']
+# Strip local version segment (e.g. '+b4a4b48') for PyPI compatibility.
+# PyPI does not allow local version identifiers (PEP 440).
+VERSION_TAG: str = version_ns['VERSION_TAG'].split('+')[0]
 GIT_URL: str = version_ns['GIT_URL']
 
 DOCS_URL: str = _read_brand_setting('docs_url')
