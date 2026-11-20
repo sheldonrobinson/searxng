@@ -49,13 +49,13 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.14.3
         with:
           # PyPI user
-          user: # optional, default is __token__
+          user: iamsheldonjay
           # Password for your PyPI user or an access token
-          password: # optional
+          password: ${secrets.PYPI_TOKEN} # optional
           # The repository URL to use
           repository-url: # optional
           # The target directory for distribution
-          packages-dir: # optional
+          packages-dir:  # optional
           # Check metadata before uploading
           verify-metadata: # optional
           # Do not fail if a Python package distribution exists in the target package index
