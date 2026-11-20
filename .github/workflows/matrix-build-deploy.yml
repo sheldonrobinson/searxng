@@ -38,7 +38,7 @@ jobs:
           build: "cp310-*,cp311-*,cp312-*,cp313-*,cp314-*"
         with:
            package-dir: .
-           output-dir: wheelhouse
+           output-dir: ./wheelhouse
            
       - uses: actions/upload-artifact@v6
         with:
@@ -49,20 +49,13 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.14.3
         with:
           # PyPI user
-          user: iamsheldonjay
+          user: ${{ secrets.PYPI_USER }}
           # Password for your PyPI user or an access token
-          password: ${secrets.PYPI_TOKEN} # optional
+          password: ${{ secrets.PYPI_TOKEN }} # optional
           # The repository URL to use
-          repository-url: # optional
-          # The target directory for distribution
-          packages-dir:  # optional
+          repository-url: https://pypi.org/p/searxng-server
+          # The target for distribution
+          packages-dir: ./wheelhouse
           # Check metadata before uploading
-          verify-metadata: # optional
-          # Do not fail if a Python package distribution exists in the target package index
-          skip-existing: # optional
-          # Show verbose output.
-          verbose: # optional, default is true
-          # Show hash values of files to be uploaded
-          print-hash: # optional
-          # Enable support for PEP 740 attestations. Only works with PyPI and TestPyPI via Trusted Publishing.
-          attestations: # optional, default is true
+          verify-metadata: true
+          
