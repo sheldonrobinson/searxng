@@ -1,0 +1,67 @@
+# File: .github/workflows/release.yml
+name: Publish Python 🐍 distribution 📦 to PyPI
+
+on:
+  push:
+    branches: [ compat ]
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-15-intel, macos-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14" ]
+
+    steps:
+      # Step 1: Checkout source code
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      # Step 2: Set up Python used to host cibuildwheel
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==4.3.5
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        # to supply options, put them in 'env', like:
+        # env:
+        #   CIBW_SOME_OPTION: value
+        #   ...
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+      - name: pypi-publish
+        # You may pin to the exact commit or the version.
+        uses: pypa/gh-action-pypi-publish@v1.14.3
+        with:
+          # PyPI user
+          user: # optional, default is __token__
+          # Password for your PyPI user or an access token
+          password: # optional
+          # The repository URL to use
+          repository-url: # optional
+          # The target directory for distribution
+          packages-dir: # optional
+          # Check metadata before uploading
+          verify-metadata: # optional
+          # Do not fail if a Python package distribution exists in the target package index
+          skip-existing: # optional
+          # Show verbose output.
+          verbose: # optional, default is true
+          # Show hash values of files to be uploaded
+          print-hash: # optional
+          # Enable support for PEP 740 attestations. Only works with PyPI and TestPyPI via Trusted Publishing.
+          attestations: # optional, default is true
